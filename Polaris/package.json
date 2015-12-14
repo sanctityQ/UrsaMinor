@@ -1,11 +1,7 @@
 {
-  "name": "zeus",
+  "name": "Polaris",
   "version": "0.1.0",
-  "description": "tiancai frontend",
-  "main": "index.js",
-  "bin": {
-    "zeus": "index.js"
-  },
+  "description": "Passport->UrsaMinor->Polaris",
   "dependencies": {
     "co": "^4.6.0",
     "commander": "^2.8.1",
@@ -51,17 +47,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tftc/zeus.git"
+    "url": "git+https://github.com/tftc/UrsaMinor.git"
   },
   "keywords": [
-    "frontend",
-    "tiancai",
+    "passport",
+    "itiancai",
     "zeus"
   ],
-  "author": "xiaoguang",
+  "author": "bao",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tftc/zeus/issues"
+    "url": "https://github.com/tftc/UrsaMinor/issues"
   },
   "homepage": "https://github.com/tftc/zeus#readme"
 }

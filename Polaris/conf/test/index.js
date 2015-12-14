@@ -8,11 +8,11 @@
 var path = require('path');
 module.exports = {
   // 当前运行模式
-  runEnv: 'dev',
+  runEnv: 'test',
 
   // 应用全局配置
   app: {
-    port: 8000,
+    port: 9980,
     httpAgentMaxSocks: 30000
   },
 
@@ -50,7 +50,7 @@ module.exports = {
   thirft: {
     passport: {
       host: '127.0.0.1',
-      port: 9981,
+      port: 9982,
       timeout: 3000,
       max_connections: 100,
       min_connections: 10
@@ -76,7 +76,7 @@ module.exports = {
   captcha: {
     redis: '192.168.0.244',
     server: 'http://192.168.0.244:8888',
-    img: 'http://127.0.0.1:8083'
+    img: 'http://192.168.0.243:8083'
   },
 
   session: {

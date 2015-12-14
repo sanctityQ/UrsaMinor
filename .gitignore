@@ -8,3 +8,4 @@
 pid
 log
 node_modules
+*.log
