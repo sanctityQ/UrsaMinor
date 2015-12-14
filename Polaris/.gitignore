@@ -1,0 +1,9 @@
+*~
+.DS_Store
+/conf/index.js
+/gen.sh
+.idea
+pid
+log
+/coverage
+node_modules
