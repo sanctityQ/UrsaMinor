@@ -76,7 +76,7 @@ module.exports = {
   captcha: {
     redis: '192.168.0.244',
     server: 'http://192.168.0.244:8888',
-    img: 'http://127.0.0.1:8083/captcha'
+    img: 'http://127.0.0.1:8083'
   },
 
   session: {

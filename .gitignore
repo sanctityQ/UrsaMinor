@@ -1,0 +1,10 @@
+/Polaris/conf/index.js
+/Polaris/coverage
+*~
+.DS_Store
+#/gen.sh
+.idea
+pid
+log
+/coverage
+node_modules
