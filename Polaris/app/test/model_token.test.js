@@ -3,21 +3,12 @@ var apiCode = require('../conf/apiCode');
 var conf = require("../../conf");
 var rewire = require('rewire');
 var tokenModel = rewire("../model/token.js");
+var test = require("../libs/test");
 
 before(function () {
   tokenModel.__set__({
-                         tclog: {
-                           notice: function (data) {
-                             console.log(data);
-                           },
-                           error: function (data) {
-                             console.error(data);
-                           },
-                           warn: function (data) {
-                             console.warn(data);
-                           }
-                         }
-                       });
+                       tclog: test.tclog
+                     });
 
 });
 
@@ -27,10 +18,10 @@ describe("token[putToken]", function () {
     var loginResult = {
       source: 0,
       sysCode: 0,
-      user: {id:52}
+      user: {id: 52}
     };
-    tokenModel.putToken("xxxxxxx", loginResult).then(function(data) {
-      console.log(data);
+    tokenModel.putToken("xxxxxxx", loginResult).then(function (data) {
+      data.should.not.empty();
       done();
     });
   });
@@ -39,9 +30,11 @@ describe("token[putToken]", function () {
 describe("token[removeToken]", function () {
 
   it("removeToken[success]", function (done) {
-    tokenModel.removeToken("23b635430ebae54ea27b1cc6682f8404026467e87e84a9fb1844f4b1fad384f0").then(function(data) {
-      console.log(data);
-      done();
-    });
+    tokenModel.removeToken("23b635430ebae54ea27b1cc6682f8404026467e87e84a9fb1844f4b1fad384f0").then(
+        function (data) {
+          data.should.have.property('header');
+          data.header.should.eql(apiCode.SUCCESS);
+          done();
+        });
   });
 });

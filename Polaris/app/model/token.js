@@ -71,7 +71,6 @@ module.exports = {
         if(err) {
           resolve({header: apiCode.E10001});
         } else {
-          console.log("removeToken:"+tokenNo+ ",result:" + results);
           resolve({header: apiCode.SUCCESS});
         }
       })

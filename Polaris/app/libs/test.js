@@ -46,11 +46,10 @@ test.TOKEN_MODEL = {
 
 test.tclog = {
   notice: function (data) {
-    console.log(data);
-    console.log("\r");
   },
   error: function (data) {
-    console.error(data);
+  },
+  warn: function (data) {
   }
 };
 

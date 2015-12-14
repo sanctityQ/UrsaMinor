@@ -5,21 +5,11 @@ var conf = require("../../conf");
 var rewire = require('rewire');
 var captchaModel = rewire("../model/captcha");
 var nock = require('nock');
+var test = require('../libs/test');
 
 before(function () {
   captchaModel.__set__({
-                         tclog: {
-                           notice: function (data) {
-                             console.log(data);
-                             console.log("\r");
-                           },
-                           error: function (data) {
-                             console.error(data);
-                           },
-                           warn: function (data) {
-                             console.warn(data);
-                           }
-                         }
+                         tclog: test.tclog
                        });
 
 });
