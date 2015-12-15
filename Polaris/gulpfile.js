@@ -15,7 +15,6 @@ var fecs = require('fecs-gulp');
 var fs = require('fs');
 var opn = require('opn');
 var gulpSequence = require('gulp-sequence');
-var port = require('./conf/index').app.port || 8000;
 // 监听静态文件和模板以及pid修改，并刷新页面
 gulp.task('watch', function () {
   livereload.listen();
@@ -29,7 +28,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('open', function () {
-  opn('http://127.0.0.1:'+port, {app: ['google chrome']})
+  opn('http://127.0.0.1:8000', {app: ['google chrome']})
 });
 
 gulp.task('start', function () {
