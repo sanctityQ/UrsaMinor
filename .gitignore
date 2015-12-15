@@ -6,5 +6,6 @@
 #/gen.sh
 .idea
 pid
+log
 node_modules
 *.log
