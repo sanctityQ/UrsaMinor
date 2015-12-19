@@ -17,8 +17,8 @@ before(function () {
 describe("发送短信注册验证码", function () {
   it("短信注册验证码[发送成功]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/users/smsCaptcha?mobile=" + mobile)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Register + "?mobile=" + mobile)
         .reply(200, {"data": mobile, "error": [], "success": true});
     captchaModel.sendSms4Register("1321312312", mobile).then(function (data) {
       data.should.have.property('header');
@@ -29,8 +29,8 @@ describe("发送短信注册验证码", function () {
 
   it("短信注册验证码[发送失败]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/users/smsCaptcha?mobile=" + mobile)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Register + "?mobile=" + mobile)
         .reply(200, {"data": "", "error": [], "success": false});
     captchaModel.sendSms4Register("1321312312", mobile).then(function (data) {
       data.should.have.property('header');
@@ -41,9 +41,9 @@ describe("发送短信注册验证码", function () {
 
   it("短信注册验证码[服务异常]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/users/smsCaptcha?mobile=" + mobile)
-        .socketDelay(10000)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Register + "?mobile=" + mobile)
+        .socketDelay(20000)
         .reply(200, {});
     captchaModel.sendSms4Register("1321312312", mobile).then(function (data) {
       data.header.should.eql(apiCode.E10001);
@@ -55,8 +55,8 @@ describe("发送短信注册验证码", function () {
 describe("发送语音注册验证码", function () {
   it("发送语音注册验证码[发送成功]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/soundcaptcha/send?mobile=" + mobile + "&type=0")
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=0")
         .reply(200, {code: '1'});
     captchaModel.sendSound4Register("1321312312", mobile).then(function (data) {
       data.header.should.eql(apiCode.SUCCESS);
@@ -66,8 +66,8 @@ describe("发送语音注册验证码", function () {
 
   it("发送语音注册验证码[发送失败]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/soundcaptcha/send?mobile=" + mobile + "&type=0")
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=0")
         .reply(200, {code: '0'});
     captchaModel.sendSound4Register("1321312312", mobile).then(function (data) {
       data.header.should.eql(apiCode.E20011);
@@ -77,9 +77,9 @@ describe("发送语音注册验证码", function () {
 
   it("发送语音注册验证码[服务异常]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/soundcaptcha/send?mobile=" + mobile + "&type=0")
-        .socketDelay(10000)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=0")
+        .socketDelay(20000)
         .reply(200, {code: '0'});
     captchaModel.sendSound4Register("1321312312", mobile).then(function (data) {
       data.header.should.eql(apiCode.E10001);
@@ -92,8 +92,8 @@ describe("验证注册验证码", function () {
   it("验证注册验证码[验证成功]", function (done) {
     var mobile = '15138695162';
     var captcha = '121212';
-    nock(conf.captcha.server)
-        .get("/api/v2/users/register/check/smscaptcha?mobile=" + mobile + "&captcha=" + captcha)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ValidateRegister + "?mobile=" + mobile + "&captcha=" + captcha)
         .reply(200, 'true');
     captchaModel.validate4Register("1321312312", mobile, captcha).then(function (data) {
       data.header.should.eql(apiCode.SUCCESS);
@@ -104,8 +104,8 @@ describe("验证注册验证码", function () {
   it("验证注册验证码[验证失败]", function (done) {
     var mobile = '15138695162';
     var captcha = '121212';
-    nock(conf.captcha.server)
-        .get("/api/v2/users/register/check/smscaptcha?mobile=" + mobile + "&captcha=" + captcha)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ValidateRegister + "?mobile=" + mobile + "&captcha=" + captcha)
         .reply(200, 'false');
     captchaModel.validate4Register("1321312312", mobile, captcha).then(function (data) {
       data.header.should.eql(apiCode.E20006);
@@ -116,8 +116,8 @@ describe("验证注册验证码", function () {
   it("验证注册验证码[服务异常]", function (done) {
     var mobile = '15138695162';
     var captcha = '121212';
-    nock(conf.captcha.server)
-        .get("/api/v2/users/register/check/smscaptcha?mobile=" + mobile + "&captcha=" + captcha)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ValidateRegister + "?mobile=" + mobile + "&captcha=" + captcha)
         .socketDelay(10000)
         .reply(200, 'false');
     captchaModel.validate4Register("1321312312", mobile, captcha).then(function (data) {
@@ -130,8 +130,8 @@ describe("验证注册验证码", function () {
 describe("发送短信找回密码验证码", function () {
   it("发送短信找回密码验证码[发送成功]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/resetpwd/smscaptcha/send/"+mobile)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ResetPassword + "/" + mobile)
         .reply(200, 'true');
     captchaModel.sendSms4ResetPassword("1321312312", mobile).then(function (data) {
       data.should.have.property('header');
@@ -142,8 +142,8 @@ describe("发送短信找回密码验证码", function () {
 
   it("发送短信找回密码验证码[发送失败]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/resetpwd/smscaptcha/send/"+mobile)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ResetPassword + "/" + mobile)
         .reply(200, 'false');
     captchaModel.sendSms4ResetPassword("1321312312", mobile).then(function (data) {
       data.should.have.property('header');
@@ -154,8 +154,8 @@ describe("发送短信找回密码验证码", function () {
 
   it("发送短信找回密码验证码[服务异常]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/resetpwd/smscaptcha/send/"+mobile)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ResetPassword + "/" + mobile)
         .socketDelay(10000)
         .reply(200, {});
     captchaModel.sendSms4ResetPassword("1321312312", mobile).then(function (data) {
@@ -168,8 +168,8 @@ describe("发送短信找回密码验证码", function () {
 describe("发送语音找回密码验证码", function () {
   it("发送语音找回密码验证码[发送成功]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/soundcaptcha/send?mobile=" + mobile + "&type=1")
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Sound+"?mobile=" + mobile + "&type=1")
         .reply(200, {code: '1'});
     captchaModel.sendSound4ResetPassword("1321312312", mobile).then(function (data) {
       data.header.should.eql(apiCode.SUCCESS);
@@ -179,8 +179,8 @@ describe("发送语音找回密码验证码", function () {
 
   it("发送语音找回密码验证码[发送失败]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/soundcaptcha/send?mobile=" + mobile + "&type=1")
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Sound+"?mobile=" + mobile + "&type=1")
         .reply(200, {code: '0'});
     captchaModel.sendSound4ResetPassword("1321312312", mobile).then(function (data) {
       data.header.should.eql(apiCode.E20011);
@@ -190,9 +190,9 @@ describe("发送语音找回密码验证码", function () {
 
   it("发送语音找回密码验证码[服务异常]", function (done) {
     var mobile = '15138695162';
-    nock(conf.captcha.server)
-        .get("/api/v2/auth/soundcaptcha/send?mobile=" + mobile + "&type=1")
-        .socketDelay(10000)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4Sound+"?mobile=" + mobile + "&type=1")
+        .socketDelay(20000)
         .reply(200, {code: '0'});
     captchaModel.sendSound4ResetPassword("1321312312", mobile).then(function (data) {
       data.header.should.eql(apiCode.E10001);
@@ -205,8 +205,8 @@ describe("验证找回密码验证码", function () {
   it("验证找回密码验证码[验证成功]", function (done) {
     var mobile = '15138695162';
     var captcha = '121212';
-    nock(conf.captcha.server)
-        .get("/resetpwd/smscaptcha/check?mobile="+mobile+"&captcha="+captcha)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha)
         .reply(200, 'true');
     captchaModel.validate4ResetPassword("1321312312", mobile, captcha).then(function (data) {
       data.header.should.eql(apiCode.SUCCESS);
@@ -217,8 +217,8 @@ describe("验证找回密码验证码", function () {
   it("验证找回密码验证码[验证失败]", function (done) {
     var mobile = '15138695162';
     var captcha = '121212';
-    nock(conf.captcha.server)
-        .get("/resetpwd/smscaptcha/check?mobile="+mobile+"&captcha="+captcha)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha)
         .reply(200, 'false');
     captchaModel.validate4ResetPassword("1321312312", mobile, captcha).then(function (data) {
       data.header.should.eql(apiCode.E20006);
@@ -229,9 +229,9 @@ describe("验证找回密码验证码", function () {
   it("验证找回密码验证码[服务异常]", function (done) {
     var mobile = '15138695162';
     var captcha = '121212';
-    nock(conf.captcha.server)
-        .get("/resetpwd/smscaptcha/check?mobile="+mobile+"&captcha="+captcha)
-        .socketDelay(10000)
+    nock(conf.captcha.sms.server)
+        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha)
+        .socketDelay(20000)
         .reply(200, 'false');
     captchaModel.validate4ResetPassword("1321312312", mobile, captcha).then(function (data) {
       data.header.should.eql(apiCode.E10001);
@@ -242,8 +242,8 @@ describe("验证找回密码验证码", function () {
 
 describe("获取图片验证码", function () {
   it("获取图片验证码[成功]", function (done) {
-    nock(conf.captcha.img)
-        .get("/captcha")
+    nock(conf.captcha.img.server)
+        .get(conf.captcha.img.path)
         .replyWithFile(200, __dirname+'/captcha.test.png', {
                  "Content-Type": "image/png",
                  "x-captcha-answer": "bgako",

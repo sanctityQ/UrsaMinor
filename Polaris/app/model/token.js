@@ -42,13 +42,13 @@ module.exports = {
           expireTime: now + DEFAULT_EXPIRE*1000
         };
         client.setex("passport:access_token:"+tokenNo, DEFAULT_EXPIRE, JSON.stringify(access_token), function(err, results) {
+          if(client) {
+            client.quit();
+          }
           if(err) {
             tclog.error({logid: traceNo, err: err});
             resolve(null);
           } else {
-            if(client) {
-              client.quit();
-            }
             tclog.notice({logid: traceNo, access_token: access_token});
             resolve(tokenNo);
           }

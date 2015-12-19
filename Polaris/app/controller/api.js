@@ -22,7 +22,7 @@ module.exports = {
     var headerBody = this.header;
     var logid = this.req.logid+"";
     var loginInfo = { //登录信息
-      source: headerBody.source || 'APP',
+      source: headerBody.source,
       sysCode: headerBody.syscode,
       traceNo: logid,
       credential: postBody.credential,
@@ -48,13 +48,13 @@ module.exports = {
     var smsCaptcha = postBody.smsCaptcha; //短信验证码(语音)
     var logid = this.req.logid+"";
     var registerInfo = {
-      source: headerBody.source || 'APP',
+      source: headerBody.source,
       sysCode: headerBody.syscode,
       traceNo: logid,
       mobile: postBody.mobile,
       password: postBody.password
     };
-    tclog.notice({api:'/api/register', loginInfo: _.omit(registerInfo, 'password')});
+    tclog.notice({api:'/api/register', registerInfo: _.omit(registerInfo, 'password')});
     //短信验证码是否正确
     var result = yield captchaModel.validate4Register(registerInfo.traceNo, registerInfo.mobile, smsCaptcha);
     if(result.header.err_code == apiCode.SUCCESS.err_code) {
@@ -64,7 +64,7 @@ module.exports = {
       //注册成功自动登录
       if(registerResult.header.err_code == apiCode.SUCCESS.err_code) {
         var loginInfo = { //登录信息
-          source: headerBody.source || 'APP',
+          source: headerBody.source,
           sysCode: headerBody.syscode,
           traceNo: logid,
           credential: postBody.mobile,
@@ -86,8 +86,13 @@ module.exports = {
     var headerBody = this.header;
     var logid = this.req.logid+"";
     var tokenNo = query.access_token;
-    tclog.notice({api:'api/logout', logid:logid, tokenNo: tokenNo});
-    var result = yield tokenModel.removeToken(tokenNo);
+    tclog.notice({api:'api/logout', logid:logid, source:headerBody.source, sysCode:headerBody.syscode, tokenNo: tokenNo});
+    var result = {};
+    if(tokenNo) { //tokenNo不能为空
+      result = yield tokenModel.removeToken(tokenNo);
+    } else {
+      result = apiCode.E20098;
+    }
     yield this.api(result);
   }
 };

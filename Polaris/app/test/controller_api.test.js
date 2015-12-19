@@ -33,7 +33,7 @@ before(function () {
   //设置router
   app.__set__({router: router});
   app.init(); //初始化server
-  app.listen(8000); //启动服务
+  app.listen(8800); //启动服务
 });
 
 beforeEach(function() {
@@ -68,6 +68,7 @@ describe("api login test", function () {
     request
         .post('/api/login')
         .send({credential: '13333333333', password: '123456'}) //登录信息
+        .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
@@ -93,6 +94,7 @@ describe("api login test", function () {
     request
         .post('/api/login')
         .send({credential: '13333333333', password: '1234567'})
+        .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
@@ -136,6 +138,7 @@ describe("api register test", function() {
     request
         .post('/api/register')
         .send({mobile: '13333333333', password: '123456', smsCaptcha: '123456'})
+        .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
@@ -161,6 +164,7 @@ describe("api register test", function() {
     request
         .post('/api/register')
         .send({mobile: '12222222222', password: '123456', smsCaptcha: '123456'})
+        .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
@@ -186,6 +190,7 @@ describe("api register test", function() {
     request
         .post('/api/register')
         .send({mobile: '12222222222', password: '123456', smsCaptcha: '123456'})
+        .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
@@ -208,6 +213,7 @@ describe("api logout test", function () {
     });
     request
         .get('/api/logout?access_token=312312321312312')
+        .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {

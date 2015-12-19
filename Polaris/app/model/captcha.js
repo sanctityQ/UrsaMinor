@@ -38,8 +38,8 @@ module.exports = {
   //发送图面验证码
   genImgCaptcha: function () {
     return new Promise(function (resolve, reject) {
-      request(config.img+"/captcha", {timeout: 3000}).on('error', function (err) {
-        console.log(err)
+      request(config.img.server+config.img.path, {timeout: 3000}).on('error', function (err) {
+        console.log(err);
         //图片验证码服务一次
         resolve({header: apiCode.E10001});
       }).on('response', function (response) {
@@ -85,7 +85,7 @@ module.exports = {
    */
   sendSms4Register: function(traceNo, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.server + "/api/v2/users/smsCaptcha?mobile="+mobile;
+      var url = config.sms.server + config.sms.path4Register + "?mobile="+mobile;
       request.get(url, {timeout: 3000}, function(e, r, body) {
         if(e) { //服务异常
           tclog.error({logid:traceNo, err:e});
@@ -108,9 +108,9 @@ module.exports = {
    */
   sendSound4Register: function(logid, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.server + "/api/v2/auth/soundcaptcha/send?mobile="+mobile+"&type=0";
+      var url = config.sms.server + config.sms.path4Sound + "?mobile="+mobile+"&type=0";
       tclog.notice({logid:logid, url:url});
-      request.get(url, {timeout: 5000}, function(e, r, body) {
+      request.get(url, {timeout: 10000}, function(e, r, body) {
         if(e) { //服务异常
           tclog.error({logid:logid, err:e}); //记录错误日志
           resolve({header: apiCode.E10001});
@@ -133,7 +133,7 @@ module.exports = {
    */
   validate4Register: function(logid, mobile, captcha) {
     return new Promise(function (resolve, reject) {
-      var url = config.server + "/api/v2/users/register/check/smscaptcha?mobile="+mobile+"&captcha="+captcha;
+      var url = config.sms.server + config.sms.path4ValidateRegister +"?mobile="+mobile+"&captcha="+captcha;
       request.get(url, {timeout: 2000}, function(e, r, body) {
         if(e) {
           tclog.error({logid:logid, err:e});
@@ -156,7 +156,7 @@ module.exports = {
    */
   sendSms4ResetPassword: function(logid, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.server + "/api/v2/auth/resetpwd/smscaptcha/send/"+mobile;
+      var url = config.sms.server + config.sms.path4ResetPassword + "/"+mobile;
       request.get(url, {timeout: 3000}, function(e, r, body) {
         if(e) { //服务异常
           tclog.error({logid:logid, err:e});
@@ -178,8 +178,8 @@ module.exports = {
    */
   sendSound4ResetPassword: function(logid, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.server + "/api/v2/auth/soundcaptcha/send?mobile="+mobile+"&type=1";
-      request.get(url, {timeout: 5000}, function(e, r, body) {
+      var url = config.sms.server + config.sms.path4Sound + "?mobile="+mobile+"&type=1";
+      request.get(url, {timeout: 10000}, function(e, r, body) {
         if(e) { //服务异常
           tclog.error({logid:logid, err:e}); //记录错误日志
           resolve({header: apiCode.E10001});
@@ -201,7 +201,7 @@ module.exports = {
    */
   validate4ResetPassword: function(logid, mobile, captcha) {
     return new Promise(function (resolve, reject) {
-      var url = config.server + "/resetpwd/smscaptcha/check?mobile="+mobile+"&captcha="+captcha;
+      var url = config.sms.server + config.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha;
       request.get(url, {timeout: 2000}, function(e, r, body) {
         if(e) {
           tclog.error({logid:logid, err:e});
