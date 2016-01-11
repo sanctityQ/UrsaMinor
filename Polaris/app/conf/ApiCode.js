@@ -17,7 +17,7 @@ module.exports = {
     E20011 : {err_code:20011, err_msg:"验证码发送失败"},
     E20098 : {err_code:20098, err_msg:"数据参数不合法"},
     E20099 : {err_code:20099, err_msg:"不合法的access_token"}
-}
+};
 
 
 

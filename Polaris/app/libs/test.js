@@ -11,7 +11,9 @@ test.NORMAL_USER = {
 test.PASSPORT_THRIFT_CLIENT = {
   login: function() {},
   reg: function() {},
-  userValidate: function() {}
+  userValidate: function() {},
+  resetPassword: function() {},
+  changePassword: function() {}
 };
 
 /**

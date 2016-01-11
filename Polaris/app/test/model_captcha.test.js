@@ -21,8 +21,7 @@ describe("发送短信注册验证码", function () {
         .get(conf.captcha.sms.path4Register + "?mobile=" + mobile)
         .reply(200, {"data": mobile, "error": [], "success": true});
     captchaModel.sendSms4Register("1321312312", mobile).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.SUCCESS);
+      data.should.be.true();
       done();
     })
   });
@@ -33,8 +32,9 @@ describe("发送短信注册验证码", function () {
         .get(conf.captcha.sms.path4Register + "?mobile=" + mobile)
         .reply(200, {"data": "", "error": [], "success": false});
     captchaModel.sendSms4Register("1321312312", mobile).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.E20011);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20011.err_code);
       done();
     })
   });
@@ -46,7 +46,9 @@ describe("发送短信注册验证码", function () {
         .socketDelay(20000)
         .reply(200, {});
     captchaModel.sendSms4Register("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.E10001);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
       done();
     })
   });
@@ -59,7 +61,7 @@ describe("发送语音注册验证码", function () {
         .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=0")
         .reply(200, {code: '1'});
     captchaModel.sendSound4Register("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.SUCCESS);
+      data.should.be.true();
       done();
     })
   });
@@ -70,7 +72,9 @@ describe("发送语音注册验证码", function () {
         .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=0")
         .reply(200, {code: '0'});
     captchaModel.sendSound4Register("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.E20011);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20011.err_code);
       done();
     })
   });
@@ -82,7 +86,9 @@ describe("发送语音注册验证码", function () {
         .socketDelay(20000)
         .reply(200, {code: '0'});
     captchaModel.sendSound4Register("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.E10001);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
       done();
     })
   });
@@ -96,7 +102,7 @@ describe("验证注册验证码", function () {
         .get(conf.captcha.sms.path4ValidateRegister + "?mobile=" + mobile + "&captcha=" + captcha)
         .reply(200, 'true');
     captchaModel.validate4Register("1321312312", mobile, captcha).then(function (data) {
-      data.header.should.eql(apiCode.SUCCESS);
+      data.should.be.true();
       done();
     });
   });
@@ -108,7 +114,9 @@ describe("验证注册验证码", function () {
         .get(conf.captcha.sms.path4ValidateRegister + "?mobile=" + mobile + "&captcha=" + captcha)
         .reply(200, 'false');
     captchaModel.validate4Register("1321312312", mobile, captcha).then(function (data) {
-      data.header.should.eql(apiCode.E20006);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20006.err_code);
       done();
     });
   });
@@ -121,7 +129,9 @@ describe("验证注册验证码", function () {
         .socketDelay(10000)
         .reply(200, 'false');
     captchaModel.validate4Register("1321312312", mobile, captcha).then(function (data) {
-      data.header.should.eql(apiCode.E10001);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
       done();
     });
   });
@@ -134,8 +144,7 @@ describe("发送短信找回密码验证码", function () {
         .get(conf.captcha.sms.path4ResetPassword + "/" + mobile)
         .reply(200, 'true');
     captchaModel.sendSms4ResetPassword("1321312312", mobile).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.SUCCESS);
+      data.should.be.true();
       done();
     })
   });
@@ -146,8 +155,9 @@ describe("发送短信找回密码验证码", function () {
         .get(conf.captcha.sms.path4ResetPassword + "/" + mobile)
         .reply(200, 'false');
     captchaModel.sendSms4ResetPassword("1321312312", mobile).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.E20011);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20011.err_code);
       done();
     })
   });
@@ -159,7 +169,9 @@ describe("发送短信找回密码验证码", function () {
         .socketDelay(10000)
         .reply(200, {});
     captchaModel.sendSms4ResetPassword("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.E10001);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
       done();
     })
   });
@@ -169,10 +181,10 @@ describe("发送语音找回密码验证码", function () {
   it("发送语音找回密码验证码[发送成功]", function (done) {
     var mobile = '15138695162';
     nock(conf.captcha.sms.server)
-        .get(conf.captcha.sms.path4Sound+"?mobile=" + mobile + "&type=1")
+        .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=1")
         .reply(200, {code: '1'});
     captchaModel.sendSound4ResetPassword("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.SUCCESS);
+      data.should.be.true();
       done();
     })
   });
@@ -180,10 +192,12 @@ describe("发送语音找回密码验证码", function () {
   it("发送语音找回密码验证码[发送失败]", function (done) {
     var mobile = '15138695162';
     nock(conf.captcha.sms.server)
-        .get(conf.captcha.sms.path4Sound+"?mobile=" + mobile + "&type=1")
+        .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=1")
         .reply(200, {code: '0'});
     captchaModel.sendSound4ResetPassword("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.E20011);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20011.err_code);
       done();
     })
   });
@@ -191,11 +205,13 @@ describe("发送语音找回密码验证码", function () {
   it("发送语音找回密码验证码[服务异常]", function (done) {
     var mobile = '15138695162';
     nock(conf.captcha.sms.server)
-        .get(conf.captcha.sms.path4Sound+"?mobile=" + mobile + "&type=1")
+        .get(conf.captcha.sms.path4Sound + "?mobile=" + mobile + "&type=1")
         .socketDelay(20000)
         .reply(200, {code: '0'});
     captchaModel.sendSound4ResetPassword("1321312312", mobile).then(function (data) {
-      data.header.should.eql(apiCode.E10001);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
       done();
     })
   });
@@ -206,10 +222,11 @@ describe("验证找回密码验证码", function () {
     var mobile = '15138695162';
     var captcha = '121212';
     nock(conf.captcha.sms.server)
-        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha)
+        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile=" + mobile + "&captcha="
+             + captcha)
         .reply(200, 'true');
     captchaModel.validate4ResetPassword("1321312312", mobile, captcha).then(function (data) {
-      data.header.should.eql(apiCode.SUCCESS);
+      data.should.be.true();
       done();
     });
   });
@@ -218,10 +235,13 @@ describe("验证找回密码验证码", function () {
     var mobile = '15138695162';
     var captcha = '121212';
     nock(conf.captcha.sms.server)
-        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha)
+        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile=" + mobile + "&captcha="
+             + captcha)
         .reply(200, 'false');
     captchaModel.validate4ResetPassword("1321312312", mobile, captcha).then(function (data) {
-      data.header.should.eql(apiCode.E20006);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20006.err_code);
       done();
     });
   });
@@ -230,11 +250,14 @@ describe("验证找回密码验证码", function () {
     var mobile = '15138695162';
     var captcha = '121212';
     nock(conf.captcha.sms.server)
-        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha)
+        .get(conf.captcha.sms.path4ValidateResetPassword + "?mobile=" + mobile + "&captcha="
+             + captcha)
         .socketDelay(20000)
         .reply(200, 'false');
     captchaModel.validate4ResetPassword("1321312312", mobile, captcha).then(function (data) {
-      data.header.should.eql(apiCode.E10001);
+    }, function (err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
       done();
     });
   });
@@ -244,32 +267,31 @@ describe("获取图片验证码", function () {
   it("获取图片验证码[成功]", function (done) {
     nock(conf.captcha.img.server)
         .get(conf.captcha.img.path)
-        .replyWithFile(200, __dirname+'/captcha.test.png', {
-                 "Content-Type": "image/png",
-                 "x-captcha-answer": "bgako",
-                 "x-captcha-token": "66267be3-2c29-43df-81f5-875f99515ebd"
-               }
+        .replyWithFile(200, __dirname + '/captcha.test.png', {
+                         "Content-Type": "image/png",
+                         "x-captcha-answer": "bgako",
+                         "x-captcha-token": "66267be3-2c29-43df-81f5-875f99515ebd"
+                       }
         );
     captchaModel.genImgCaptcha().then(function (data) {
-      data.should.have.property('header');
       data.should.have.property('token').and.not.empty();
       data.should.have.property('captcha').and.not.empty();
-      data.header.should.eql(apiCode.SUCCESS);
       data.token.should.equal('66267be3-2c29-43df-81f5-875f99515ebd');
       done();
     })
   });
 
-
-  //it("获取图片验证码[服务异常]", function (done) {
-  //  nock(conf.captcha.img)
-  //      .get("/captcha")
-  //      .reply(500, "err");
-  //  captchaModel.genImgCaptcha().then(function (data) {
-  //    console.log(data);
-  //    data.should.have.property('header');
-  //    data.header.should.eql(apiCode.E10001);
-  //    done();
-  //  })
-  //});
+  it("获取图片验证码[服务异常]", function (done) {
+    nock(conf.captcha.img.server)
+        .get("/captcha")
+        .reply(function (uri, requestBody) {
+          return [500, 'THIS IS THE REPLY BODY'];
+        });
+    captchaModel.genImgCaptcha().then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
+      done();
+    })
+  });
 });

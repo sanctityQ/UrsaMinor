@@ -50,10 +50,7 @@ module.exports = {
   thirft: {
     passport: {
       host: '127.0.0.1',
-      port: 9999,
-      timeout: 3000,
-      max_connections: 100,
-      min_connections: 10
+      port: 9999
     }
   },
 
@@ -94,7 +91,7 @@ module.exports = {
       path4ResetPassword : "/api/v2/auth/resetpwd/smscaptcha/send",
       path4Sound : "/api/v2/auth/soundcaptcha/send",
       path4ValidateRegister: "/api/v2/users/register/check/smscaptcha",
-      path4ValidateResetPassword : "/resetpwd/smscaptcha/check"
+      path4ValidateResetPassword : "/api/v2/auth/resetpwd/smscaptcha/check"
     },
     img: {
       server: "http://192.168.0.243:8083",

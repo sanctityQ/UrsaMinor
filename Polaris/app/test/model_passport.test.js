@@ -55,16 +55,14 @@ describe("passportModel--登录接口", function () {
 
   it("登录接口[正常返回]", function (done) {
     var stub = sinon.stub(client, "login", function (request, cb) {
-      cb(null, {header: apiCode.SUCCESS, user: user});
+      cb(null, user);
     });
     passportModel.login(loginInfo).then(function (data) {
-      data.should.have.property('header');
-      data.should.have.property('sysCode');
-      data.should.have.property('source');
-      data.should.have.property('user');
-      data.header.err_code.should.eql(apiCode.SUCCESS.err_code);
+      data.should.have.property('id'); //用户ID
+      data.id.should.equal(user.id.valueOf());
+      data.mobile.should.equal(loginInfo.credential);//手机号
 
-      sinon.assert.calledOnce(stub);
+      sinon.assert.calledOnce(stub); //登陆接口调用一次
       sinon.assert.calledWith(stub, sinon.match(loginRequest), sinon.match.func);
       done();
     });
@@ -72,27 +70,28 @@ describe("passportModel--登录接口", function () {
 
   it("登录接口[参数错误]", function (done) {
     var stub = sinon.stub(client, "login", function (request, cb) {
-      cb(null, {header: apiCode.SUCCESS, user: user});
+      cb(null, user);
     });
     var errInfo = _.clone(loginInfo);
     errInfo.source = "ERR SOURCE";
     passportModel.login(errInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.E20098); //参数不合法
+    }, function(err) { //参数异常
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
       done();
-    });
+    }) ;
   });
 
   it("登录接口[服务异常]", function (done) {
     var stub = sinon.stub(client, "login", function (request, cb) {
-      cb({err:"CONNECTION TIMEOUT"}, null);
+      cb(new Error("CONNECTION TIMEOUT"), null); //mock网络异常
     });
     passportModel.login(loginInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.err_code.should.equal(apiCode.E10001.err_code);
-
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
       sinon.assert.calledOnce(stub);
       sinon.assert.calledWith(stub, sinon.match(loginRequest), sinon.match.func);
       done();
@@ -121,11 +120,13 @@ describe("passportModel--注册接口", function () {
 
   it("注册接口[正常返回]", function (done) {
     var stub = sinon.stub(client, "reg", function (request, cb) {
-      cb(null, {header: apiCode.SUCCESS});
+      cb(null, user);
     });
     passportModel.register(registerInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.SUCCESS);
+      data.should.have.property('id'); //用户ID
+      data.id.should.equal(user.id.valueOf());
+      data.mobile.should.equal(registerInfo.mobile);//手机号
+
       sinon.assert.calledOnce(stub);
       sinon.assert.calledWith(stub,
                               sinon.match(registerRequest),
@@ -138,11 +139,12 @@ describe("passportModel--注册接口", function () {
     var errInfo = _.clone(registerInfo);
     errInfo.sysCode = 'ERR SYSCODE';
     var stub = sinon.stub(client, "reg", function (request, cb) {
-      cb(null, {header: apiCode.SUCCESS});
+      cb(null, user);
     });
     passportModel.register(errInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.E20098); //参数不合法
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
       done();
@@ -151,11 +153,12 @@ describe("passportModel--注册接口", function () {
 
   it("注册接口[服务异常]", function (done) {
     var stub = sinon.stub(client, "reg", function (request, cb) {
-      cb({err:"CONNECTION TIMEOUT"}, null);
+      cb(new Error("CONNECTION TIMEOUT"), null);
     });
     passportModel.register(registerInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.err_code.should.equal(apiCode.E10001.err_code);
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
 
       sinon.assert.calledOnce(stub);
       sinon.assert.calledWith(stub, sinon.match(registerRequest), sinon.match.func);
@@ -176,12 +179,10 @@ describe("passportModel--用户信息验证接口", function () {
 
   it("用户信息验证接口[正常返回]", function (done) {
     var stub = sinon.stub(client, "userValidate", function (request, cb) {
-      cb(null, {header: apiCode.SUCCESS});
+      cb(null, 'true');
     });
     passportModel.userValidate(validateInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.SUCCESS);
-
+      data.should.equal('true');
       sinon.assert.calledOnce(stub);
       done();
     });
@@ -191,11 +192,12 @@ describe("passportModel--用户信息验证接口", function () {
     var errInfo = _.clone(validateInfo);
     errInfo.value = null;
     var stub = sinon.stub(client, "userValidate", function (request, cb) {
-      cb(null, {header: apiCode.SUCCESS});
+      cb(null, 'true');
     });
     passportModel.userValidate(errInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.E20098);
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
       done();
@@ -204,15 +206,117 @@ describe("passportModel--用户信息验证接口", function () {
 
   it("用户信息验证接口[服务异常]", function (done) {
     var stub = sinon.stub(client, "userValidate", function (request, cb) {
-      cb({error: 'connection timeout'}, null);
+      cb(new Error("CONNECTION TIMEOUT"), null);
     });
     passportModel.userValidate(validateInfo).then(function (data) {
-      data.should.have.property('header');
-      data.header.should.eql(apiCode.E10001);
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
 
       sinon.assert.calledOnce(stub);
       done();
     });
   });
+});
 
+describe("passportModel--重置密码接口", function () {
+  var resetInfo = { //验证信息
+    source: 'APP',
+    sysCode: 'FINANCE',
+    traceNo: 'xxxxxxxx',
+    mobile: '15131235327'
+  };
+
+  it("重置密码接口[正常返回]", function (done) {
+    var stub = sinon.stub(client, "resetPassword", function (request, cb) {
+      cb(null, 'true');
+    });
+    passportModel.resetPassword(resetInfo).then(function (data) {
+      data.should.equal('true');
+      sinon.assert.calledOnce(stub);
+      done();
+    });
+  });
+
+  it("重置密码接口[参数错误]", function (done) {
+    var errInfo = _.clone(resetInfo);
+    errInfo.mobile = null;
+    var stub = sinon.stub(client, "resetPassword", function (request, cb) {
+      cb(null, 'true');
+    });
+    passportModel.resetPassword(errInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20098.err_code);
+
+      sinon.assert.notCalled(stub); //未调用后台接口
+      done();
+    });
+  });
+
+  it("重置密码接口[服务异常]", function (done) {
+    var stub = sinon.stub(client, "resetPassword", function (request, cb) {
+      cb(new Error("CONNECTION TIMEOUT"), null);
+    });
+    passportModel.resetPassword(resetInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
+
+      sinon.assert.calledOnce(stub);
+      done();
+    });
+  });
+});
+
+describe("passportModel--修改密码接口", function () {
+  var changeInfo = { //验证信息
+    source: 'APP',
+    sysCode: 'FINANCE',
+    traceNo: 'xxxxxxxx',
+    userId: 52,
+    oldPassword: '123456',
+    password: 'qwe123'
+  };
+
+  it("修改密码接口[正常返回]", function (done) {
+    var stub = sinon.stub(client, "changePassword", function (request, cb) {
+      cb(null, 'true');
+    });
+    passportModel.changePassword(changeInfo).then(function (data) {
+      data.should.equal('true');
+      sinon.assert.calledOnce(stub);
+      done();
+    });
+  });
+
+  it("修改密码接口[参数错误]", function (done) {
+    var errInfo = _.clone(changeInfo);
+    errInfo.oldPassword = null;
+    var stub = sinon.stub(client, "changePassword", function (request, cb) {
+      cb(null, 'true');
+    });
+    passportModel.changePassword(errInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20098.err_code);
+
+      sinon.assert.notCalled(stub); //未调用后台接口
+      done();
+    });
+  });
+
+  it("修改密码接口[服务异常]", function (done) {
+    var stub = sinon.stub(client, "changePassword", function (request, cb) {
+      cb(new Error("CONNECTION TIMEOUT"), null);
+    });
+    passportModel.changePassword(changeInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
+
+      sinon.assert.calledOnce(stub);
+      done();
+    });
+  });
 });

@@ -1,5 +1,4 @@
 var passportModel = require('../model/passport.js');
-var apiCode = require("../conf/ApiCode.js");
 var tclog = require('../libs/tclog.js');
 var token = require('../model/token.js');
 var _ = require('underscore');
@@ -12,16 +11,23 @@ module.exports = {
   checkMobile: function *() {
     var query = this.query;
     var headerBody = this.header;
+    var traceNo = this.req.traceNo + "";
     var validateInfo = {
       source: headerBody.source || 'APP',
       sysCode: headerBody.syscode,
-      traceNo: this.req.logid + "",
+      traceNo: traceNo,
       name: 'MOBILE',
       value: query.mobile
     };
     tclog.notice({api: '/api/checkMobile', validateInfo: validateInfo});
-    var data = yield passportModel.userValidate(validateInfo);
-    yield this.api(data);
+    try {
+      var result = yield passportModel.userValidate(validateInfo);
+      tclog.notice({api:'/api/check/mobile', traceNo:traceNo, result:result});
+      yield this.api({mobile:query.mobile, msg:'验证通过'});
+    } catch(err) {
+      tclog.warn({api:'/api/check/mobile', traceNo:traceNo, err:err});
+      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+    }
   }
 
 }

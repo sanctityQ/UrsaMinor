@@ -31,18 +31,25 @@ function setMap(ctrs) {
   router.get('/', ctrs.index.show);
   router.get('/index', ctrs.index.show);
 
-  router.get('/api/captcha/img', ctrs.captcha.sendImg);
-  router.get('/api/captcha/sms/register', ctrs.captcha.sendSms4Register);
-  router.get('/api/captcha/sound/register', ctrs.captcha.sendSound4Register);
-  router.get('/api/captcha/sms/resetPassword', ctrs.captcha.sendSms4ResetPassword);
-  router.get('/api/captcha/sound/resetPassword', ctrs.captcha.sendSound4ResetPassword);
+  //验证码
+  router.get('/api/captcha/img', ctrs.captcha.genImg);
+  //type:(sms|sound)
+  router.post('/api/captcha/:type/register', ctrs.captcha.sendSms4Register);
+  router.post('/api/captcha/:type/resetPassword', ctrs.captcha.sendSms4ResetPassword);
+  //router.post('/api/captcha/sound/register', ctrs.captcha.sendSound4Register);
+  //router.post('/api/captcha/sound/resetPassword', ctrs.captcha.sendSound4ResetPassword);
 
+  //主流程
   router.post('/api/login', ctrs.api.login);
-  router.get('/api/logout', ctrs.api.logout);
   router.post('/api/register', ctrs.api.register);
+  router.get('/api/logout', ctrs.api.logout);
 
-  // /api/password/forget 忘记密码
-  // /api/password/forget
+  //验证手机号
   router.get('/api/check/mobile', ctrs.check.checkMobile);
+
+  //重置密码
+  router.post('/api/password/reset', ctrs.password.reset);
+  //修改密码
+  router.post('/api/password/change', ctrs.password.change);
 }
 module.exports = set;

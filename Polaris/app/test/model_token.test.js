@@ -15,12 +15,14 @@ before(function () {
 describe("token[putToken]", function () {
 
   it("putToken[success]", function (done) {
-    var loginResult = {
+    var loginInfo = {
       source: 0,
       sysCode: 0,
-      user: {id: 52}
+      traceNo: "xxxxxx"
     };
-    tokenModel.putToken("xxxxxxx", loginResult).then(function (data) {
+    var passportUser = {id: 52};
+    tokenModel.putToken(loginInfo, passportUser).then(function (data) {
+      console.log(data);
       data.should.not.empty();
       done();
     });

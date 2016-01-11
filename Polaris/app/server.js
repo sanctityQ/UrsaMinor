@@ -16,8 +16,6 @@ var redisStore = require('koa-redis');
 var tclog = require('./libs/tclog.js');
 var genLogid = require('./libs/logid').genLogid;
 var api = require('./libs/api');
-var apiCode = require('./conf/ApiCode');
-
 
 module.exports = app;
 
@@ -30,7 +28,7 @@ module.exports.init = function() {
     } else {
       yield next;
     }
-  })
+  });
 
 // 设置模板
   view(app, config.view);
@@ -64,8 +62,8 @@ module.exports.init = function() {
                   }));
 
   app.use(function *(next) {
-    var logid = genLogid();
-    this.req.logid = logid;
+    var traceNo = genLogid();
+    this.req.traceNo = traceNo;
     if (app.redisIsOk) {
       var tiancainame = this.cookies.get('tiancainame', {signed: true});
       try {
@@ -80,7 +78,7 @@ module.exports.init = function() {
     }
 
     tclog.notice(
-        {logid: logid, type: 'pv', method: this.req.method, url: this.url, userInfo: this.userInfo})
+        {traceNo: traceNo, type: 'pv', method: this.req.method, url: this.url, userInfo: this.userInfo})
     yield next;
   });
 
@@ -91,7 +89,9 @@ module.exports.init = function() {
     if (this.status === 404) {
       var url = this.url;
       if (url && url.length > 4 && url.substring(0, 4) == '/api') {
-        yield this.api({header: apiCode.E404});
+        this.type = 'json';
+        this.status = 404;
+        this.body = JSON.stringify({error_code:404, error_msg:"资源不存在"});
       } else {
         yield this.render('error/404', {noWrap: true});
       }
