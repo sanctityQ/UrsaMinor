@@ -32,7 +32,8 @@ module.exports = {
     try {
       var passportUser = yield passportModel.login(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
-      yield this.api({access_token:tokenNo, user:passportUser,msg:'登录成功'});
+      var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
+      yield this.api(result);
     } catch (err) { //500
       tclog.error({api:'/api/login', traceNo:traceNo, err:err});
       yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
@@ -70,7 +71,8 @@ module.exports = {
       //注册成功自动登录
       var passportUser = yield passportModel.login(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
-      yield this.api({access_token:tokenNo, user:passportUser,msg:'登录成功'});
+      var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
+      yield this.api(result);
     } catch (err) {
       tclog.warn({api:'/api/register', traceNo:traceNo, err:err});
       yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});

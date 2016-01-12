@@ -75,7 +75,7 @@ module.exports = {
   captcha: {
     sms: {
       redis: {
-        host:'192.168.0.244',
+        host:'127.0.0.1',
         port: 6379,
         options: {
           connectTimeout: 1000,
@@ -88,7 +88,7 @@ module.exports = {
           }
         }
       },
-      server: 'http://192.168.0.244:8888',
+      server: 'http://127.0.0.1:8888',
       path4Register : "/api/v2/users/smsCaptcha",
       path4ResetPassword : "/api/v2/auth/resetpwd/smscaptcha/send",
       path4Sound : "/api/v2/auth/soundcaptcha/send",
@@ -96,7 +96,7 @@ module.exports = {
       path4ValidateResetPassword : "/api/v2/auth/resetpwd/smscaptcha/check"
     },
     img: {
-      server: "http://192.168.0.243:8083",
+      server: "http://127.0.0.1:8083",
       path : "/captcha"
     }
   },
