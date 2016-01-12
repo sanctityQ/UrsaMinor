@@ -3,6 +3,8 @@ var Redis = require("ioredis");
 var tclog = require('../libs/tclog.js');
 var ex_utils = require('../libs/exception.js');
 var apiCode = require("../conf/ApiCode.js");
+var passportTypes = require("@itiancai/passport-client");
+var ttypes = passportTypes.ttypes;
 var config = require('../../conf/index');
 var DEFAULT_EXPIRE = 7*24*60*60;
 /**
@@ -37,8 +39,8 @@ module.exports = {
         var client = new Redis(config.redis);
         var now = new Date().getTime();
         var access_token = {
-          source: loginIno.source,
-          sysCode: loginIno.sysCode,
+          source: ttypes.Source[loginIno.source],
+          sysCode: ttypes.Source[loginIno.sysCode],
           uid: passportUser.id,
           createTime: now,
           expireTime: now + DEFAULT_EXPIRE*1000

@@ -9,3 +9,4 @@ pid
 log
 node_modules
 *.log
+tiancai.log.*
