@@ -2,17 +2,19 @@ var request = require("request");
 var concat = require("concat-stream");
 var ex_utils = require('../libs/exception.js');
 var apiCode = require("../conf/ApiCode.js");
-var config = require("../../conf").captcha;
+var app_config = require("../../conf").captcha;
+var config = app_config.captcha;
+var developMode = app_config.developMode;
 var tclog = require('../libs/tclog.js');
 
 //passport:REGISTER_IMG_CAPTCHA:[TOKEN]
 //passport:REGISTER_CAPTCHA:[MOBILE]
 //passport:REGISTER_SMS_CAPTCHA:[MOBILE]
 //passport:REGISTER_SOUND_CAPTCHA:[MOBILE]
-var randomNumber = new Array(0,1,2,3,4,5,6,7,8,9);//随机数
+var randomNumber = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);//随机数
 
-var random = new Array(0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
-                       'S','T','U','V','W','X','Y','Z');//随机字符
+var random = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+    'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');//随机字符
 
 //sms: 'http://192.168.0.244:8888/api/v2/users/smsCaptcha',
 //sound: 'http://192.168.0.244:8888/api/v2/auth/soundcaptcha/send',
@@ -39,11 +41,11 @@ module.exports = {
   //发送图面验证码
   genImgCaptcha: function () {
     return new Promise(function (resolve, reject) {
-      request(config.img.server+config.img.path, {timeout: 3000}).on('error', function (err) {
+      request(config.img.server + config.img.path, {timeout: 3000}).on('error', function (err) {
         //图片验证码服务一次
         reject(ex_utils.buildCommonException(apiCode.E10001));
       }).on('response', function (response) {
-        if(response.statusCode != 200) {
+        if (response.statusCode != 200) {
           reject(ex_utils.buildCommonException(apiCode.E10001));
         } else {
           var token = response.headers['x-captcha-token'];
@@ -77,7 +79,7 @@ module.exports = {
   /**
    * 验证图片验证码
    */
-  validateImgCaptcha: function(token, captcha) {
+  validateImgCaptcha: function (token, captcha) {
     return new Promise(function (resolve, reject) {
 
     })
@@ -86,139 +88,165 @@ module.exports = {
   /**
    * 注册-短信验证码
    */
-  sendSms4Register: function(traceNo, mobile) {
+  sendSms4Register: function (traceNo, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.sms.server + config.sms.path4Register + "?mobile="+mobile;
-      request.get(url, {timeout: 3000}, function(e, r, body) {
-        if(e) { //服务异常
-          tclog.error({traceNo:traceNo, err:e});
-          reject(ex_utils.buildCommonException(apiCode.E10001));
-        } else {
-          var result = JSON.parse(body);
-          if(result.success) { //发送成功
-            resolve(true);
-          } else { //发送失败
-            tclog.warn({traceNo:traceNo, result:body});
-            reject(ex_utils.buildCommonException(apiCode.E20011));
+      if (developMode) {
+        resolve(true);
+      } else {
+        var url = config.sms.server + config.sms.path4Register + "?mobile=" + mobile;
+        request.get(url, {timeout: 3000}, function (e, r, body) {
+          if (e) { //服务异常
+            tclog.error({traceNo: traceNo, err: e});
+            reject(ex_utils.buildCommonException(apiCode.E10001));
+          } else {
+            var result = JSON.parse(body);
+            if (result.success) { //发送成功
+              resolve(true);
+            } else { //发送失败
+              tclog.warn({traceNo: traceNo, result: body});
+              reject(ex_utils.buildCommonException(apiCode.E20011));
+            }
           }
-        }
-      })
+        });
+      }
     })
   },
 
   /**
    * 注册-语音验证码
    */
-  sendSound4Register: function(traceNo, mobile) {
+  sendSound4Register: function (traceNo, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.sms.server + config.sms.path4Sound + "?mobile="+mobile+"&type=0";
-      tclog.notice({traceNo:traceNo, url:url});
-      request.get(url, {timeout: 10000}, function(e, r, body) {
-        if(e) { //服务异常
-          tclog.error({traceNo:traceNo, err:e}); //记录错误日志
-          reject(ex_utils.buildCommonException(apiCode.E10001));
-        } else {
-          var result = JSON.parse(body);
-          if(result.code == '1') {
-            tclog.notice({traceNo:traceNo, result:body});
-            resolve(true);
+      if (developMode) {
+        resolve(true);
+      } else {
+        var url = config.sms.server + config.sms.path4Sound + "?mobile=" + mobile + "&type=0";
+        tclog.notice({traceNo: traceNo, url: url});
+        request.get(url, {timeout: 10000}, function (e, r, body) {
+          if (e) { //服务异常
+            tclog.error({traceNo: traceNo, err: e}); //记录错误日志
+            reject(ex_utils.buildCommonException(apiCode.E10001));
           } else {
-            tclog.warn({traceNo:traceNo, result:body});
-            reject(ex_utils.buildCommonException(apiCode.E20011));
+            var result = JSON.parse(body);
+            if (result.code == '1') {
+              tclog.notice({traceNo: traceNo, result: body});
+              resolve(true);
+            } else {
+              tclog.warn({traceNo: traceNo, result: body});
+              reject(ex_utils.buildCommonException(apiCode.E20011));
+            }
           }
-        }
-      })
+        });
+      }
     })
   },
 
   /**
    * 注册-验证短信验证码
    */
-  validate4Register: function(traceNo, mobile, captcha) {
+  validate4Register: function (traceNo, mobile, captcha) {
     return new Promise(function (resolve, reject) {
-      var url = config.sms.server + config.sms.path4ValidateRegister +"?mobile="+mobile+"&captcha="+captcha;
-      request.get(url, {timeout: 2000}, function(e, r, body) {
-        if(e) {
-          tclog.error({traceNo:traceNo, err:e});
-          reject(ex_utils.buildCommonException(apiCode.E10001))
-        } else {
-          if(body == 'true') {
-            //[mobile]_CONFIRM_CREDITMARKET_REGISTER_CAPTCHA_MOBILE del
-            resolve(true);
+      if (developMode) {
+        resolve(true);
+      } else {
+        var url = config.sms.server + config.sms.path4ValidateRegister + "?mobile=" + mobile
+                  + "&captcha=" + captcha;
+        request.get(url, {timeout: 2000}, function (e, r, body) {
+          if (e) {
+            tclog.error({traceNo: traceNo, err: e});
+            reject(ex_utils.buildCommonException(apiCode.E10001))
           } else {
-            tclog.warn({traceNo:traceNo, result:body});
-            reject(ex_utils.buildCommonException(apiCode.E20006));
+            if (body == 'true') {
+              //[mobile]_CONFIRM_CREDITMARKET_REGISTER_CAPTCHA_MOBILE del
+              resolve(true);
+            } else {
+              tclog.warn({traceNo: traceNo, result: body});
+              reject(ex_utils.buildCommonException(apiCode.E20006));
+            }
           }
-        }
-      })
+        });
+      }
     })
   },
 
   /**
    * 找回密码-短信验证码
    */
-  sendSms4ResetPassword: function(traceNo, mobile) {
+  sendSms4ResetPassword: function (traceNo, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.sms.server + config.sms.path4ResetPassword + "/"+mobile;
-      request.get(url, {timeout: 3000}, function(e, r, body) {
-        if(e) { //服务异常
-          tclog.error({traceNo:traceNo, err:e});
-          reject(ex_utils.buildCommonException(apiCode.E10001));
-        } else {
-          if(body == 'true') {
-            resolve(true);
-          } else { //发送失败
-            tclog.warn({traceNo:traceNo, result:body});
-            reject(ex_utils.buildCommonException(apiCode.E20011));
+      if (developMode) {
+        resolve(true);
+      } else {
+        var url = config.sms.server + config.sms.path4ResetPassword + "/" + mobile;
+        request.get(url, {timeout: 3000}, function (e, r, body) {
+          if (e) { //服务异常
+            tclog.error({traceNo: traceNo, err: e});
+            reject(ex_utils.buildCommonException(apiCode.E10001));
+          } else {
+            if (body == 'true') {
+              resolve(true);
+            } else { //发送失败
+              tclog.warn({traceNo: traceNo, result: body});
+              reject(ex_utils.buildCommonException(apiCode.E20011));
+            }
           }
-        }
-      })
+        });
+      }
     })
   },
 
   /**
    * 找回密码-语音验证码
    */
-  sendSound4ResetPassword: function(traceNo, mobile) {
+  sendSound4ResetPassword: function (traceNo, mobile) {
     return new Promise(function (resolve, reject) {
-      var url = config.sms.server + config.sms.path4Sound + "?mobile="+mobile+"&type=1";
-      request.get(url, {timeout: 10000}, function(e, r, body) {
-        if(e) { //服务异常
-          tclog.error({traceNo:traceNo, err:e}); //记录错误日志
-          reject(ex_utils.buildCommonException(apiCode.E10001));
-        } else {
-          var result = JSON.parse(body);
-          if(result.code == '1') {
-            resolve(true);
+      if (developMode) {
+        resolve(true);
+      } else {
+        var url = config.sms.server + config.sms.path4Sound + "?mobile=" + mobile + "&type=1";
+        request.get(url, {timeout: 10000}, function (e, r, body) {
+          if (e) { //服务异常
+            tclog.error({traceNo: traceNo, err: e}); //记录错误日志
+            reject(ex_utils.buildCommonException(apiCode.E10001));
           } else {
-            tclog.warn({traceNo:traceNo, result:body});
-            reject(ex_utils.buildCommonException(apiCode.E20011));
+            var result = JSON.parse(body);
+            if (result.code == '1') {
+              resolve(true);
+            } else {
+              tclog.warn({traceNo: traceNo, result: body});
+              reject(ex_utils.buildCommonException(apiCode.E20011));
+            }
           }
-        }
-      })
+        });
+      }
     })
   },
 
   /**
    * 找回密码-验证短信验证码
    */
-  validate4ResetPassword: function(traceNo, mobile, captcha) {
+  validate4ResetPassword: function (traceNo, mobile, captcha) {
     return new Promise(function (resolve, reject) {
-      var url = config.sms.server + config.sms.path4ValidateResetPassword + "?mobile="+mobile+"&captcha="+captcha;
-      request.get(url, {timeout: 2000}, function(e, r, body) {
-        if(e) {
-          tclog.error({traceNo:traceNo, err:e});
-          reject(ex_utils.buildCommonException(apiCode.E10001));
-        } else {
-          if(body == 'true') {
-            //[mobile]_CONFIRM_CREDITMARKET_CHANGE_LOGIN_PASSWORD_CAPTCHA_MOBILE del
-            resolve(true);
+      if (developMode) {
+        resolve(true);
+      } else {
+        var url = config.sms.server + config.sms.path4ValidateResetPassword + "?mobile=" + mobile
+                  + "&captcha=" + captcha;
+        request.get(url, {timeout: 2000}, function (e, r, body) {
+          if (e) {
+            tclog.error({traceNo: traceNo, err: e});
+            reject(ex_utils.buildCommonException(apiCode.E10001));
           } else {
-            tclog.warn({traceNo:traceNo, result:body});
-            reject(ex_utils.buildCommonException(apiCode.E20006));
+            if (body == 'true') {
+              //[mobile]_CONFIRM_CREDITMARKET_CHANGE_LOGIN_PASSWORD_CAPTCHA_MOBILE del
+              resolve(true);
+            } else {
+              tclog.warn({traceNo: traceNo, result: body});
+              reject(ex_utils.buildCommonException(apiCode.E20006));
+            }
           }
-        }
-      })
+        });
+      }
     })
   }
 };

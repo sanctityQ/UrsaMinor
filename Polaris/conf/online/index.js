@@ -10,6 +10,8 @@ module.exports = {
   // 当前运行模式
   runEnv: 'online',
 
+  developMode: false,
+
   // 应用全局配置
   app: {
     port: 9980,

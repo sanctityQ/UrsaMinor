@@ -10,6 +10,8 @@ module.exports = {
   // 当前运行模式
   runEnv: 'dev',
 
+  developMode: true,
+
   // 应用全局配置
   app: {
     port: 8000,

@@ -9,7 +9,8 @@ var test = require('../libs/test');
 
 before(function () {
   captchaModel.__set__({
-                         tclog: test.tclog
+                         tclog: test.tclog,
+                         developMode: false //非开发模式
                        });
 
 });
