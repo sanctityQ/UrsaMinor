@@ -94,7 +94,8 @@ module.exports = {
           } else {
             //用户信息Long字段特殊处理
             var passportUser = _.mapObject(response, function (val, key) {
-              return val.valueOf();
+              if(val) return val.valueOf();
+              else val;
             });
             resolve(passportUser);
           }
@@ -125,8 +126,10 @@ module.exports = {
             reject(handleError(registerInfo, err));
           } else {
             //用户信息Long字段特殊处理
+            console.log(response)
             var passportUser = _.mapObject(response, function (val, key) {
-              return val.valueOf();
+              if(val) return val.valueOf();
+              else val;
             });
             resolve(passportUser);
           }
