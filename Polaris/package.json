@@ -44,6 +44,11 @@
     "istanbul": "^0.4.1"
   },
   "scripts": {
+    "start": "pm2 start --node-args='--harmony' ./app/bootSrtap.js --name passport-polaris",
+    "pm2": "pm2 start --node-args='--harmony' ./app/bootSrtap.js -i 0 --name passport-polaris",
+    "reload": "pm2 reload passport-polaris",
+    "stop": "pm2 stop passport-polaris",
+    "delete": "pm2 stop passport-polaris && pm2 delete passport-polaris",
     "test": "node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./app/test -- --recursive -R spec -r should"
   },
   "repository": {

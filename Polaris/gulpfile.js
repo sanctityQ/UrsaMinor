@@ -125,6 +125,15 @@ gulp.task('build', function () {
       .pipe(gulp.dest('client/build/font'));
 });
 
+gulp.task('buildConfig', function () {
+  var ENV = gulp.env.ENV;
+  if(ENV) {
+    var path = 'conf/'+ ENV +'/index.js';
+    gulp.src(path)
+        .pipe(gulp.dest('conf'));
+  }
+});
+
 // livereload
 gulp.task('reload', function () {
   gulp.src('')
@@ -142,4 +151,9 @@ gulp.task('test', gulpSequence(
     'startTest',
     'watch',
     'open'
+));
+
+gulp.task('compile', gulpSequence(
+    'build',
+    'buildConfig'
 ));
