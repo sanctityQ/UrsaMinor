@@ -45,7 +45,7 @@ function buildHeader(requestInfo) {
  * @returns {exports.PassportException}
  */
 function buildPassportException(errCode) {
-  var err_msg = common_types.msg_map[errCode];
+  var err_msg = common_types.MSG_MAP[errCode];
   return new common_types.PassportException({
     err_code: errCode,
     err_msg: err_msg
