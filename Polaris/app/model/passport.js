@@ -4,6 +4,7 @@
  * @author xiaoguang01
  * @date 2015/9/27
  */
+var thrift = require('thrift');
 var tclog = require('../libs/tclog.js');
 var _ = require('underscore');
 var client_factory = require("../libs/client_factory");
