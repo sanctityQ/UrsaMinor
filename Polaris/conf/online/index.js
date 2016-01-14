@@ -53,6 +53,10 @@ module.exports = {
     passport: {
       host: '127.0.0.1',
       port: 9981
+    },
+    notifaction: {
+      host: '127.0.0.1',
+      port: 9951
     }
   },
 
@@ -98,6 +102,10 @@ module.exports = {
     img: {
       server: "http://127.0.0.1:8083",
       path : "/captcha"
+    },
+    captcha_template : { //短信模板
+      REGISTER : "欢迎注册甜菜金融，手机验证码：{SMS_CAPTCHA}，验证码在10分钟内有效 www.itiancai.com",
+      RESETPWD : "甜菜金融通知您本次修改登录密码的手机验证码为:{SMS_CAPTCHA},验证码在10分钟内有效"
     }
   },
 

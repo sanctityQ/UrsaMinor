@@ -14,7 +14,10 @@ module.exports = {
     E20008 : {err_code:20008, err_msg:"登录失败，账号或密码错误"},
     E20009 : {err_code:20009, err_msg:"登录失败，账号已禁用"},
     E20010 : {err_code:20010, err_msg:"用户不存在"},
-    E20011 : {err_code:20011, err_msg:"验证码发送失败"},
+    E20011 : {err_code:20011, err_msg:"密码修改失败，原始密码错误"},
+    E20012 : {err_code:20012, err_msg:"密码修改失败，不能与原始密码相同"},
+    E20013 : {err_code:20013, err_msg:"验证码发送失败"},
+    E20014 : {err_code:20014, err_msg:"图片验证码错误"},
     E20098 : {err_code:20098, err_msg:"数据参数不合法"},
     E20099 : {err_code:20099, err_msg:"不合法的access_token"}
 };

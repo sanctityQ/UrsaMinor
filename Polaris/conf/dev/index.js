@@ -51,8 +51,12 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      host: '127.0.0.1',
-      port: 9999
+      host: '192.168.0.245',
+      port: 9981
+    },
+    notifaction: {
+      host: '192.168.0.244',
+      port: 9951
     }
   },
 
@@ -98,6 +102,10 @@ module.exports = {
     img: {
       server: "http://192.168.0.243:8083",
       path : "/captcha"
+    },
+    captcha_template : { //短信模板
+      REGISTER : "欢迎注册甜菜金融，手机验证码：{SMS_CAPTCHA}，验证码在10分钟内有效 www.itiancai.com",
+      RESETPWD : "甜菜金融通知您本次修改登录密码的手机验证码为:{SMS_CAPTCHA},验证码在10分钟内有效"
     }
   },
 

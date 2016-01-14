@@ -16,6 +16,7 @@ module.exports = {
     var headerBody = this.header;
     var traceNo = this.req.traceNo+"";
     var mobile = postBody.mobile;
+    var password = postBody.password; //新密码(用户设置)
     var smsCaptcha = postBody.smsCaptcha; //短信验证码(语音)
     try {
       var flag = yield captchaModel.validate4ResetPassword(traceNo, mobile, smsCaptcha);
@@ -24,7 +25,8 @@ module.exports = {
         source: headerBody.source,
         sysCode: headerBody.syscode,
         traceNo: traceNo,
-        mobile: mobile
+        mobile: mobile,
+        password: password
       };
       var result = yield passportModel.resetPassword(resetInfo);
       tclog.notice({api:'/api/password/reset', traceNo:traceNo, result:result});
@@ -45,7 +47,7 @@ module.exports = {
     var headerBody = this.header;
     var traceNo = this.req.traceNo+"";
     var tokenNo = postBody.access_token;
-    tclog.notice({api:'api/logout', traceNo:traceNo, source:headerBody.source, sysCode:headerBody.syscode, tokenNo: tokenNo});
+    tclog.notice({api:'api/change', traceNo:traceNo, source:headerBody.source, sysCode:headerBody.syscode, tokenNo: tokenNo});
     try {
       var token = yield tokenModel.getToken(traceNo, tokenNo);
       var changeInfo = { //登录信息

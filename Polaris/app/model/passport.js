@@ -4,27 +4,13 @@
  * @author xiaoguang01
  * @date 2015/9/27
  */
-var thrift = require('thrift');
-var passportTypes = require("@itiancai/passport-client");
-var PassportService = passportTypes.PassportService;
-var common_types = passportTypes.common_types;
-var ttypes = passportTypes.ttypes;
-var thrift_pool = require("node-thrift-pool");
-var thrift_conf = require('../../conf').thirft.passport;
 var tclog = require('../libs/tclog.js');
 var _ = require('underscore');
-
-var transport = thrift.TFramedTransport;
-var protocol = thrift.TBinaryProtocol;
-var settings = {
-  host: thrift_conf.host,
-  port: thrift_conf.port
-};
-var options = {
-  transport: transport,
-  protocol: protocol
-};
-var client = thrift_pool(thrift, PassportService, settings, options);
+var client_factory = require("../libs/client_factory");
+var passport_types = client_factory.passport_types;
+var ttypes = passport_types.ttypes;
+var common_types = passport_types.common_types;
+var client = client_factory.passport_client;
 
 /**
  * 构建RequestHeader
@@ -179,7 +165,8 @@ module.exports = {
       try {
         request = new ttypes.ResetPasswordRequest({
           header: buildHeader(resetInfo),
-          mobile: resetInfo.mobile
+          mobile: resetInfo.mobile,
+          password: resetInfo.password
         });
       } catch (err) {
         //构建request错误
@@ -209,7 +196,7 @@ module.exports = {
         request = new ttypes.ChangePasswordRequest({
           header: buildHeader(changeInfo),
           userId: new thrift.Int64(changeInfo.userId),
-          oldPasword: changeInfo.oldPassword,
+          oldPassword: changeInfo.oldPassword,
           password: changeInfo.password
         });
       } catch (err) {
