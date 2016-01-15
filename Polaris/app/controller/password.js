@@ -9,6 +9,34 @@ module.exports = {
 
 
   /**
+   * 验证原始密码
+   */
+  check: function* (){
+    var postBody = this.request.body;
+    var headerBody = this.header;
+    var traceNo = this.req.traceNo+"";
+    var tokenNo = postBody.access_token;
+    try {
+      //获取token信息
+      var token = yield tokenModel.getToken(traceNo, tokenNo);
+      var checkInfo = { //登录信息
+        source: headerBody.source,
+        sysCode: headerBody.syscode,
+        traceNo: traceNo,
+        userId: token.uid,//用户ID
+        oldPassword: postBody.oldPassword //原始密码
+      };
+      //验证密码是否正确
+      var result = yield passportModel.checkPassword(checkInfo);
+      tclog.notice({api:'/api/password/check', traceNo:traceNo, result:result});
+      yield this.api({access_token:tokenNo, msg:'密码验证通过'});
+    } catch (err) {
+      tclog.error({api:'/api/password/check', traceNo:traceNo, err:err});
+      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+    }
+  },
+
+  /**
    * 重置密码
    */
   reset: function* () {
@@ -30,7 +58,7 @@ module.exports = {
       };
       var result = yield passportModel.resetPassword(resetInfo);
       tclog.notice({api:'/api/password/reset', traceNo:traceNo, result:result});
-      yield this.api({mobile:mobile, msg:'密码已发送'});
+      yield this.api({mobile:mobile, msg:'密码已重置'});
     } catch (err) {
       tclog.error({api:'/api/password/reset', traceNo:traceNo, err:err});
       yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});

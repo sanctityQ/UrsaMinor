@@ -46,7 +46,6 @@ function buildPassportException(errCode) {
  * @returns {*}
  */
 function handleError(requestInfo, err) {
-  console.log(err);
   tclog.error({logid: requestInfo.traceNo, requestInfo: requestInfo, err: err});
   if(err instanceof common_types.PassportException) { //passport系统异常
     return err; //直接返回
@@ -113,7 +112,6 @@ module.exports = {
             reject(handleError(registerInfo, err));
           } else {
             //用户信息Long字段特殊处理
-            console.log(response)
             var passportUser = _.mapObject(response, function (val, key) {
               if(val) return val.valueOf();
               else val;
@@ -177,6 +175,36 @@ module.exports = {
         client.resetPassword(request, function (err, response) {
           if (err) {
             reject(handleError(resetInfo, err));
+          } else {
+            resolve(response);
+          }
+        })
+      }
+    });
+  },
+
+  /**
+   * 验证密码
+   * @param checkInfo
+   * @returns {Promise}
+   */
+  checkPassword: function (checkInfo) {
+    return new Promise(function (resolve, reject) {
+      var request = false;
+      try {
+        request = new ttypes.CheckPasswordRequest({
+          header: buildHeader(checkInfo),
+          userId: new thrift.Int64(checkInfo.userId),
+          oldPassword: checkInfo.oldPassword
+        });
+      } catch (err) {
+        //构建request错误
+        reject(handleError(checkInfo, err));
+      }
+      if (request) {
+        client.checkPassword(request, function (err, response) {
+          if (err) {
+            reject(handleError(checkInfo, err));
           } else {
             resolve(response);
           }

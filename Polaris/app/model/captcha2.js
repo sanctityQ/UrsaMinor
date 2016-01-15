@@ -160,7 +160,6 @@ module.exports = {
           if (err) {
             reject(ex_utils.buildCommonException(apiCode.E10001));
           } else {
-            console.log(response);
             resolve(true);
           }
         });

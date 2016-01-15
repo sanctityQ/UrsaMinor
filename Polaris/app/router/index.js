@@ -51,5 +51,6 @@ function setMap(ctrs) {
   router.post('/api/password/reset', ctrs.password.reset);
   //修改密码
   router.post('/api/password/change', ctrs.password.change);
+  router.post('/api/password/check', ctrs.password.check);
 }
 module.exports = set;

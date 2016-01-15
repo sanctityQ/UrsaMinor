@@ -55,7 +55,7 @@ module.exports = {
       port: 9981
     },
     notifaction: {
-      host: '127.0.0.1',
+      host: '192.168.0.244',
       port: 9951
     }
   },
