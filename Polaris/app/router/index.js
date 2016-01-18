@@ -34,8 +34,10 @@ function setMap(ctrs) {
   //验证码
   router.get('/api/captcha/img', ctrs.captcha.genImg);
   //type:(sms|sound)
-  router.post('/api/captcha/:type/register', ctrs.captcha.sendSms4Register);
-  router.post('/api/captcha/:type/resetPassword', ctrs.captcha.sendSms4ResetPassword);
+  router.post('/api/captcha/:type/:biz', ctrs.captcha.sendSmsCaptcha);
+  //router.post('/api/captcha/:type/resetPassword', ctrs.captcha.sendSms4ResetPassword);
+
+  //router.post('/api/captcha2/:type/', ctrs.captchanew.sendSmsCaptcha);
   //router.post('/api/captcha/sound/register', ctrs.captcha.sendSound4Register);
   //router.post('/api/captcha/sound/resetPassword', ctrs.captcha.sendSound4ResetPassword);
 

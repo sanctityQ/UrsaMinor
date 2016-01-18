@@ -7,83 +7,7 @@ var config = app_config.captcha;
 var developMode = app_config.developMode;
 var tclog = require('../libs/tclog.js');
 
-//passport:REGISTER_IMG_CAPTCHA:[TOKEN]
-//passport:REGISTER_CAPTCHA:[MOBILE]
-//passport:REGISTER_SMS_CAPTCHA:[MOBILE]
-//passport:REGISTER_SOUND_CAPTCHA:[MOBILE]
-var randomNumber = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);//随机数
-
-var random = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-    'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');//随机字符
-
-//sms: 'http://192.168.0.244:8888/api/v2/users/smsCaptcha',
-//sound: 'http://192.168.0.244:8888/api/v2/auth/soundcaptcha/send',
-//valid: 'http://192.168.0.244:8888/api/v2/users/register/check/smscaptcha',
-//sms4ResetPassword: 'http://192.168.0.244:8888/api/v2/users/smsCaptcha',
-//valid4ResetPassword: 'http://192.168.0.244:8888/api/v2/users/smsCaptcha'
-//[mobile]_CONFIRM_CREDITMARKET_REGISTER_CAPTCHA_MOBILE
-//[mobile]_CONFIRM_CREDITMARKET_CHANGE_LOGIN_PASSWORD_CAPTCHA_MOBILE
-/**
- * 生产验证码
- * @returns {string}
- */
-//function genCaptcha() {
-//  var code = "";
-//  var codeLength = 6;//验证码的长度
-//  for(var i = 0; i < codeLength; i++) {//循环操作
-//    var index = Math.floor(Math.random()*10);//取得随机数的索引（0~35）
-//    code += randomNumber[index];//根据索引取得随机数加到code上
-//  }
-//  return code;//把code值赋给验证码
-//}
-
 module.exports = {
-  //发送图面验证码
-  genImgCaptcha: function () {
-    return new Promise(function (resolve, reject) {
-      request(config.img.server + config.img.path, {timeout: 3000}).on('error', function (err) {
-        //图片验证码服务一次
-        reject(ex_utils.buildCommonException(apiCode.E10001));
-      }).on('response', function (response) {
-        if (response.statusCode != 200) {
-          reject(ex_utils.buildCommonException(apiCode.E10001));
-        } else {
-          var token = response.headers['x-captcha-token'];
-          var answer = response.headers['x-captcha-answer'];
-          var createTime = Date.now();
-          var ttl = 1800;
-          var saveObj = { //保存到redis信息
-            createTime: createTime,
-            ttl: ttl,
-            answer: answer
-          };
-          //TODO saveObj 保存到 redis
-          response.pipe(
-              concat(function (data) {
-                //图片信息转换成base64
-                var captcha = "data:image/png;base64," + data.toString("base64");
-                var resObj = { //接口返回信息
-                  createTime: createTime,
-                  ttl: ttl,
-                  token: token,
-                  captcha: captcha
-                };
-                resolve(resObj)
-              })
-          );
-        }
-      })
-    })
-  },
-
-  /**
-   * 验证图片验证码
-   */
-  validateImgCaptcha: function (token, captcha) {
-    return new Promise(function (resolve, reject) {
-
-    })
-  },
 
   /**
    * 注册-短信验证码
@@ -104,7 +28,7 @@ module.exports = {
               resolve(true);
             } else { //发送失败
               tclog.warn({traceNo: traceNo, result: body});
-              reject(ex_utils.buildCommonException(apiCode.E20011));
+              reject(ex_utils.buildCommonException(apiCode.E20013));
             }
           }
         });
@@ -133,7 +57,7 @@ module.exports = {
               resolve(true);
             } else {
               tclog.warn({traceNo: traceNo, result: body});
-              reject(ex_utils.buildCommonException(apiCode.E20011));
+              reject(ex_utils.buildCommonException(apiCode.E20013));
             }
           }
         });
@@ -187,7 +111,7 @@ module.exports = {
               resolve(true);
             } else { //发送失败
               tclog.warn({traceNo: traceNo, result: body});
-              reject(ex_utils.buildCommonException(apiCode.E20011));
+              reject(ex_utils.buildCommonException(apiCode.E20013));
             }
           }
         });
@@ -214,7 +138,7 @@ module.exports = {
               resolve(true);
             } else {
               tclog.warn({traceNo: traceNo, result: body});
-              reject(ex_utils.buildCommonException(apiCode.E20011));
+              reject(ex_utils.buildCommonException(apiCode.E20013));
             }
           }
         });

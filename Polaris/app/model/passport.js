@@ -46,10 +46,11 @@ function buildPassportException(errCode) {
  * @returns {*}
  */
 function handleError(requestInfo, err) {
-  tclog.error({logid: requestInfo.traceNo, requestInfo: requestInfo, err: err});
   if(err instanceof common_types.PassportException) { //passport系统异常
+    tclog.warn({logid: requestInfo.traceNo, requestInfo: requestInfo, err: err});
     return err; //直接返回
   } else if(err instanceof Error) { //其他错误 转换为PassportException
+    tclog.error({logid: requestInfo.traceNo, requestInfo: requestInfo, err: err});
     if(err.name == 'TProtocolException') { //thrift.TProtocolException
       return buildPassportException(common_types.ErrCode.E20098); //参数错误
     } else { //链接错误 connection error

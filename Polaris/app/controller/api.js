@@ -5,7 +5,7 @@
  * @date 2015/11/2
  */
 var passportModel = require('../model/passport.js');
-var captchaModel = require('../model/captcha.js');
+var captcha2Model = require('../model/captcha2.js');
 var tclog = require('../libs/tclog.js');
 var tokenModel = require('../model/token.js');
 var _ = require('underscore');
@@ -58,7 +58,9 @@ module.exports = {
     tclog.notice({api:'/api/register', registerInfo: _.omit(registerInfo, 'password')});
     try {
       //短信验证码是否正确
-      yield captchaModel.validate4Register(registerInfo.traceNo, registerInfo.mobile, smsCaptcha);
+      var biz_type = captcha2Model.BIZ_TYPE.REGISTER;
+      var validObj = {biz_type:biz_type, captcha:smsCaptcha, mobile:registerInfo.mobile};
+      yield captcha2Model.validateSmsCaptcha(registerInfo.traceNo, validObj);
       //调用注册接口
       yield passportModel.register(registerInfo);
       var loginInfo = { //登录信息

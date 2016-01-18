@@ -47,25 +47,24 @@ test.TOKEN_MODEL = {
 };
 
 test.tclog = {
+  debug: function(data) {
+    console.info(data);
+  },
   notice: function (data) {
+    console.info(data);
   },
   error: function (data) {
+    console.error(data);
   },
   warn: function (data) {
+    console.warn(data);
   }
 };
 
-//test.generator = function(generator) {
-//  var flag = true;
-//  var result;
-//  while(flag) {
-//    var r = generator.next();
-//    console.log(r)
-//    result = r;
-//    result = !r.done;
-//  }
-//  return result.value;
-//};
+test.redis_client = {
+  set: function() {},
+  setex: function() {}
+};
 
 var fs = require('fs');
 var path = require('path');

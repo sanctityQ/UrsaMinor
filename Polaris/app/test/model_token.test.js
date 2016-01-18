@@ -32,10 +32,13 @@ describe("token[putToken]", function () {
 describe("token[removeToken]", function () {
 
   it("removeToken[success]", function (done) {
-    tokenModel.removeToken("23b635430ebae54ea27b1cc6682f8404026467e87e84a9fb1844f4b1fad384f0").then(
+    var tokenInfo = {
+      traceNo : '13213213123123',
+      tokenNo : "23b635430ebae54ea27b1cc6682f8404026467e87e84a9fb1844f4b1fad384f0"
+    };
+    tokenModel.removeToken(tokenInfo).then(
         function (data) {
-          data.should.have.property('header');
-          data.header.should.eql(apiCode.SUCCESS);
+          data.should.equal(true);
           done();
         });
   });

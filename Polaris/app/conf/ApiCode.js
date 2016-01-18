@@ -18,8 +18,11 @@ module.exports = {
     E20012 : {err_code:20012, err_msg:"密码修改失败，不能与原始密码相同"},
     E20013 : {err_code:20013, err_msg:"验证码发送失败"},
     E20014 : {err_code:20014, err_msg:"图片验证码错误"},
+    E20015 : {err_code:20015, err_msg:"验证次数过多，请重新发送"},
+    E20016 : {err_code:20016, err_msg:"对不起，您今天获取验证码的次数过多，请改天再试！"},
     E20098 : {err_code:20098, err_msg:"数据参数不合法"},
     E20099 : {err_code:20099, err_msg:"不合法的access_token"}
+
 };
 
 

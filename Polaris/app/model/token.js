@@ -1,12 +1,12 @@
 var crypto = require("crypto");
-var Redis = require("ioredis");
 var tclog = require('../libs/tclog.js');
 var ex_utils = require('../libs/exception.js');
 var apiCode = require("../conf/ApiCode.js");
-var passportTypes = require("@itiancai/passport-client");
-var ttypes = passportTypes.ttypes;
+var client_factory = require("../libs/client_factory");
+var redis_client = client_factory.redis_client;
+var passportTypes = client_factory.passport_types.ttypes;
 var config = require('../../conf/index');
-var DEFAULT_EXPIRE = 7*24*60*60;
+var token_config = config.token;
 /**
  * 生成tokenNo
  * @returns {Promise}
@@ -36,30 +36,27 @@ module.exports = {
     var traceNo = loginIno.traceNo;
     return new Promise(function (resolve, reject) {
       genTokenNo().then(function(tokenNo) {
-        var client = new Redis(config.redis);
         var now = new Date().getTime();
         var access_token = {
-          source: ttypes.Source[loginIno.source],
-          sysCode: ttypes.Source[loginIno.sysCode],
+          source: passportTypes.Source[loginIno.source],
+          sysCode: passportTypes.SysCode[loginIno.sysCode],
           uid: passportUser.id,
           createTime: now,
-          expireTime: now + DEFAULT_EXPIRE*1000
+          expireTime: now + token_config.DEFAULT_EXPIRE*1000
         };
-        client.setex("passport:access_token:"+tokenNo, DEFAULT_EXPIRE, JSON.stringify(access_token), function(err, results) {
-          if(client) {
-            client.quit();
-          }
+        var key = token_config.KEY_PRE+tokenNo;
+        redis_client.setex(key, token_config.DEFAULT_EXPIRE, JSON.stringify(access_token), function(err, result) {
           if(err) {
-            tclog.error({traceNo: traceNo, err_msg:"putToken error", err: err});
+            tclog.error({traceNo: traceNo, msg:"putToken error", err: err});
             reject(ex_utils.buildCommonException(apiCode.E10001));
           } else {
-            tclog.notice({traceNo: traceNo, access_token: access_token});
+            tclog.debug({traceNo: traceNo, msg:"putToken success", access_token: access_token, result:result});
             resolve(tokenNo);
           }
         });
 
       }, function(err) {
-        tclog.error({traceNo: traceNo, err_msg:"gen tokenNo error", err: err});
+        tclog.error({traceNo: traceNo, msg:"gen tokenNo error", err: err});
         reject(ex_utils.buildCommonException(apiCode.E10001));
       });
     })
@@ -72,17 +69,14 @@ module.exports = {
    */
   getToken: function (traceNo, tokenNo) {
     return new Promise(function (resolve, reject) {
-      var client = new Redis(config.redis);
-      client.get("passport:access_token:"+tokenNo, function(err, results) {
-        if(client) {
-          client.quit();
-        }
+      redis_client.get(token_config.KEY_PRE+tokenNo, function(err, result) {
         if(err) {
           tclog.error({traceNo:traceNo, tokenNo:tokenNo, err_msg:"getToken error", err:err});
           reject(ex_utils.buildCommonException(apiCode.E10001));
         } else {
-          if(results) { //token有效
-            var token = JSON.parse(results);
+          if(result) { //token有效
+            redis_client.expire(token_config.DEFAULT_EXPIRE);//重置失效时间
+            var token = JSON.parse(result);
             resolve(token);
           } else { //token失效
             reject(ex_utils.buildCommonException(apiCode.E20099));
@@ -99,14 +93,11 @@ module.exports = {
    */
   removeToken: function (tokenInfo) {
     return new Promise(function (resolve, reject) {
-      var client = new Redis(config.redis);
-      client.del("passport:access_token:"+tokenInfo.tokenNo, function(err, results) {
-        if(client) {
-          client.quit();
-        }
+      redis_client.del(token_config.KEY_PRE+tokenInfo.tokenNo, function(err, result) {
         if(err) {
           tclog.error({tokenNo:tokenInfo.tokenNo, traceNo:tokenInfo.traceNo, err_msg:"removeToken error", err:err});
         }
+        tclog.debug({msg:"removeToken count:"+result});
         resolve(true);
       })
     });

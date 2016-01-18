@@ -1,3 +1,6 @@
+var moment = require("moment");
+var config = require("../../conf/index.js");
+
 //随机数
 var randomNumber = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
@@ -25,10 +28,14 @@ module.exports = {
    */
   genCaptcha: function () {
     var code = "";
-    var codeLength = 6;//验证码的长度
-    for (var i = 0; i < codeLength; i++) {//循环操作
-      var index = Math.floor(Math.random() * 10);//取得随机数的索引（0~35）
-      code += randomNumber[index];//根据索引取得随机数加到code上
+    if(!config.developMode) { //非开发模式
+      var codeLength = 6;//验证码的长度
+      for (var i = 0; i < codeLength; i++) {//循环操作
+        var index = Math.floor(Math.random() * 10);//取得随机数的索引（0~35）
+        code += randomNumber[index];//根据索引取得随机数加到code上
+      }
+    } else { //开发模式
+      code = "666666";
     }
     return code;//把code值赋给验证码
   },

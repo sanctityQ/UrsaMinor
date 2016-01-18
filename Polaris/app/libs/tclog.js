@@ -6,7 +6,8 @@
  */
 
 var tclog = {};
-var logConf = require('../../conf/index.js').log;
+var config = require('../../conf/index.js');
+var logConf = config.log;
 var fs = require('fs');
 var chalk = require('chalk');
 var inspect = require('util').inspect;
@@ -42,9 +43,15 @@ tclog.init = function () {
         path: tclog.conf.path + '.dev'
     };
     tclog._watch = [];
-    openLogStream(tclog.loginfo);
-    openLogStream(tclog.wfloginfo);
-    openLogStream(tclog.devloginfo);
+    if (!config.developMode && tclog.conf.printFile) {
+        openLogStream(tclog.loginfo);
+        openLogStream(tclog.wfloginfo);
+        openLogStream(tclog.devloginfo);
+    } else {
+        tclog.loginfo.logStream = {};
+        tclog.wfloginfo.logStream = {};
+        tclog.devloginfo.logStream = {};
+    }
     if (tclog.conf.redictConsole) {
         // redictConsole();
     }
@@ -145,7 +152,7 @@ tclog.log = function (stream, method, loginfos) {
         console.log(logStr);
     }
 
-    if (tclog.conf.printFile) {
+    if (!config.developMode && tclog.conf.printFile) {
         logArgs = tclog.prepare(method, loginfos);
         logStr = tclog.genLog.apply(null, logArgs);
         if (stream.writable) {

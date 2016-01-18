@@ -1,5 +1,8 @@
 var Redis = require("ioredis");
 var config = require('../../conf/index');
+var tclog = require('../libs/tclog.js');
+var apiCode = require("../conf/ApiCode.js");
+var ex_utils = require('../libs/exception.js');
 
 //var cluster = new Redis.Cluster([{
 //  port: 6380,
@@ -8,6 +11,10 @@ var config = require('../../conf/index');
 //  port: 6381,
 //  host: '127.0.0.1'
 //}]);
+Redis.Promise.onPossiblyUnhandledRejection(function (error) {
+  tclog.error({msg:"Redis Error", error:error});
+  throw ex_utils.buildCommonException(apiCode.E10001);
+});
 var redis_client = new Redis(config.redis);
 
 var thrift_conf = config.thirft;
@@ -41,4 +48,4 @@ module.exports = {
 
   sms_client : sms_client,
   notification_types :notification_types
-}
+};

@@ -29,122 +29,45 @@ before(function () {
 });
 var captchaModel;
 var passportModel;
+var portalModel;
 beforeEach(function () {
-  captchaModel = _.clone(test.CAPTCHA_MODEL);
-  passportModel = _.clone(test.PASSPORT_MODEL);
-  ctrs.captcha.__set__({
-                         captchaModel: captchaModel,
-                         passportModel: passportModel
-                       });
+  captchaModel = ctrs.captcha.__get__('captcha2Model');
+  passportModel = ctrs.captcha.__get__('passportModel');
+  portalModel = ctrs.captcha.__get__('portalModel');
 });
 
-describe("captcha sendSms4Register test", function () {
-  it("sendSms4Register success", function (done) {
-    var sendSms4RegisterStub = sinon.stub(captchaModel, "sendSms4Register", function (logid, mobile) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var userValidateStub = sinon.stub(passportModel, "userValidate", function (validateInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
+describe("图片验证码测试", function () {
+  it("生成图片验证码", function (done) {
+    var spy = sinon.spy(captchaModel, "genImgCaptcha");
     request
-        .get('/api/captcha/sms/register?mobile=15138695162')
-        .set('syscode', 'FINANCE')//header info
+        .get('/api/captcha/img')
+        .set('syscode', 'FINANCE')
+        .set('source', 'APP')
         .expect(200)
         .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.SUCCESS);
-
-          sinon.assert.calledOnce(userValidateStub);
-          sinon.assert.calledOnce(sendSms4RegisterStub);
+          spy.calledOnce.should.be.equal(true);
+          res.statusCode.should.be.equal(200);
+          res.body.should.have.property('token');
+          res.body.should.have.property('captcha');
+          res.body.should.have.property('ttl');
+          res.body.should.have.property('createTime');
           done();
         });
   });
 });
 
-describe("captcha sendSound4Register test", function () {
-  it("sendSound4Register success", function (done) {
-    var sendSound4RegisterStub = sinon.stub(captchaModel, "sendSound4Register", function (logid, mobile) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var userValidateStub = sinon.stub(passportModel, "userValidate", function (validateInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
+describe("发送验证码测试", function () {
+  it("发送验证码测试[短信成功发送]", function (done) {
+    var getMobileCheck_stub = sinon.stub(captchaModel, "getMobileCheck");
+    var getMobileCheck_stub = sinon.stub(portalModel, "getMobileCheck");
+    var spy = sinon.spy(captchaModel, "getMobileCheck");
     request
-        .get('/api/captcha/sound/register?mobile=15138695162')
-        .set('syscode', 'FINANCE')//header info
+        .get('/api/captcha/sms/register')
+        .set('syscode', 'FINANCE')
+        .set('source', 'APP')
         .expect(200)
         .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.SUCCESS);
 
-          sinon.assert.calledOnce(userValidateStub);
-          sinon.assert.calledOnce(sendSound4RegisterStub);
-          done();
-        });
-  });
-});
-
-describe("captcha sendSms4ResetPassword test", function () {
-  it("sendSound4Register success", function (done) {
-    var sendSms4ResetPasswordStub = sinon.stub(captchaModel, "sendSms4ResetPassword", function (logid, mobile) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var userValidateStub = sinon.stub(passportModel, "userValidate", function (validateInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.E20001});
-      });
-    });
-    request
-        .get('/api/captcha/sms/resetPassword?mobile=15138695162')
-        .set('syscode', 'FINANCE')//header info
-        .expect(200)
-        .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.SUCCESS);
-
-          sinon.assert.calledOnce(userValidateStub);
-          sinon.assert.calledOnce(sendSms4ResetPasswordStub);
-          done();
-        });
-  });
-});
-
-describe("captcha sendSound4ResetPassword test", function () {
-  it("sendSound4Register success", function (done) {
-    var sendSound4ResetPasswordStub = sinon.stub(captchaModel, "sendSound4ResetPassword", function (logid, mobile) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var userValidateStub = sinon.stub(passportModel, "userValidate", function (validateInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.E20001});
-      });
-    });
-    request
-        .get('/api/captcha/sound/resetPassword?mobile=15138695162')
-        .set('syscode', 'FINANCE')//header info
-        .expect(200)
-        .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.SUCCESS);
-
-          sinon.assert.calledOnce(userValidateStub);
-          sinon.assert.calledOnce(sendSound4ResetPasswordStub);
           done();
         });
   });

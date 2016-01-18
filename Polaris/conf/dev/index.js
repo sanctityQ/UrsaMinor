@@ -44,7 +44,7 @@ module.exports = {
     maxLength: 3000,
     level: 1, // [ 1-debug, 2-trace, 3-notice, 4-warn, 5-fatal ]
     printTty: true,
-    printFile: true,
+    printFile: false,
     redictConsole: true
   },
 
@@ -73,6 +73,22 @@ module.exports = {
         }
         return times * 200;
       }
+    }
+  },
+
+  "portal":{
+    url:'https://apitest.fraudmetrix.cn/riskService',
+    secret_key:'8e1da24851a04d99be5bd553280ec047',
+    //url:'https://api.fraudmetrix.cn/riskService',
+    //secret_key:'9390b740ab244837b9870241c20eba65',
+    partner_code:'itiancai',
+    resp_detail_type:'device,geoip',
+    events:{
+      register:'register_web',
+      authRealName:'verify_web',
+      register_activity:'activity_reg',
+      authRealName_activity:'activity_verfiy',
+      phoneCheck:'sms_web'
     }
   },
 
@@ -106,7 +122,16 @@ module.exports = {
     captcha_template : { //短信模板
       REGISTER : "欢迎注册甜菜金融，手机验证码：{SMS_CAPTCHA}，验证码在10分钟内有效 www.itiancai.com",
       RESETPWD : "甜菜金融通知您本次修改登录密码的手机验证码为:{SMS_CAPTCHA},验证码在10分钟内有效"
-    }
+    },
+    TTL: 10*60, //验证码有效时间[10分钟(单位:秒)]
+    MIN_INTERVAL: 50*1000, //最小发送间隔[50秒(单位:毫秒)]
+    MAX_SEND_COUNT: 20, //每日最多发送条数(注册+找回密码)
+    MAX_VALID_COUNT: 20 //单个验证码最多可验证次数
+  },
+
+  token:{
+    DEFAULT_EXPIRE : 7*24*60*60, //token有效时间
+    KEY_PRE: "passport:access_token:" //redis-key
   },
 
   session: {
