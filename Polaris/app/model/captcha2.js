@@ -202,6 +202,7 @@ module.exports = {
             }
             //通过模板生成短信内容
             var content = captcha_utils.genSmsContent({SMS_CAPTCHA: captcha}, template);
+            tclog.notice({traceNo:traceNo, msg:'send sms captcha', mobile:mobile, content:content});
             if(!developMode) { //非开发模式
               var sendType = ttypes.SendType.TRIGGER;//发送类型及时发送
               sms_client.sendMessage(mobile, content, sendType, function(err, response) {
@@ -221,8 +222,8 @@ module.exports = {
               resolve(true);
             }
           } else { //语音验证码
+            tclog.notice({traceNo:traceNo, msg:"send voice captcha", mobile:mobile, captcha: captcha});
             if(!developMode) { //非开发模式
-              tclog.debug({traceNo:traceNo, msg:"sendSmsCaptcha voice excute", captcha: captcha});
               sms_client.sendVoiceVerifyCode(mobile, captcha, function (err, response) {
                 if (err) { //服务一次
                   tclog.error({traceNo:traceNo, msg:"sendSmsCaptcha error", err: err});

@@ -47,8 +47,11 @@
     "istanbul": "^0.4.1"
   },
   "scripts": {
+    "compile-test": "gulp --ENV=test compile",
+    "compile-online": "gulp --ENV=online compile",
+    "compile-stress": "gulp --ENV=stress compile",
     "start": "pm2 start --node-args='--harmony' ./app/bootSrtap.js --name passport-polaris",
-    "pm2": "mpm2 start --node-args='--harmony' ./app/bootSrtap.js -i 0 --name passport-polaris",
+    "cluster": "mpm2 start --node-args='--harmony' ./app/bootSrtap.js -i 0 --name passport-polaris",
     "reload": "pm2 reload passport-polaris",
     "stop": "pm2 stop passport-polaris",
     "delete": "pm2 stop passport-polaris && pm2 delete passport-polaris",

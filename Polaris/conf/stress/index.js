@@ -8,7 +8,7 @@
 var path = require('path');
 module.exports = {
   // 当前运行模式
-  runEnv: 'test',
+  runEnv: 'stress',
 
   developMode: false,
 
