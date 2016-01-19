@@ -8,7 +8,7 @@
 var path = require('path');
 module.exports = {
   // 当前运行模式
-  runEnv: 'uat',
+  runEnv: 'check',
 
   developMode: false,
 
@@ -79,8 +79,6 @@ module.exports = {
   "portal":{
     url:'https://apitest.fraudmetrix.cn/riskService',
     secret_key:'8e1da24851a04d99be5bd553280ec047',
-    //url:'https://api.fraudmetrix.cn/riskService',
-    //secret_key:'9390b740ab244837b9870241c20eba65',
     partner_code:'itiancai',
     resp_detail_type:'device,geoip',
     events:{

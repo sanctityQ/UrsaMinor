@@ -10,7 +10,7 @@ module.exports = {
   // 当前运行模式
   runEnv: 'stress',
 
-  developMode: false,
+  developMode: true,
 
   // 应用全局配置
   app: {
@@ -42,9 +42,9 @@ module.exports = {
   log: {
     path: './log/tiancai.log',
     maxLength: 3000,
-    level: 1, // [ 1-debug, 2-trace, 3-notice, 4-warn, 5-fatal ]
+    level: 5, // [ 1-debug, 2-trace, 3-notice, 4-warn, 5-fatal ]
     printTty: true,
-    printFile: true,
+    printFile: false,
     redictConsole: true
   },
 
@@ -93,28 +93,6 @@ module.exports = {
   },
 
   captcha: {
-    sms: {
-      redis: {
-        host:'192.168.0.244',
-        port: 6379,
-        options: {
-          connectTimeout: 1000,
-          //重试策略为每次递增200ms，最多3次
-          retryStrategy: function (times) {
-            if (times > 3) {
-              return false;
-            }
-            return times * 200;
-          }
-        }
-      },
-      server: 'http://192.168.0.244:8888',
-      path4Register : "/api/v2/users/smsCaptcha",
-      path4ResetPassword : "/api/v2/auth/resetpwd/smscaptcha/send",
-      path4Sound : "/api/v2/auth/soundcaptcha/send",
-      path4ValidateRegister: "/api/v2/users/register/check/smscaptcha",
-      path4ValidateResetPassword : "/api/v2/auth/resetpwd/smscaptcha/check"
-    },
     img: {
       server: "http://192.168.0.243:8083",
       path : "/captcha"

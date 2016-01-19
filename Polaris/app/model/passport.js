@@ -268,7 +268,11 @@ module.exports = {
           if (err) {
             reject(handleError(userInfo, err));
           } else {
-            resolve(response);
+            var passportUser = _.mapObject(response, function (val, key) {
+              if(val) return val.valueOf();
+              else val;
+            });
+            resolve(passportUser);
           }
         })
       }

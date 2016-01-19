@@ -13,7 +13,7 @@ module.exports = {
     var headerBody = this.header;
     var traceNo = this.req.traceNo + "";
     var validateInfo = {
-      source: headerBody.source || 'APP',
+      source: headerBody.source,
       sysCode: headerBody.syscode,
       traceNo: traceNo,
       name: 'MOBILE',

@@ -10,7 +10,7 @@ module.exports = {
   // 当前运行模式
   runEnv: 'test',
 
-  developMode: false,
+  developMode: true,
 
   // 应用全局配置
   app: {
@@ -93,28 +93,6 @@ module.exports = {
   },
 
   captcha: {
-    sms: {
-      redis: {
-        host:'192.168.0.244',
-        port: 6379,
-        options: {
-          connectTimeout: 1000,
-          //重试策略为每次递增200ms，最多3次
-          retryStrategy: function (times) {
-            if (times > 3) {
-              return false;
-            }
-            return times * 200;
-          }
-        }
-      },
-      server: 'http://192.168.0.244:8888',
-      path4Register : "/api/v2/users/smsCaptcha",
-      path4ResetPassword : "/api/v2/auth/resetpwd/smscaptcha/send",
-      path4Sound : "/api/v2/auth/soundcaptcha/send",
-      path4ValidateRegister: "/api/v2/users/register/check/smscaptcha",
-      path4ValidateResetPassword : "/api/v2/auth/resetpwd/smscaptcha/check"
-    },
     img: {
       server: "http://192.168.0.243:8083",
       path : "/captcha"

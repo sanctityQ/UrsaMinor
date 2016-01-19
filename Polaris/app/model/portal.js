@@ -1,6 +1,7 @@
 var request = require("request");
 var config = require("../../conf");
 var tclog = require('../libs/tclog.js');
+var developMode = config.developMode;
 
 /**
  * 同盾接口
@@ -25,7 +26,7 @@ module.exports = {
         resp_detail_type:config.portal.resp_detail_type
       };
       tclog.debug({traceNo: checkInfo.traceNo, requestInfo:requestInfo});
-      if(!config.developMode) { //非开发模式
+      if(!developMode) { //非开发模式
         request.post({url:config.portal.url, form:requestInfo}, function (e, r, body) {
           try {
             var result = JSON.parse(body);

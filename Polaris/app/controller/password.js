@@ -1,7 +1,7 @@
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
-var tclog = require('../libs/tclog.js');
 var tokenModel = require('../model/token.js');
+var tclog = require('../libs/tclog.js');
 
 module.exports = {
 

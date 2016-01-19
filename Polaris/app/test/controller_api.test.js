@@ -5,6 +5,7 @@ var sinon = require('sinon');
 var app = rewire('../server');
 var request = require('supertest-koa-agent')(app);
 var test = require('../libs/test');
+var ex_utils = require('../libs/exception.js');
 var apiCode = require('../conf/apiCode');
 var router = rewire('../router');
 var _ = require('underscore');
@@ -12,8 +13,13 @@ var _ = require('underscore');
 var ctrs;
 
 var passportModel;
-var tokenModel;
 var captchaModel;
+var tokenModel;
+
+var validateSmsCaptcha_stub;
+var register_stub;
+var login_stub;
+var putToken_stub;
 
 before(function () {
   //rewire 所有controller
@@ -30,137 +36,146 @@ before(function () {
                      });
                    }
                  });
+
   //设置router
   app.__set__({router: router});
   app.init(); //初始化server
-  app.listen(8800); //启动服务
-});
+  app.listen(80001); //启动服务
 
-beforeEach(function() {
-  passportModel = _.clone(test.PASSPORT_MODEL);
-  tokenModel = _.clone(test.TOKEN_MODEL);
-  captchaModel = _.clone(test.CAPTCHA_MODEL);
-  ctrs.api.__set__({
-                     passportModel: passportModel,
-                     captchaModel: captchaModel,
-                     tokenModel: tokenModel
-                   });
+  passportModel = ctrs.api.__get__('passportModel');
+  captchaModel = ctrs.api.__get__('captcha2Model');
+  tokenModel = ctrs.api.__get__('tokenModel');
 });
+var tokenNo = "3213213123123213131";
+var user = {
+  "id": 65,
+  "mobile": "14131313131",
+  "loginName": "tc_1a8r7j3k5qkwu",
+  "source": 2,
+  "registerDate": 1452612882000,
+  "lastLoginDate": 1453122445819
+};
 
 /**
- * 登录api测试
+ * 主流程API测试
  */
-describe("api login test", function () {
-  it("login success", function (done) {
-    //passportModel--login
-    var loginStub = sinon.stub(passportModel, "login", function (validateInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS}); //返回成功
-      });
-    });
+describe("主流程测试", function () {
+
+  before(function() {
+    validateSmsCaptcha_stub = sinon.stub(captchaModel, "validateSmsCaptcha");
+    register_stub = sinon.stub(passportModel, "register");
+    login_stub = sinon.stub(passportModel, "login");
+    putToken_stub = sinon.stub(tokenModel, "putToken");
+  });
+
+  it("登录测试[登录成功]", function (done) {
+    login_stub.returns(new Promise(function (resovel, reject) {
+      resovel(user); //返回成功
+    }));
     //tokenModel--putToken
-    var putTokenStub = sinon.stub(tokenModel, "putToken", function (traceNo, loginResult) {
-      return new Promise(function (resovel, reject) {
-        resovel("3213213123123213131"); //返回tokenNo
-      });
-    });
+    putToken_stub.returns(new Promise(function (resovel, reject) {
+      resovel(tokenNo); //返回tokenNo
+    }));
     //发送登录请求
     request
         .post('/api/login')
-        .send({credential: '13333333333', password: '123456'}) //登录信息
+        .send({credential: '14131313131', password: '123456'}) //登录信息
         .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
           //验证返回信息
-          var result = eval(res.body);
-          result.should.have.property('header');
+          var result = res.body;
           result.should.have.property('access_token');
-          result.header.should.have.eql(apiCode.SUCCESS);
-          result.access_token.should.have.eql("3213213123123213131");
+          result.access_token.should.be.equal(tokenNo);
+          result.should.have.property('user');
+          result.user.should.be.eql(user);
 
-          sinon.assert.calledOnce(loginStub);
-          sinon.assert.calledOnce(putTokenStub);
+          sinon.assert.calledOnce(login_stub);
+          sinon.assert.calledOnce(putToken_stub);
           done();
         });
   });
 
-  it("login password error", function (done) {
-    var loginStub = sinon.stub(passportModel, "login", function (validateInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.E20008});
-      });
-    });
+  it("登录测试[登录失败]", function (done) {
+    login_stub.returns(new Promise(function (resovel, reject) {
+      reject(ex_utils.buildCommonException(apiCode.E20008)); //账号或密码错误
+    }));
     request
         .post('/api/login')
-        .send({credential: '13333333333', password: '1234567'})
+        .send({credential: '14131313131', password: '1234567'})
         .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
-        .expect(200)
+        .expect(500)
         .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.E20008);
-
-          sinon.assert.calledOnce(loginStub);
+          var result = res.body;
+          result.should.have.property('error_code');
+          result.error_code.should.be.equal(apiCode.E20008.err_code);
+          sinon.assert.calledOnce(login_stub);
           done();
         });
+  });
 
-  })
-
-
-});
-
-describe("api register test", function() {
-
-  it("register success", function (done) {
-    var validate4RegisterStub = sinon.stub(captchaModel, "validate4Register", function (traceNo, mobile, smsCaptcha) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var registerStub = sinon.stub(passportModel, "register", function (registerInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var loginStub = sinon.stub(passportModel, "login", function (loginInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var putTokenStub = sinon.stub(tokenModel, "putToken", function (traceNo, loginResult) {
-      return new Promise(function (resovel, reject) {
-        resovel("3213213123123213131");
-      });
-    });
+  it("注册测试[注册成功]", function (done) {
+    validateSmsCaptcha_stub.returns(new Promise(function (resovel, reject) {
+      resovel(true);
+    }));
+    register_stub.returns(new Promise(function (resovel, reject) {
+      resovel(user);
+    }));
+    login_stub.returns(new Promise(function (resovel, reject) {
+      resovel(user);
+    }));
+    putToken_stub.returns(new Promise(function (resovel, reject) {
+      resovel(tokenNo); //返回tokenNo
+    }));
 
     request
         .post('/api/register')
-        .send({mobile: '13333333333', password: '123456', smsCaptcha: '123456'})
+        .send({mobile: '14131313131', password: '123456', smsCaptcha: '123456'})
         .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
+          var result = res.body;
           result.should.have.property('access_token');
-          result.header.should.have.eql(apiCode.SUCCESS);
+          result.should.have.property('user');
+          result.user.should.be.eql(user);
 
-          sinon.assert.calledOnce(validate4RegisterStub);
-          sinon.assert.calledOnce(registerStub);
-          sinon.assert.calledOnce(loginStub);
-          sinon.assert.calledOnce(putTokenStub);
+          sinon.assert.calledOnce(validateSmsCaptcha_stub);
+          sinon.assert.calledOnce(register_stub);
+          sinon.assert.calledOnce(login_stub);
+          sinon.assert.calledOnce(putToken_stub);
           done();
         });
   });
 
-  it("register smsCaptcha error", function (done) {
-    var validate4RegisterStub = sinon.stub(captchaModel, "validate4Register", function (traceNo, mobile, smsCaptcha) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.E20006});
-      });
-    });
+  it("注册失败[验证码错误]", function (done) {
+    validateSmsCaptcha_stub.returns(new Promise(function (resovel, reject) {
+      reject(ex_utils.buildCommonException(apiCode.E20006)); //验证码错误
+    }));
+    request
+        .post('/api/register')
+        .send({mobile: '14131313131', password: '123456', smsCaptcha: '1234567'})
+        .set('source', 'APP')//header info
+        .set('syscode', 'FINANCE')//header info
+        .expect(200)
+        .end(function (err, res) {
+          var result = res.body;
+          result.should.have.property('error_code');
+          result.error_code.should.be.equal(apiCode.E20006.err_code);
+          sinon.assert.calledOnce(validateSmsCaptcha_stub);
+          done();
+        });
+  });
+
+  it("注册失败[手机号已被使用]", function (done) {
+    validateSmsCaptcha_stub.returns(new Promise(function (resovel, reject) {
+      resovel(true);
+    }));
+    register_stub.returns(new Promise(function (resovel, reject) {
+      reject(ex_utils.buildCommonException(apiCode.E20001)); //手机号已被使用
+    }));
     request
         .post('/api/register')
         .send({mobile: '12222222222', password: '123456', smsCaptcha: '123456'})
@@ -169,59 +184,45 @@ describe("api register test", function() {
         .expect(200)
         .end(function (err, res) {
           var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.E20006);
-          sinon.assert.calledOnce(validate4RegisterStub);
+          result.should.have.property('error_code');
+          result.error_code.should.be.equal(apiCode.E20001.err_code);
+          sinon.assert.calledOnce(validateSmsCaptcha_stub);
+          sinon.assert.calledOnce(register_stub);
           done();
         });
   });
 
-  it("register mobile used", function (done) {
-    var validate4RegisterStub = sinon.stub(captchaModel, "validate4Register", function (traceNo, mobile, smsCaptcha) {
+  it("安全退出[成功]", function (done) {
+    var removeToken_stub = sinon.stub(tokenModel, "removeToken", function (tokenNo) {
       return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    var registerStub = sinon.stub(passportModel, "register", function (registerInfo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.E20001});
+        resovel(true);
       });
     });
     request
-        .post('/api/register')
-        .send({mobile: '12222222222', password: '123456', smsCaptcha: '123456'})
+        .get('/api/logout?access_token='+tokenNo)
         .set('source', 'APP')//header info
         .set('syscode', 'FINANCE')//header info
         .expect(200)
         .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.E20001);
-          sinon.assert.calledOnce(validate4RegisterStub);
-          sinon.assert.calledOnce(registerStub);
+          var result = res.body;
+          result.should.have.property('access_token');
+          result.access_token.should.be.equal(tokenNo);
+          sinon.assert.calledOnce(removeToken_stub);
           done();
         });
   });
-});
 
-describe("api logout test", function () {
-  it("logout success", function (done) {
-    var removeTokenStub = sinon.stub(tokenModel, "removeToken", function (tokenNo) {
-      return new Promise(function (resovel, reject) {
-        resovel({header: apiCode.SUCCESS});
-      });
-    });
-    request
-        .get('/api/logout?access_token=312312321312312')
-        .set('source', 'APP')//header info
-        .set('syscode', 'FINANCE')//header info
-        .expect(200)
-        .end(function (err, res) {
-          var result = eval(res.body);
-          result.should.have.property('header');
-          result.header.should.have.eql(apiCode.SUCCESS);
-          sinon.assert.calledOnce(removeTokenStub);
-          done();
-        });
+  afterEach(function() {
+    validateSmsCaptcha_stub.reset();
+    register_stub.reset();
+    login_stub.reset();
+    putToken_stub.reset();
+  });
+
+  after(function() {
+    validateSmsCaptcha_stub.restore();
+    register_stub.restore();
+    login_stub.restore();
+    putToken_stub.restore();
   });
 });

@@ -22,11 +22,9 @@ before(function(){
   sms_types = captchaModel.__get__('ttypes');
   var tclog = captchaModel.__get__('tclog');
   tclog.init();
-
 });
 
 describe("图片验证码测试", function () {
-
   before(function() {
     captchaModel.__set__('developMode', false);
   });
@@ -450,6 +448,8 @@ describe("(短信|语音)验证码[手机号验证]", function () {
       return obj.score == score && obj.count == 11;
     })).should.equal(true);//验证参数
     pexpireat_spy.calledWith(key, sinon.match.number).should.equal(true);
+    set_spy.restore();
+    pexpireat_spy.restore();
   });
 
 });

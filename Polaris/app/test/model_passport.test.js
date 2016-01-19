@@ -1,9 +1,10 @@
 require("should");
-var thrift = require('thrift');
 var rewire = require('rewire');
 var sinon = require('sinon');
 var apiCode = require('../conf/apiCode');
 var test = require('../libs/test');
+var thrift = require('thrift');
+var passport_types = require("@itiancai/passport-client");
 var passportModel = rewire("../model/passport");
 var _ = require('underscore');
 
@@ -11,27 +12,18 @@ var user = {
   "id": new thrift.Int64(52),
   "mobile": "15131235327",
   "loginName": "tc_1a612duqo1e1c",
-  "source": 0,
-  "syscode": 0,
+  "source": passport_types.ttypes.Source.APP,
+  "sysCode": passport_types.ttypes.SysCode.FINANCE,
   "registerDate": new thrift.Int64(1449587571000),
   "lastLoginDate": new thrift.Int64(1449664805678)
 };
 
 var client;
-
 before(function () {
   //覆盖tclog
-  passportModel.__set__({
-                          tclog: test.tclog
-                        });
-});
-
-beforeEach(function () {
-  //重新指定client
-  client = _.clone(test.PASSPORT_THRIFT_CLIENT);
-  passportModel.__set__({
-                          client: client
-                        });
+  var tclog = passportModel.__get__('tclog');
+  tclog.init();
+  client = passportModel.__get__('client');
 });
 
 describe("passportModel--登录接口", function () {
@@ -61,9 +53,9 @@ describe("passportModel--登录接口", function () {
       data.should.have.property('id'); //用户ID
       data.id.should.equal(user.id.valueOf());
       data.mobile.should.equal(loginInfo.credential);//手机号
-
       sinon.assert.calledOnce(stub); //登陆接口调用一次
       sinon.assert.calledWith(stub, sinon.match(loginRequest), sinon.match.func);
+      stub.restore();
       done();
     });
   });
@@ -80,6 +72,7 @@ describe("passportModel--登录接口", function () {
       err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
+      stub.restore();
       done();
     }) ;
   });
@@ -94,6 +87,7 @@ describe("passportModel--登录接口", function () {
       err.err_code.should.equal(apiCode.E10001.err_code);
       sinon.assert.calledOnce(stub);
       sinon.assert.calledWith(stub, sinon.match(loginRequest), sinon.match.func);
+      stub.restore();
       done();
     });
   });
@@ -131,6 +125,7 @@ describe("passportModel--注册接口", function () {
       sinon.assert.calledWith(stub,
                               sinon.match(registerRequest),
                               sinon.match.func);
+      stub.restore();
       done();
     });
   });
@@ -147,6 +142,7 @@ describe("passportModel--注册接口", function () {
       err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
+      stub.restore();
       done();
     });
   });
@@ -162,6 +158,7 @@ describe("passportModel--注册接口", function () {
 
       sinon.assert.calledOnce(stub);
       sinon.assert.calledWith(stub, sinon.match(registerRequest), sinon.match.func);
+      stub.restore();
       done();
     });
   });
@@ -184,6 +181,7 @@ describe("passportModel--用户信息验证接口", function () {
     passportModel.userValidate(validateInfo).then(function (data) {
       data.should.equal('true');
       sinon.assert.calledOnce(stub);
+      stub.restore();
       done();
     });
   });
@@ -200,6 +198,7 @@ describe("passportModel--用户信息验证接口", function () {
       err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
+      stub.restore();
       done();
     });
   });
@@ -214,6 +213,7 @@ describe("passportModel--用户信息验证接口", function () {
       err.err_code.should.equal(apiCode.E10001.err_code);
 
       sinon.assert.calledOnce(stub);
+      stub.restore();
       done();
     });
   });
@@ -234,6 +234,7 @@ describe("passportModel--重置密码接口", function () {
     passportModel.resetPassword(resetInfo).then(function (data) {
       data.should.equal('true');
       sinon.assert.calledOnce(stub);
+      stub.restore();
       done();
     });
   });
@@ -250,6 +251,7 @@ describe("passportModel--重置密码接口", function () {
       err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
+      stub.restore();
       done();
     });
   });
@@ -264,6 +266,7 @@ describe("passportModel--重置密码接口", function () {
       err.err_code.should.equal(apiCode.E10001.err_code);
 
       sinon.assert.calledOnce(stub);
+      stub.restore();
       done();
     });
   });
@@ -286,6 +289,7 @@ describe("passportModel--修改密码接口", function () {
     passportModel.changePassword(changeInfo).then(function (data) {
       data.should.equal('true');
       sinon.assert.calledOnce(stub);
+      stub.restore();
       done();
     });
   });
@@ -302,11 +306,13 @@ describe("passportModel--修改密码接口", function () {
       err.err_code.should.equal(apiCode.E20098.err_code);
 
       sinon.assert.notCalled(stub); //未调用后台接口
+      stub.restore();
       done();
     });
   });
 
   it("修改密码接口[服务异常]", function (done) {
+
     var stub = sinon.stub(client, "changePassword", function (request, cb) {
       cb(new Error("CONNECTION TIMEOUT"), null);
     });
@@ -316,7 +322,124 @@ describe("passportModel--修改密码接口", function () {
       err.err_code.should.equal(apiCode.E10001.err_code);
 
       sinon.assert.calledOnce(stub);
+      stub.restore();
       done();
     });
   });
+});
+
+describe("passportModel--验证原始密码", function () {
+  var checkInfo = { //验证信息
+    source: 'APP',
+    sysCode: 'FINANCE',
+    traceNo: 'xxxxxxxx',
+    userId: 52,
+    oldPassword: '123456'
+  };
+
+  it("验证原始密码[原始密码正确]", function (done) {
+    var stub = sinon.stub(client, "checkPassword", function (request, cb) {
+      cb(null, 'true');
+    });
+    passportModel.checkPassword(checkInfo).then(function (data) {
+      data.should.equal('true');
+      sinon.assert.calledOnce(stub);
+      stub.restore();
+      done();
+    }, function(err) {
+    });
+  });
+
+  it("验证原始密码[参数错误]", function (done) {
+    var errInfo = _.clone(checkInfo);
+    errInfo.oldPassword = null;
+    var stub = sinon.stub(client, "checkPassword", function (request, cb) {
+      cb(null, 'true');
+    });
+    passportModel.checkPassword(errInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20098.err_code);
+
+      sinon.assert.notCalled(stub); //未调用后台接口
+      stub.restore();
+      done();
+    });
+  });
+
+  it("验证原始密码[服务异常]", function (done) {
+    var stub = sinon.stub(client, "checkPassword", function (request, cb) {
+      cb(new Error("CONNECTION TIMEOUT"), null);
+    });
+    passportModel.checkPassword(checkInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
+
+      sinon.assert.calledOnce(stub);
+      stub.restore();
+      done();
+    });
+  });
+
+});
+
+describe("passportModel--用户信息", function () {
+  var userInfo = { //验证信息
+    source: 'APP',
+    sysCode: 'FINANCE',
+    traceNo: 'xxxxxxxx',
+    name: 'MOBILE',
+    value: '15138695162'
+  };
+
+  it("用户信息[通过手机号获取]", function (done) {
+    var stub = sinon.stub(client, "userInfo", function (request, cb) {
+      cb(null, user);
+    });
+    passportModel.userInfo(userInfo).then(function (data) {
+      var passportUser = _.mapObject(user, function (val, key) {
+        if(val) return val.valueOf();
+        else val;
+      });
+      data.should.be.eql(passportUser);
+      sinon.assert.calledOnce(stub);
+      stub.restore();
+      done();
+    }, function(err) {
+    });
+  });
+
+  it("用户信息[参数错误]", function (done) {
+    var errInfo = _.clone(userInfo);
+    errInfo.value = null;
+    var stub = sinon.stub(client, "userInfo", function (request, cb) {
+      cb(null, null);
+    });
+    passportModel.userInfo(errInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E20098.err_code);
+
+      sinon.assert.notCalled(stub); //未调用后台接口
+      stub.restore();
+      done();
+    });
+  });
+
+  it("用户信息[服务异常]", function (done) {
+    var stub = sinon.stub(client, "userInfo", function (request, cb) {
+      cb(new Error("CONNECTION TIMEOUT"), null);
+    });
+    passportModel.userInfo(userInfo).then(function (data) {
+    }, function(err) {
+      err.should.have.property('err_code');
+      err.err_code.should.equal(apiCode.E10001.err_code);
+
+      sinon.assert.calledOnce(stub);
+      stub.restore();
+      done();
+    });
+  });
+
 });

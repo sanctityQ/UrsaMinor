@@ -54,7 +54,6 @@ module.exports = {
             resolve(tokenNo);
           }
         });
-
       }, function(err) {
         tclog.error({traceNo: traceNo, msg:"gen tokenNo error", err: err});
         reject(ex_utils.buildCommonException(apiCode.E10001));
@@ -69,13 +68,14 @@ module.exports = {
    */
   getToken: function (traceNo, tokenNo) {
     return new Promise(function (resolve, reject) {
-      redis_client.get(token_config.KEY_PRE+tokenNo, function(err, result) {
+      var key = token_config.KEY_PRE+tokenNo;
+      redis_client.get(key, function(err, result) {
         if(err) {
           tclog.error({traceNo:traceNo, tokenNo:tokenNo, err_msg:"getToken error", err:err});
           reject(ex_utils.buildCommonException(apiCode.E10001));
         } else {
           if(result) { //token有效
-            redis_client.expire(token_config.DEFAULT_EXPIRE);//重置失效时间
+            redis_client.expire(key, token_config.DEFAULT_EXPIRE);//重置失效时间
             var token = JSON.parse(result);
             resolve(token);
           } else { //token失效
