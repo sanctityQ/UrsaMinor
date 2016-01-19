@@ -1,6 +1,6 @@
 require("should");
 var fs = require('fs');
-var apiCode = require('../conf/apiCode');
+var apiCode = require('../conf/ApiCode');
 var conf = require("../../conf");
 var sinon = require('sinon');
 var rewire = require('rewire');
