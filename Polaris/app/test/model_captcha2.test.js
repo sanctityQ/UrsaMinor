@@ -433,23 +433,23 @@ describe("(短信|语音)验证码[手机号验证]", function () {
     });
   });
 
-  it("更新验证信息[分数更新,次数+1]", function () {
-    var mobile = '15138695162';
-    var score = 30;
-    var key = captcha_utils.sms_captcha_check_key(mobile);
-    var checkObj = { score: 20, count: 10 };
-    var set_spy = sinon.spy(redis_client, 'set');
-    var pexpireat_spy = sinon.spy(redis_client, 'pexpireat');
-    captchaModel.updateMobileCheck(checkObj, mobile, score);
-    set_spy.calledWithMatch(sinon.match.same(key), sinon.match(function(value){
-      var obj = JSON.parse(value);
-      obj.should.have.property('score');
-      obj.should.have.property('count');
-      return obj.score == score && obj.count == 11;
-    })).should.equal(true);//验证参数
-    pexpireat_spy.calledWith(key, sinon.match.number).should.equal(true);
-    set_spy.restore();
-    pexpireat_spy.restore();
-  });
+  //it("更新验证信息[分数更新,次数+1]", function () {
+  //  var mobile = '15138695162';
+  //  var score = 30;
+  //  var key = captcha_utils.sms_captcha_check_key(mobile);
+  //  var checkObj = { score: 20, count: 10 };
+  //  var set_spy = sinon.spy(redis_client, 'set');
+  //  var pexpireat_spy = sinon.spy(redis_client, 'pexpireat');
+  //  captchaModel.updateMobileCheck(checkObj, mobile, score);
+  //  set_spy.calledWithMatch(sinon.match.same(key), sinon.match(function(value){
+  //    var obj = JSON.parse(value);
+  //    obj.should.have.property('score');
+  //    obj.should.have.property('count');
+  //    return obj.score == score && obj.count == 11;
+  //  })).should.equal(true);//验证参数
+  //  pexpireat_spy.calledWith(key, sinon.match.number).should.equal(true);
+  //  set_spy.restore();
+  //  pexpireat_spy.restore();
+  //});
 
 });

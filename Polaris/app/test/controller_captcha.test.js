@@ -17,7 +17,6 @@ var portalModel;
 var userValidate_stub;
 var getMobileCheck_stub;
 var mobileCheck_stub;
-var updateMobileCheck_stub;
 var sendSmsCaptcha_stub;
 
 before(function () {
@@ -81,7 +80,6 @@ describe("发送验证码测试", function () {
     userValidate_stub = sinon.stub(passportModel, "userValidate");
     getMobileCheck_stub = sinon.stub(captchaModel, "getMobileCheck");
     mobileCheck_stub = sinon.stub(portalModel, "mobileCheck");
-    updateMobileCheck_stub = sinon.stub(captchaModel, "updateMobileCheck");
     sendSmsCaptcha_stub = sinon.stub(captchaModel, "sendSmsCaptcha");
   });
 
@@ -189,7 +187,6 @@ describe("发送验证码测试", function () {
     userValidate_stub.reset();
     getMobileCheck_stub.reset();
     mobileCheck_stub.reset();
-    updateMobileCheck_stub.reset();
     sendSmsCaptcha_stub.reset();
   });
 
@@ -197,7 +194,6 @@ describe("发送验证码测试", function () {
     userValidate_stub.restore();
     getMobileCheck_stub.restore();
     mobileCheck_stub.restore();
-    updateMobileCheck_stub.restore();
     sendSmsCaptcha_stub.restore();
   });
 });

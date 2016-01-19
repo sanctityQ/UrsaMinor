@@ -1,5 +1,5 @@
 /*
-@file 工具js
-@author tshawn
-*/
+ @file 工具js
+ @author tshawn
+ */
 console.log('index');

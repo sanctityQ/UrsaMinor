@@ -4,7 +4,8 @@
  * @author xiaoguang01
  * @date 2015/11/11
  */
-zeus.page({
+// var zeus = window.zeus;
+window.zeus.page({
     initDatas: function () {},
     // 初始化部件
     initParts: function () {

@@ -28,7 +28,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('open', function () {
-  opn('http://127.0.0.1:8000', {app: ['google chrome']})
+  //opn('http://127.0.0.1:8000', {app: ['google chrome']})
 });
 
 gulp.task('start', function () {

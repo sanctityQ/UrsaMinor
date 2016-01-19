@@ -83,12 +83,7 @@ module.exports = {
           throw ex_utils.buildCommonException(apiCode.E20016);
         }
         var checkInfo = {traceNo:traceNo, token_id: traceNo,  mobile: mobile, ip: this.ip};
-        var checkResult = yield portalModel.mobileCheck(checkInfo); //调用同盾接口
-        if(checkResult.status) { //调用成功更新同盾分数 次数+1
-          captcha2Model.updateMobileCheck(mobileCheck, mobile, checkResult.score);
-        } else { //调用失败加6分 次数+1
-          captcha2Model.updateMobileCheck(mobileCheck, mobile, mobileCheck.score + 6);
-        }
+        portalModel.mobileCheck(checkInfo, mobileCheck); //调用同盾接口 更新分数和次数
         var sendObj = {sms_type: sms_type, biz_type: biz_type, mobile: mobile};
         var result = yield captcha2Model.sendSmsCaptcha(traceNo, sendObj);
         tclog.notice({msg: "sendSmsCaptcha success", traceNo: traceNo, result: result});
