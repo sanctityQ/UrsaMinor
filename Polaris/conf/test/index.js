@@ -51,11 +51,11 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      host: '192.168.0.245',
+      host: '127.0.0.1',
       port: 9981
     },
     notifaction: {
-      host: '192.168.0.244',
+      host: '127.0.0.1',
       port: 9951
     }
   },

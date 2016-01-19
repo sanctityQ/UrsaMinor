@@ -39,13 +39,15 @@ module.exports = {
     var password = postBody.password; //新密码(用户设置)
     var smsCaptcha = postBody.smsCaptcha; //短信验证码(语音)
     try {
-      var validObj = {biz_type:captcha2Model.BIZ_TYPE.RESETPWD, mobile:mobile, captcha: smsCaptcha};
+      var biz_type = captcha2Model.BIZ_TYPE.RESETPWD;
+      var validObj = {biz_type: biz_type, mobile: mobile, captcha: smsCaptcha};
       var flag = yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
       tclog.notice({api: '/api/password/reset', traceNo: traceNo, validate_flag: flag});
       var resetInfo = {source: headerBody.source, sysCode: headerBody.syscode, traceNo: traceNo,
         mobile: mobile, password: password};
       var result = yield passportModel.resetPassword(resetInfo);
       tclog.notice({api: '/api/password/reset', traceNo: traceNo, result: result});
+      captcha2Model.clearSmsCaptcha(traceNo, mobile, biz_type); //清除找回密码验证码
       yield this.api({mobile:mobile, msg:'密码已重置'});
     } catch (err) {
       tclog.error({api:'/api/password/reset', traceNo:traceNo, err:err});

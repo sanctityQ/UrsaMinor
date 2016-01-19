@@ -42,7 +42,7 @@ module.exports = {
   log: {
     path: './log/tiancai.log',
     maxLength: 3000,
-    level: 2, // [ 1-debug, 2-trace, 3-notice, 4-warn, 5-fatal ]
+    level: 3, // [ 1-debug, 2-trace, 3-notice, 4-warn, 5-fatal ]
     printTty: true,
     printFile: true,
     redictConsole: true
@@ -92,7 +92,7 @@ module.exports = {
 
   captcha: {
     img: {
-      server: "http://127.0.0.1:8083",
+      server: "http://10.10.134.123:8090",
       path : "/captcha"
     },
     captcha_template : { //短信模板

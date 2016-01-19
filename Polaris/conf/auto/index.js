@@ -1,16 +1,16 @@
 /**
  * @file config.js
- * @desc 开发环境配置
- * @author xiaoguang01
+ * @desc 自动化测试环境配置
+ * @author bao
  * @date 2015/9/25
  */
 "use strict";
 var path = require('path');
 module.exports = {
   // 当前运行模式
-  runEnv: 'check',
+  runEnv: 'auto',
 
-  developMode: false,
+  developMode: true,
 
   // 应用全局配置
   app: {
@@ -42,9 +42,9 @@ module.exports = {
   log: {
     path: './log/tiancai.log',
     maxLength: 3000,
-    level: 3, // [ 1-debug, 2-trace, 3-notice, 4-warn, 5-fatal ]
+    level: 2, // [ 1-debug, 2-trace, 3-notice, 4-warn, 5-fatal ]
     printTty: true,
-    printFile: true,
+    printFile: false,
     redictConsole: true
   },
 
@@ -77,8 +77,8 @@ module.exports = {
   },
 
   "portal":{
-    url:'https://api.fraudmetrix.cn/riskService',
-    secret_key:'9390b740ab244837b9870241c20eba65',
+    url:'https://apitest.fraudmetrix.cn/riskService',
+    secret_key:'8e1da24851a04d99be5bd553280ec047',
     partner_code:'itiancai',
     resp_detail_type:'device,geoip',
     events:{
@@ -92,7 +92,7 @@ module.exports = {
 
   captcha: {
     img: {
-      server: "http://10.10.134.123:8090",
+      server: "http://192.168.0.243:8083",
       path : "/captcha"
     },
     captcha_template : { //短信模板

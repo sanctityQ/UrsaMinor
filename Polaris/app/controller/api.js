@@ -63,6 +63,7 @@ module.exports = {
       yield captcha2Model.validateSmsCaptcha(registerInfo.traceNo, validObj);
       //调用注册接口
       yield passportModel.register(registerInfo);
+      captcha2Model.clearSmsCaptcha(traceNo, registerInfo.mobile, biz_type);//清除注册短信
       var loginInfo = { //登录信息
         source: headerBody.source,
         sysCode: headerBody.syscode,

@@ -18,6 +18,7 @@ var getToken_stub;
 var checkPassword_stub;
 var resetPassword_stub;
 var changePassword_stub;
+var clearSmsCaptcha_stub;
 var validateSmsCaptcha_stub;
 before(function () {
   router.__set__({
@@ -43,13 +44,14 @@ before(function () {
 
 var mobile = '15138695162';
 var access_token = 'xxxxxxxx';
-describe("安全保护", function () {
+describe("安全保护测试", function () {
 
   before(function() {
     getToken_stub = sinon.stub(tokenModel, 'getToken');
     checkPassword_stub = sinon.stub(passportModel, 'checkPassword');
     resetPassword_stub = sinon.stub(passportModel, 'resetPassword');
     changePassword_stub = sinon.stub(passportModel, 'changePassword');
+    clearSmsCaptcha_stub = sinon.stub(captchaModel, 'clearSmsCaptcha');
     validateSmsCaptcha_stub = sinon.stub(captchaModel, 'validateSmsCaptcha');
   });
 
@@ -70,6 +72,8 @@ describe("安全保护", function () {
           var result = res.body;
           result.should.have.property('access_token');
           result.access_token.should.be.equal(access_token);
+          sinon.assert.calledOnce(getToken_stub);
+          sinon.assert.calledOnce(checkPassword_stub);
           done();
         });
   });
@@ -91,6 +95,8 @@ describe("安全保护", function () {
           var result = res.body;
           result.should.have.property('access_token');
           result.access_token.should.be.equal(access_token);
+          sinon.assert.calledOnce(getToken_stub);
+          sinon.assert.calledOnce(changePassword_stub);
           done();
         });
   });
@@ -112,6 +118,9 @@ describe("安全保护", function () {
           var result = res.body;
           result.should.have.property('mobile');
           result.mobile.should.be.equal(mobile);
+          sinon.assert.calledOnce(validateSmsCaptcha_stub);
+          sinon.assert.calledOnce(resetPassword_stub);
+          sinon.assert.calledOnce(clearSmsCaptcha_stub);
           done();
         });
   });
@@ -121,6 +130,7 @@ describe("安全保护", function () {
     checkPassword_stub.reset();
     resetPassword_stub.reset();
     changePassword_stub.reset();
+    clearSmsCaptcha_stub.reset();
     validateSmsCaptcha_stub.reset();
   });
 
@@ -131,5 +141,6 @@ after(function() {
   checkPassword_stub.restore();
   resetPassword_stub.restore();
   changePassword_stub.restore();
+  clearSmsCaptcha_stub.restore();
   validateSmsCaptcha_stub.restore();
 });

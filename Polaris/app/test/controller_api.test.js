@@ -16,6 +16,7 @@ var passportModel;
 var captchaModel;
 var tokenModel;
 
+var clearSmsCaptcha_stub;
 var validateSmsCaptcha_stub;
 var register_stub;
 var login_stub;
@@ -62,6 +63,7 @@ var user = {
 describe("主流程测试", function () {
 
   before(function() {
+    clearSmsCaptcha_stub = sinon.stub(captchaModel, "clearSmsCaptcha");
     validateSmsCaptcha_stub = sinon.stub(captchaModel, "validateSmsCaptcha");
     register_stub = sinon.stub(passportModel, "register");
     login_stub = sinon.stub(passportModel, "login");
@@ -144,6 +146,7 @@ describe("主流程测试", function () {
 
           sinon.assert.calledOnce(validateSmsCaptcha_stub);
           sinon.assert.calledOnce(register_stub);
+          sinon.assert.calledOnce(clearSmsCaptcha_stub);
           sinon.assert.calledOnce(login_stub);
           sinon.assert.calledOnce(putToken_stub);
           done();
@@ -214,6 +217,7 @@ describe("主流程测试", function () {
 
   afterEach(function() {
     validateSmsCaptcha_stub.reset();
+    clearSmsCaptcha_stub.reset();
     register_stub.reset();
     login_stub.reset();
     putToken_stub.reset();
@@ -221,6 +225,7 @@ describe("主流程测试", function () {
 
   after(function() {
     validateSmsCaptcha_stub.restore();
+    clearSmsCaptcha_stub.restore();
     register_stub.restore();
     login_stub.restore();
     putToken_stub.restore();

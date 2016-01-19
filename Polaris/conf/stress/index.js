@@ -94,7 +94,7 @@ module.exports = {
 
   captcha: {
     img: {
-      server: "http://192.168.0.243:8083",
+      server: "http://127.0.0.1:8083",
       path : "/captcha"
     },
     captcha_template : { //短信模板

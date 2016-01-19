@@ -333,7 +333,7 @@ module.exports = {
     } else { //找回密码
       key = captcha_utils.sms_captcha_resetpwd_key(mobile);
     }
-    redis_client.del(key); //清楚验证码信息
+    redis_client.del(key); //清除验证码信息
   },
 
   SMS_TYPE: SMS_TYPE, //验证码类型 短信|语音

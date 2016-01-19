@@ -48,6 +48,7 @@
   },
   "scripts": {
     "compile-uat": "gulp --ENV=uat compile",
+    "compile-auto": "gulp --ENV=auto compile",
     "compile-test": "gulp --ENV=test compile",
     "compile-check": "gulp --ENV=check compile",
     "compile-stress": "gulp --ENV=stress compile",
