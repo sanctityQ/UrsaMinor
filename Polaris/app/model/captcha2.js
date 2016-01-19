@@ -305,22 +305,6 @@ module.exports = {
   },
 
   /**
-   * 分数变更&次数+1&发送时间更新
-   * @param mobile
-   * @param score
-   */
-  updateMobileCheck: function (checkObj, mobile, score) {
-    tclog.debug({msg:"updateMobileCheck", mobile:mobile, score:score});
-    var key = captcha_utils.sms_captcha_check_key(mobile);
-    checkObj.score = score; //更新分数
-    checkObj.count = checkObj.count + 1; //更新次数
-    redis_client.set(key, JSON.stringify(checkObj));
-    var expire = new Date();
-    expire.setHours(23, 59, 59, 999); //指定失效时间
-    redis_client.pexpireat(key, expire.getTime());
-  },
-
-  /**
    * 清除验证码信息
    * @param traceNo
    * @param mobile

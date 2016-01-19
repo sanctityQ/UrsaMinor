@@ -1,5 +1,5 @@
 /*
-@file 页面js
-@author tshawn
+ * @file index
+ * @author tshawn
 */
 console.log('index');
