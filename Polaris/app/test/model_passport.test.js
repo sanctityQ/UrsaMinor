@@ -1,7 +1,7 @@
 require("should");
 var rewire = require('rewire');
 var sinon = require('sinon');
-var apiCode = require('../conf/apiCode');
+var apiCode = require('../conf/ApiCode');
 var test = require('../libs/test');
 var thrift = require('thrift');
 var passport_types = require("@itiancai/passport-client");

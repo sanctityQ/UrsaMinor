@@ -6,7 +6,7 @@ var app = rewire('../server');
 var request = require('supertest-koa-agent')(app);
 var test = require('../libs/test');
 var ex_utils = require('../libs/exception.js');
-var apiCode = require('../conf/apiCode');
+var apiCode = require('../conf/ApiCode');
 var router = rewire('../router');
 var _ = require('underscore');
 

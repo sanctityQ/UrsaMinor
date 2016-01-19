@@ -1,6 +1,6 @@
 require("should");
 var sinon = require('sinon');
-var apiCode = require('../conf/apiCode');
+var apiCode = require('../conf/ApiCode');
 var conf = require("../../conf");
 var rewire = require('rewire');
 var tokenModel = rewire("../model/token.js");
