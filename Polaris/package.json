@@ -1,0 +1,78 @@
+{
+  "name": "Polaris",
+  "version": "0.1.0",
+  "description": "Passport->UrsaMinor->Polaris",
+  "dependencies": {
+    "co": "^4.6.0",
+    "commander": "^2.8.1",
+    "extend": "^3.0.0",
+    "koa": "^1.0.0",
+    "koa-bodyparser": "^2.0.1",
+    "koa-generic-session": "^1.9.2",
+    "koa-redis": "^1.0.1",
+    "koa-router": "^5.1.2",
+    "koa-static": "^1.4.9",
+    "opn": "^3.0.3",
+    "thrift": "^0.9.3",
+    "zeus-template": "*",
+    "node-thrift-pool": "^1.1.0",
+    "underscore": "^1.8.3",
+    "superagent": "^1.4.0",
+    "request": "^2.67.0",
+    "ioredis":"^1.3.6",
+    "concat-stream": "^1.4.7",
+    "moment": "^2.10.0",
+    "moment-timezone": "0.5.0",
+    "@itiancai/passport-client":"^0.0.8",
+    "@itiancai/notification-client-node":"^0.0.1"
+  },
+  "devDependencies": {
+    "chalk": "^1.1.1",
+    "fecs": "^0.4.4",
+    "gulp": "^3.9.0",
+    "gulp-livereload": "^3.8.0",
+    "gulp-nodemon": "^2.0.4",
+    "gulp-concat": "^2.6.0",
+    "gulp-less": "^3.0.3",
+    "gulp-uglify": "^1.4.2",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-sequence": "^0.4.1",
+    "fecs-gulp": "^0.1.1",
+    "mocha": "^2.2.5",
+    "should": "^7.1.0",
+    "sinon": "^1.17.2",
+    "nock": "^3.3.2",
+    "supertest-koa-agent": "^0.2.1",
+    "rewire": "^2.5.1",
+    "istanbul": "^0.4.1"
+  },
+  "scripts": {
+    "compile-uat": "gulp --ENV=uat compile",
+    "compile-auto": "gulp --ENV=auto compile",
+    "compile-test": "gulp --ENV=test compile",
+    "compile-check": "gulp --ENV=check compile",
+    "compile-stress": "gulp --ENV=stress compile",
+    "compile-online": "gulp --ENV=online compile",
+    "start": "pm2 start --node-args='--harmony' ./app/bootSrtap.js --name passport-polaris",
+    "cluster": "mpm2 start --node-args='--harmony' ./app/bootSrtap.js -i 4 --name passport-polaris",
+    "reload": "pm2 reload passport-polaris",
+    "stop": "pm2 stop passport-polaris",
+    "delete": "pm2 stop passport-polaris && pm2 delete passport-polaris",
+    "test": "npm run compile-test && node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./app/test -- --recursive -R spec -r should"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tftc/UrsaMinor.git"
+  },
+  "keywords": [
+    "passport",
+    "itiancai",
+    "zeus"
+  ],
+  "author": "bao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tftc/UrsaMinor/issues"
+  },
+  "homepage": "https://github.com/tftc/UrsaMinor/#readme"
+}
