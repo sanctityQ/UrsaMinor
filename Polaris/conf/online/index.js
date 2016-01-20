@@ -63,7 +63,7 @@ module.exports = {
   // redis连接相关配置
   redis: {
     port: 6379,
-    host: '127.0.0.1',
+    host: '10.10.134.123',
     options: {
       connectTimeout: 1000,
       //重试策略为每次递增200ms，最多3次
