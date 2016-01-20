@@ -23,6 +23,9 @@ module.exports = {
       tclog.notice({api:'/api/password/check', traceNo:traceNo, result:result});
       yield this.api({access_token:tokenNo, msg:'密码验证通过'});
     } catch (err) {
+      if(err.err_code == 20011) {
+        err.err_msg = '原始密码错误';
+      }
       tclog.error({api:'/api/password/check', traceNo:traceNo, err:err});
       yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
     }
