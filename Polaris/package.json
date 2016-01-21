@@ -54,7 +54,7 @@
     "compile-stress": "gulp --ENV=stress compile",
     "compile-online": "gulp --ENV=online compile",
     "start": "pm2 start --node-args='--harmony' ./app/bootSrtap.js --name passport-polaris",
-    "cluster": "mpm2 start --node-args='--harmony' ./app/bootSrtap.js -i 4 --name passport-polaris",
+    "cluster": "pm2 start --node-args='--harmony' ./app/bootSrtap.js -i 4 --name passport-polaris",
     "reload": "pm2 reload passport-polaris",
     "stop": "pm2 stop passport-polaris",
     "delete": "pm2 stop passport-polaris && pm2 delete passport-polaris",
