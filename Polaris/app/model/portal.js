@@ -46,7 +46,8 @@ module.exports = {
     };
     tclog.debug({traceNo: checkInfo.traceNo, requestInfo:requestInfo});
     if(!developMode) { //非开发模式
-      request.post({url:config.portal.url, form:requestInfo}, function (e, r, body) {
+      var url = config.portal.server + config.portal.path;
+      request.post({url: url, form: requestInfo}, function (e, r, body) {
         try {
           var result = JSON.parse(body);
           //发送短信验证码

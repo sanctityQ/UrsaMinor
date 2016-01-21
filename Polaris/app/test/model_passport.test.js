@@ -22,7 +22,7 @@ var client;
 before(function () {
   //覆盖tclog
   var tclog = passportModel.__get__('tclog');
-  tclog.init();
+  tclog.init(true);
   client = passportModel.__get__('client');
 });
 

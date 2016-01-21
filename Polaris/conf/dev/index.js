@@ -77,7 +77,8 @@ module.exports = {
   },
 
   "portal":{
-    url:'https://apitest.fraudmetrix.cn/riskService',
+    server:'https://apitest.fraudmetrix.cn',
+    path:'/riskService',
     secret_key:'8e1da24851a04d99be5bd553280ec047',
     partner_code:'itiancai',
     resp_detail_type:'device,geoip',
