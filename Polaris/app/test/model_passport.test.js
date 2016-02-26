@@ -114,7 +114,7 @@ describe("passportModel--注册接口", function () {
 
   it("注册接口[正常返回]", function (done) {
     var stub = sinon.stub(client, "reg", function (request, cb) {
-      cb(null, user);
+      cb(null, {user:user, token:""});
     });
     passportModel.register(registerInfo).then(function (data) {
       data.should.have.property('id'); //用户ID
@@ -134,7 +134,7 @@ describe("passportModel--注册接口", function () {
     var errInfo = _.clone(registerInfo);
     errInfo.sysCode = 'ERR SYSCODE';
     var stub = sinon.stub(client, "reg", function (request, cb) {
-      cb(null, user);
+      cb(null, {user:user, token:""});
     });
     passportModel.register(errInfo).then(function (data) {
     }, function(err) {

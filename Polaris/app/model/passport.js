@@ -70,7 +70,6 @@ module.exports = {
           credential: loginInfo.credential,
           password: loginInfo.password
         });
-        tclog.notice({info: 'passportModel login begin', request: request});
       } catch (err) {
         reject(handleError(loginInfo, err));
       }
@@ -113,7 +112,7 @@ module.exports = {
             reject(handleError(registerInfo, err));
           } else {
             //用户信息Long字段特殊处理
-            var passportUser = _.mapObject(response, function (val, key) {
+            var passportUser = _.mapObject(response.user, function (val, key) {
               if(val) return val.valueOf();
               else val;
             });
