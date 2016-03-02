@@ -21,7 +21,7 @@ before(function(){
   sms_client = captchaModel.__get__('sms_client');
   sms_types = captchaModel.__get__('ttypes');
   var tclog = captchaModel.__get__('tclog');
-  tclog.init();
+  tclog.init(true);
 });
 
 describe("图片验证码测试", function () {
@@ -167,17 +167,17 @@ describe("(短信|语音)验证码测试[开发模式]", function () {
     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
       cb(null, null);
     });
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
       sinon.assert.calledOnce(get_stub);
-      setex_spy.calledWith(key, captcha_config.TTL, sinon.match(function(value){
+      setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
         var obj = JSON.parse(value);
         return obj.captcha.length == 6 && obj.count == 0;
       })).should.be.true; //验证参数
       data.should.be.true; //发送成功
 
       get_stub.restore();
-      setex_spy.restore();
+      setex_stub.restore();
       done();
     }, function(err) {
     });
@@ -193,17 +193,17 @@ describe("(短信|语音)验证码测试[开发模式]", function () {
         cb(null, JSON.stringify(captchaObj));
       }
     });
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
       sinon.assert.calledOnce(get_stub);
-      setex_spy.calledWith(key, captcha_config.TTL, sinon.match(function(value){
+      setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
         var obj = JSON.parse(value);
         return captchaObj.captcha == obj.captcha && obj.count == 0;
       })).should.be.true; //验证参数
       data.should.be.true;
 
       get_stub.restore();
-      setex_spy.restore();
+      setex_stub.restore();
       done();
     }, function(err) {
     });
@@ -218,16 +218,16 @@ describe("(短信|语音)验证码测试[开发模式]", function () {
         cb(null, JSON.stringify(captchaObj));
       }
     });
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
-      setex_spy.calledWith(key, captcha_config.TTL, sinon.match(function(value){
+      setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
         var obj = JSON.parse(value);
         return captchaObj.captcha == obj.captcha && obj.count == 0;
       })).should.be.true; //验证参数
       data.should.be.true;
 
       get_stub.restore();
-      setex_spy.restore();
+      setex_stub.restore();
       done();
     }, function(err) {
     });
@@ -264,16 +264,16 @@ describe("(短信|语音)验证码测试[开发模式]", function () {
     var ttl_stub = sinon.stub(redis_client, 'ttl', function(k, cb) {
       if(k == key) {cb(null, 600);}
     });
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     captchaModel.validateSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', validObj).then(function(data) {
       get_stub.calledWith(key).should.be.true;
       ttl_stub.calledWith(key, captcha_config.TTL, sinon.match.string).should.be.true;
-      setex_spy.calledWith(key, sinon.match.func).should.be.true;
+      setex_stub.calledWith(key, sinon.match.func).should.be.true;
       data.should.be.true;
 
       get_stub.restore();
       ttl_stub.restore();
-      setex_spy.restore();
+      setex_stub.restore();
       done();
     }, function(err) {});
   });
@@ -284,19 +284,19 @@ describe("(短信|语音)验证码测试[开发模式]", function () {
     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
       cb(null, null);
     });
-    var ttl_spy = sinon.spy(redis_client, 'ttl');
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var ttl_stub = sinon.stub(redis_client, 'ttl');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     captchaModel.validateSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', validObj).then(function(data) {
     }, function(err) {
       get_stub.calledWith(key).should.be.true;
-      sinon.assert.notCalled(ttl_spy);
-      sinon.assert.notCalled(setex_spy);
+      sinon.assert.notCalled(ttl_stub);
+      sinon.assert.notCalled(setex_stub);
       err.should.have.property('err_code');
       err.err_code.should.equal(apiCode.E20006.err_code); //发送失败
 
       get_stub.restore();
-      ttl_spy.restore();
-      setex_spy.restore();
+      ttl_stub.restore();
+      setex_stub.restore();
       done();
     });
   });
@@ -328,14 +328,14 @@ describe("(短信|语音)验证码测试[非开发模式]", function () {
     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
       cb(null, null);
     });
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     var sendMessage_stub = sinon.stub(sms_client, "sendMessage", function(mobile, content, sendType, cb) {
       mobile.should.equal(sendObj.mobile);
       cb(null, true);
     });
     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
       sinon.assert.calledOnce(get_stub);
-      setex_spy.calledWith(key, captcha_config.TTL, sinon.match(function(value){
+      setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
         var obj = JSON.parse(value);
         return obj.captcha.length == 6 && obj.checkCount == 0;
       })).should.be.true; //验证参数
@@ -343,7 +343,7 @@ describe("(短信|语音)验证码测试[非开发模式]", function () {
       data.should.be.true; //发送成功
 
       get_stub.restore();
-      setex_spy.restore();
+      setex_stub.restore();
       sendMessage_stub.restore();
       done();
     }, function(err) {
@@ -357,7 +357,7 @@ describe("(短信|语音)验证码测试[非开发模式]", function () {
     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
       cb(null, JSON.stringify(captchaObj));
     });
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     var sendVoiceVerifyCode_stub = sinon.stub(sms_client, "sendVoiceVerifyCode", function(mobile, captcha, cb) {
       mobile.should.be.equal(sendObj.mobile);
       captcha.length.should.be.equal(6);
@@ -365,7 +365,7 @@ describe("(短信|语音)验证码测试[非开发模式]", function () {
     });
     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
       sinon.assert.calledOnce(get_stub);
-      setex_spy.calledWith(key, captcha_config.TTL, sinon.match(function(value){
+      setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
         var obj = JSON.parse(value);
         return obj.captcha.length == 6 && obj.checkCount == 0;
       })).should.equal(true);//验证参数
@@ -373,7 +373,7 @@ describe("(短信|语音)验证码测试[非开发模式]", function () {
       data.should.be.true; //发送成功
 
       get_stub.restore();
-      setex_spy.restore();
+      setex_stub.restore();
       sendVoiceVerifyCode_stub.restore();
       done();
     }, function(err) {
@@ -390,23 +390,23 @@ describe("(短信|语音)验证码[手机号验证]", function () {
     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
       cb(null, null);
     });
-    var set_spy = sinon.spy(redis_client, 'set');
-    var pexpireat_spy = sinon.spy(redis_client, 'pexpireat');
+    var set_stub = sinon.stub(redis_client, 'set');
+    var pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
     captchaModel.getMobileCheck(mobile).then(function(data){
       sinon.assert.calledOnce(get_stub);
-      set_spy.calledWith(key, sinon.match(function(value){
+      set_stub.calledWith(key, sinon.match(function(value){
         var obj = JSON.parse(value);
         obj.should.have.property('score');
         obj.should.have.property('count');
         return obj.score == 0 && obj.count == 0;
       })).should.equal(true);
-      pexpireat_spy.calledWith(key, sinon.match.number).should.equal(true);
+      pexpireat_stub.calledWith(key, sinon.match.number).should.equal(true);
       data.should.have.property('score');
       data.should.have.property('count');
 
       get_stub.restore();
-      set_spy.restore();
-      pexpireat_spy.restore();
+      set_stub.restore();
+      pexpireat_stub.restore();
       done();
     });
   });
@@ -417,18 +417,18 @@ describe("(短信|语音)验证码[手机号验证]", function () {
     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
       cb(null, JSON.stringify(checkObj));
     });
-    var set_spy = sinon.spy(redis_client, 'set');
-    var pexpireat_spy = sinon.spy(redis_client, 'pexpireat');
+    var set_stub = sinon.stub(redis_client, 'set');
+    var pexpireat_stub = sinon.spy(redis_client, 'pexpireat');
     captchaModel.getMobileCheck(mobile).then(function(data){
       sinon.assert.calledOnce(get_stub);
-      sinon.assert.notCalled(set_spy);
-      sinon.assert.notCalled(pexpireat_spy);
+      sinon.assert.notCalled(set_stub);
+      sinon.assert.notCalled(pexpireat_stub);
       data.should.have.property('score');
       data.should.have.property('count');
 
       get_stub.restore();
-      set_spy.restore();
-      pexpireat_spy.restore();
+      set_stub.restore();
+      pexpireat_stub.restore();
       done();
     });
   });
