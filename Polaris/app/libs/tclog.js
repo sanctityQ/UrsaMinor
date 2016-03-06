@@ -11,6 +11,7 @@ var logConf = config.log;
 var fs = require('fs');
 var chalk = require('chalk');
 var inspect = require('util').inspect;
+var developMode = config.developMode;
 
 tclog.logTemplate = '%s: pid::%s %d-%d-%d %d:%d:%d %s\n';
 tclog.conf = logConf;
@@ -32,7 +33,8 @@ tclog.logLevel = {
     error: 6
 };
 
-tclog.init = function () {
+tclog.init = function (mode) {
+    if(mode) developMode = mode;
     tclog.loginfo = {
         path: tclog.conf.path
     };
@@ -43,7 +45,7 @@ tclog.init = function () {
         path: tclog.conf.path + '.dev'
     };
     tclog._watch = [];
-    if (!config.developMode && tclog.conf.printFile) {
+    if (!developMode && tclog.conf.printFile) {
         openLogStream(tclog.loginfo);
         openLogStream(tclog.wfloginfo);
         openLogStream(tclog.devloginfo);
@@ -152,7 +154,7 @@ tclog.log = function (stream, method, loginfos) {
         console.log(logStr);
     }
 
-    if (!config.developMode && tclog.conf.printFile) {
+    if (!developMode && tclog.conf.printFile) {
         logArgs = tclog.prepare(method, loginfos);
         logStr = tclog.genLog.apply(null, logArgs);
         if (stream.writable) {

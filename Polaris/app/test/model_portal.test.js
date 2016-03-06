@@ -7,39 +7,39 @@ var config = require("../../conf/index.js");
 
 var redis_client;
 
-var set_tub;
-var pexpireat_tub;
+var set_stub;
+var pexpireat_stub;
 
 before(function() {
   redis_client = portalModel.__get__('redis_client');
   var tclog = portalModel.__get__('tclog');
-  tclog.init();
+  tclog.init(true);
 });
 
 describe("同盾测试[开发模式]", function () {
   before(function(){
     portalModel.__set__('developMode', true);
 
-    set_tub = sinon.stub(redis_client, 'set');
-    pexpireat_tub = sinon.stub(redis_client, 'pexpireat');
+    set_stub = sinon.stub(redis_client, 'set');
+    pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
   });
   it("同盾测试手机号验证", function (done) {
     var mobileCheck = {score:0, count:5};
     var checkInfo = {traceNo:'xxxxxx', token_id: 'xxxxxx',  mobile: '13333333333', ip: '127.0.0.1'};
     portalModel.mobileCheck(checkInfo, mobileCheck);
-    sinon.assert.calledOnce(set_tub);
-    sinon.assert.calledOnce(pexpireat_tub);
+    sinon.assert.calledOnce(set_stub);
+    sinon.assert.calledOnce(pexpireat_stub);
     done();
   });
 
   afterEach(function(){
-    set_tub.reset();
-    pexpireat_tub.reset();
+    set_stub.reset();
+    pexpireat_stub.reset();
   });
 
   after(function() {
-    set_tub.restore();
-    pexpireat_tub.restore();
+    set_stub.restore();
+    pexpireat_stub.restore();
   });
 });
 
@@ -48,14 +48,14 @@ describe("同盾测试[非开发模式]", function () {
   before(function(){
     portalModel.__set__('developMode', false);
 
-    set_tub = sinon.stub(redis_client, 'set');
-    pexpireat_tub = sinon.stub(redis_client, 'pexpireat');
+    set_stub = sinon.stub(redis_client, 'set');
+    pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
   });
   it("同盾服务正常返回", function () {
     var mobileCheck = {score:0, count:5};
     var checkInfo = {traceNo:'xxxxxx', token_id: 'xxxxxx',  mobile: '13333333333', ip: '127.0.0.1'};
-    nock("https://apitest.fraudmetrix.cn")
-        .post("/riskService", {
+    nock(config.portal.server)
+        .post(config.portal.path, {
           token_id: checkInfo.token_id,
           partner_code: config.portal.partner_code,
           secret_key: config.portal.secret_key,
@@ -70,16 +70,16 @@ describe("同盾测试[非开发模式]", function () {
         });
     portalModel.mobileCheck(checkInfo, mobileCheck);
     setTimeout(function() {
-      sinon.assert.calledOnce(set_tub);
-      sinon.assert.calledOnce(pexpireat_tub);
+      sinon.assert.calledOnce(set_stub);
+      sinon.assert.calledOnce(pexpireat_stub);
     }, 1000);
   });
 
   it("同盾服务异常", function () {
     var mobileCheck = {score:0, count:5};
     var checkInfo = {traceNo:'xxxxxx', token_id: 'xxxxxx',  mobile: '13333333333', ip: '127.0.0.1'};
-    nock("https://apitest.fraudmetrix.cn")
-        .post("/riskService", {
+    nock(config.portal.server)
+        .post(config.portal.path, {
           token_id: checkInfo.token_id,
           partner_code: config.portal.partner_code,
           secret_key: config.portal.secret_key,
@@ -93,18 +93,18 @@ describe("同盾测试[非开发模式]", function () {
         });
     portalModel.mobileCheck(checkInfo, mobileCheck);
     setTimeout(function() {
-      sinon.assert.calledOnce(set_tub);
-      sinon.assert.calledOnce(pexpireat_tub);
+      sinon.assert.calledOnce(set_stub);
+      sinon.assert.calledOnce(pexpireat_stub);
     }, 1000);
   });
 
   afterEach(function(){
-    set_tub.reset();
-    pexpireat_tub.reset();
+    set_stub.reset();
+    pexpireat_stub.reset();
   });
 
   after(function() {
-    set_tub.restore();
-    pexpireat_tub.restore();
+    set_stub.restore();
+    pexpireat_stub.restore();
   });
 });
