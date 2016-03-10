@@ -62,8 +62,10 @@ module.exports = {
 
   // redis连接相关配置
   redis: {
-    port: 6379,
-    host: '127.0.0.1',
+    sentinels: [{ host: '127.0.0.1', port: 6379 }, { host: '127.0.0.1', port: 6389 }, { host: '127.0.0.1', port: 6399 }],
+    name: 'resque',
+    //port: 6379,
+    //host: '127.0.0.1',
     options: {
       connectTimeout: 1000,
       //重试策略为每次递增200ms，最多3次
