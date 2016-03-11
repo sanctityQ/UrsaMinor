@@ -69,13 +69,17 @@ module.exports = {
    */
   redis: {
     port: 6379,
-    host: '127.0.0.1',
-    //重试策略为每次递增200ms，最多3次
+    host: '192.168.0.225',
     retryStrategy: function (times) {
-      console.log(times);
       var delay = Math.min(times * 2, 2000);
       return delay;
     }
+    //sentinels: [{ host: '192.168.0.227', port: 26379 }, { host: '192.168.0.228', port: 26379 }, { host: '192.168.0.229', port: 26379 }],
+    //name: 'resque',
+    //sentinelRetryStrategy: function (times) {
+    //  var delay = Math.min(times * 10, 1000);
+    //  return delay;
+    //}
   },
 
   "portal":{
