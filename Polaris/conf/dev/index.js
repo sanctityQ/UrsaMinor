@@ -69,7 +69,8 @@ module.exports = {
    */
   redis: {
     port: 6379,
-    host: '192.168.0.225',
+    host: '127.0.0.1',
+    enableOfflineQueue: false,
     retryStrategy: function (times) {
       var delay = Math.min(times * 2, 2000);
       return delay;
