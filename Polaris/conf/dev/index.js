@@ -51,8 +51,8 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      host: '127.0.0.1',
-      port: 9999
+      host: '192.168.0.244',
+      port: 9981
     },
     notifaction: {
       host: '192.168.0.244',
@@ -61,19 +61,26 @@ module.exports = {
   },
 
   // redis连接相关配置
+
+  /**
+   *  哨兵相关配置
+   * sentinels: [{ host: 'localhost', port: 26379 }, { host: 'localhost', port: 26380 }],
+   name: 'mymaster'
+   */
   redis: {
     port: 6379,
     host: '127.0.0.1',
-    options: {
-      connectTimeout: 1000,
-      //重试策略为每次递增200ms，最多3次
-      retryStrategy: function (times) {
-        if (times > 3) {
-          return false;
-        }
-        return times * 200;
-      }
+    enableOfflineQueue: false,
+    retryStrategy: function (times) {
+      var delay = Math.min(times * 2, 2000);
+      return delay;
     }
+    //sentinels: [{ host: '192.168.0.227', port: 26379 }, { host: '192.168.0.228', port: 26379 }, { host: '192.168.0.229', port: 26379 }],
+    //name: 'resque',
+    //sentinelRetryStrategy: function (times) {
+    //  var delay = Math.min(times * 10, 1000);
+    //  return delay;
+    //}
   },
 
   "portal":{

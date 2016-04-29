@@ -11,8 +11,8 @@ var router = require('./router');
 var app = koa();
 var runEnv = config.runEnv;
 var bodyParser = require('koa-bodyparser');
-var session = require('koa-generic-session');
-var redisStore = require('koa-redis');
+//var session = require('koa-generic-session');
+//var redisStore = require('koa-redis');
 var tclog = require('./libs/tclog.js');
 var genLogid = require('./libs/logid').genLogid;
 var api = require('./libs/api');
@@ -20,7 +20,7 @@ var api = require('./libs/api');
 module.exports = app;
 
 module.exports.init = function() {
-  app.keys = ['tiancai', 'xiaoguang'];
+  //app.keys = ['tiancai', 'xiaoguang'];
 
   app.use(function *(next) {
     if (this.url == '/favicon.ico') {
@@ -48,37 +48,31 @@ module.exports.init = function() {
     });
   }
 
-  var redis = redisStore({
-                           host: config.redis.host,
-                           port: config.redis.port
-                         });
+  //var redis = redisStore({host: config.redis.host, port: config.redis.port});
 
-  app.redisIsOk = true;
-  redis.on('disconnect', function () {
-    app.redisIsOk = false;
-  });
-  app.use(session({
-                    store: redis
-                  }));
+  //app.redisIsOk = true;
+  //redis.on('disconnect', function () {
+  //  app.redisIsOk = false;
+  //});
+  //app.use(session({store: redis}));
 
   app.use(function *(next) {
     var traceNo = genLogid();
     this.req.traceNo = traceNo;
-    if (app.redisIsOk) {
-      var tiancainame = this.cookies.get('tiancainame', {signed: true});
-      try {
-        var userInfo = this.session[tiancainame];
-        this.userInfo = userInfo;
-      }
-      catch (e) {
-        this.userInfo = null;
-      }
-    } else {
-      this.userInfo = null;
-    }
+    //if (app.redisIsOk) {
+    //  var tiancainame = this.cookies.get('tiancainame', {signed: true});
+    //  try {
+    //    var userInfo = this.session[tiancainame];
+    //    this.userInfo = userInfo;
+    //  }
+    //  catch (e) {
+    //    this.userInfo = null;
+    //  }
+    //} else {
+    //  this.userInfo = null;
+    //}
 
-    tclog.notice(
-        {traceNo: traceNo, type: 'pv', method: this.req.method, url: this.url, userInfo: this.userInfo})
+    tclog.notice({traceNo: traceNo, type: 'pv', method: this.req.method, url: this.url, userInfo: this.userInfo});
     yield next;
   });
 
