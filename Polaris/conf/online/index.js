@@ -62,17 +62,12 @@ module.exports = {
 
   // redis连接相关配置
   redis: {
-    port: 6379,
-    host: '10.10.134.123',
-    options: {
-      connectTimeout: 1000,
-      //重试策略为每次递增200ms，最多3次
-      retryStrategy: function (times) {
-        if (times > 3) {
-          return false;
-        }
-        return times * 200;
-      }
+    sentinels: [{ host: '10.10.134.123', port: 26379 }, { host: '10.10.128.130', port: 26379 }, { host: '10.10.8.63', port: 26379 }],
+    name: 'resque',
+    enableOfflineQueue: false,
+    sentinelRetryStrategy: function (times) {
+      var delay = Math.min(times * 10, 1000);
+      return delay;
     }
   },
 
