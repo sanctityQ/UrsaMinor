@@ -61,11 +61,6 @@ test.tclog = {
   }
 };
 
-test.redis_client = {
-  set: function() {},
-  setex: function() {}
-};
-
 var fs = require('fs');
 var path = require('path');
 var files = fs.readdirSync(__dirname + '/../controller/');
