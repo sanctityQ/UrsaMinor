@@ -52,7 +52,7 @@ function setMap(ctrs) {
   //验证手机号
   router.get('/api/check/mobile', ctrs.check.checkMobile);
   //验证 身份信息是否匹配
-  router.get('/api/check/idNumber/match', ctrs.check.matchIdNumber);
+  router.post('/api/check/idNumber/match', ctrs.check.matchIdNumber);
 
   //重置密码
   router.post('/api/password/reset', ctrs.password.reset);
