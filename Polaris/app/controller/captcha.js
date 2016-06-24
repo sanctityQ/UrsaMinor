@@ -1,5 +1,6 @@
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
+var userModel = require('../model/user.js');
 var portalModel = require('../model/portal.js');
 var apiCode = require("../conf/ApiCode.js");
 var ex_utils = require('../libs/exception.js');
@@ -48,14 +49,35 @@ module.exports = {
   },
 
   /**
+   * 验证图片验证码
+   */
+  validateImg: function* () {
+    var postBody = this.request.body;
+    var headerBody = this.header; //header信息
+    var traceNo = this.req.traceNo + ""; //日志ID
+    var token = postBody.token; //图片验证码token
+    var captcha = postBody.captcha; //图片验证码
+    try {
+      var result = yield captcha2Model.validateImgCaptcha(token, captcha, false);
+      tclog.notice({msg: "validateImg success", traceNo: traceNo, result: result});
+      yield this.api({token:token, msg:"验证通过"});
+    } catch (err) {
+      tclog.warn({msg:'validateImg error', traceNo: traceNo, err: err});
+      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+    }
+  },
+
+  /**
    * 发送验证码
-   * //TODO 图片验证码
+   *
    */
   sendSmsCaptcha: function* () {
     var postBody = this.request.body;
     var headerBody = this.header; //header信息
     var traceNo = this.req.traceNo + ""; //日志ID
     var mobile = postBody.mobile; //手机号
+    var token = postBody.token; //图片验证码token
+    var captcha = postBody.captcha; //图片验证码
     var sms_type = this.params.type;
     var biz_type = this.params.biz;
     tclog.notice({api: 'sendSmsCaptcha', traceNo: traceNo, mobile: mobile});
@@ -63,6 +85,9 @@ module.exports = {
       if (validateParam(sms_type, biz_type)) { //参数验证
         var valid_code;
         try{
+          //验证图片验证码 TODO 老版本支持
+          yield captcha2Model.validateImgCaptcha(token, captcha, true);
+          //验证
           var validateInfo = {source: headerBody.source, sysCode: headerBody.syscode,
             traceNo: traceNo, name: 'MOBILE', value: mobile};
           yield passportModel.userValidate(validateInfo);
@@ -96,84 +121,28 @@ module.exports = {
       tclog.warn({msg:'sendSmsCaptcha error', traceNo: traceNo, err: err});
       yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
     }
+  },
+
+  /**
+   *验证短信验证码(找回密码)
+   */
+  validateSms4ResetPassword: function* () {
+    var postBody = this.request.body;
+    var headerBody = this.header; //header信息
+    var traceNo = this.req.traceNo + ""; //日志ID
+    var mobile = postBody.mobile; //手机号
+    var smsCaptcha = postBody.smsCaptcha; //短信验证码
+    try {
+      var biz_type = captcha2Model.BIZ_TYPE.RESETPWD;
+      var validObj = {biz_type: biz_type, mobile: mobile, captcha: smsCaptcha};
+      yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
+      var user = yield userModel.findUserByMobile(mobile);
+      var id_authenticated = (user && user.idNumber) ? 1 : 0;
+      yield this.api({mobile: mobile, msg: '验证码发送成功', id_authenticated:id_authenticated});
+    } catch (err) {
+      tclog.warn({msg:'validateSms4ResetPassword error', traceNo: traceNo, err: err});
+      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+    }
   }
 
-  ///**
-  // * (短信|语音)验证码
-  // */
-  //sendSms4Register: function* () {
-  //  var postBody = this.request.body;
-  //  var headerBody = this.header; //header信息
-  //  var traceNo = this.req.traceNo+""; //日志ID
-  //  var mobile = postBody.mobile; //手机号
-  //  tclog.notice({api:'sendSms',traceNo:traceNo, mobile:mobile});
-  //  try {
-  //    //验证手机号是否可用
-  //    var type = this.params.type;
-  //    if(type == 'sms' || type == 'sound') { //短信类型
-  //      var validateInfo = {
-  //        source: headerBody.source || 'APP',
-  //        sysCode: headerBody.syscode,
-  //        traceNo: traceNo,
-  //        name: 'MOBILE',
-  //        value: mobile
-  //      };
-  //      var result = yield passportModel.userValidate(validateInfo);
-  //      tclog.notice({traceNo:traceNo, validate_result:result});
-  //      if(type == 'sms') {
-  //        result = yield captchaModel.sendSms4Register(traceNo, mobile);
-  //        tclog.notice({api:"/api/captcha/sms/register", traceNo:traceNo, result: result});
-  //      } else {
-  //        result = yield captchaModel.sendSound4Register(traceNo, mobile);
-  //        tclog.notice({api:"/api/captcha/sound/register", traceNo:traceNo, result: result});
-  //      }
-  //      yield this.api({mobile:mobile, msg:'验证码发送成功'});
-  //    } else { //资源不存在
-  //      yield this.api_404();
-  //    }
-  //  } catch(err) {
-  //    tclog.error({api:'/api/captcha/sms/register', traceNo:traceNo, err:err});
-  //    yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
-  //  }
-  //},
-  //
-  ///**
-  // * (短信|语音)验证码-找回密码
-  // */
-  //sendSms4ResetPassword: function* () {
-  //  var postBody = this.request.body;
-  //  var headerBody = this.header; //header信息
-  //  var traceNo = this.req.traceNo+""; //日志ID
-  //  var mobile = postBody.mobile; //手机号
-  //  tclog.notice({api:'sendSms4ResetPassword',traceNo:traceNo, mobile:mobile});
-  //  try {
-  //    //验证手机号是否可用
-  //    var type = this.params.type;
-  //    if(type == 'sms' || type == 'sound') { //短信类型
-  //      var userInfo = {
-  //        source: headerBody.source || 'APP',
-  //        sysCode: headerBody.syscode,
-  //        traceNo: traceNo+"",
-  //        name: 'MOBILE',
-  //        value: mobile
-  //      };
-  //      //验证手机号是否已注册
-  //      var passportUser = yield passportModel.userInfo(userInfo);
-  //      tclog.notice({traceNo:traceNo, userId:passportUser.id});
-  //      if(type == 'sms') { //短信
-  //        var result = yield captchaModel.sendSms4ResetPassword(traceNo, mobile);
-  //        tclog.notice({api:'/api/captcha/sms/resetPassword', traceNo:traceNo, result:result});
-  //      } else { //语音
-  //        var result = yield captchaModel.sendSound4ResetPassword(traceNo, mobile);
-  //        tclog.notice({api:'/api/captcha/sound/resetPassword', traceNo:traceNo, result:result});
-  //      }
-  //      yield this.api({mobile:mobile, msg:'验证码发送成功'});
-  //    } else { //资源不存在
-  //      yield this.api_404();
-  //    }
-  //  } catch (err) {
-  //    tclog.error({api:'/api/captcha/sms/resetPassword', traceNo:traceNo, err:err});
-  //    yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
-  //  }
-  //}
 };

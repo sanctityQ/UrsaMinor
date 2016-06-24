@@ -16,33 +16,27 @@ before(function() {
   tclog.init(true);
 });
 
-describe("同盾测试[开发模式]", function () {
-  before(function(){
-    portalModel.__set__('developMode', true);
 
+
+describe("同盾测试[开发模式]", function () {
+
+  it("同盾测试手机号验证", function (done) {
     set_stub = sinon.stub(redis_client, 'set');
     pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
-  });
-  it("同盾测试手机号验证", function (done) {
+
+    portalModel.__set__('developMode', true);
     var mobileCheck = {score:0, count:5};
     var checkInfo = {traceNo:'xxxxxx', token_id: 'xxxxxx',  mobile: '13333333333', ip: '127.0.0.1'};
     portalModel.mobileCheck(checkInfo, mobileCheck);
     sinon.assert.calledOnce(set_stub);
     sinon.assert.calledOnce(pexpireat_stub);
+
+    set_stub.restore();
+    pexpireat_stub.restore();
     done();
   });
 
-  afterEach(function(){
-    set_stub.reset();
-    pexpireat_stub.reset();
-  });
-
-  after(function() {
-    set_stub.restore();
-    pexpireat_stub.restore();
-  });
 });
-
 
 describe("同盾测试[非开发模式]", function () {
   before(function(){
@@ -51,7 +45,7 @@ describe("同盾测试[非开发模式]", function () {
     set_stub = sinon.stub(redis_client, 'set');
     pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
   });
-  it("同盾服务正常返回", function () {
+  it("同盾服务正常返回", function (done) {
     var mobileCheck = {score:0, count:5};
     var checkInfo = {traceNo:'xxxxxx', token_id: 'xxxxxx',  mobile: '13333333333', ip: '127.0.0.1'};
     nock(config.portal.server)
@@ -69,13 +63,15 @@ describe("同盾测试[非开发模式]", function () {
           final_score: 20
         });
     portalModel.mobileCheck(checkInfo, mobileCheck);
+
     setTimeout(function() {
       sinon.assert.calledOnce(set_stub);
       sinon.assert.calledOnce(pexpireat_stub);
+      done();
     }, 1000);
   });
 
-  it("同盾服务异常", function () {
+  it("同盾服务异常", function (done) {
     var mobileCheck = {score:0, count:5};
     var checkInfo = {traceNo:'xxxxxx', token_id: 'xxxxxx',  mobile: '13333333333', ip: '127.0.0.1'};
     nock(config.portal.server)
@@ -95,6 +91,7 @@ describe("同盾测试[非开发模式]", function () {
     setTimeout(function() {
       sinon.assert.calledOnce(set_stub);
       sinon.assert.calledOnce(pexpireat_stub);
+      done();
     }, 1000);
   });
 
@@ -107,4 +104,5 @@ describe("同盾测试[非开发模式]", function () {
     set_stub.restore();
     pexpireat_stub.restore();
   });
+
 });

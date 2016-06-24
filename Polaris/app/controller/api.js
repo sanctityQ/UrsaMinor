@@ -6,6 +6,8 @@
  */
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
+var userModel = require('../model/user.js');
+var interactModel = require('../model/interact.js');
 var tclog = require('../libs/tclog.js');
 var tokenModel = require('../model/token.js');
 var _ = require('underscore');
@@ -75,6 +77,14 @@ module.exports = {
       var passportUser = yield passportModel.login(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
       var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
+      if(postBody.inviteCode) { //如果填写了邀请码
+        userModel.findUserByPassportUser(passportUser).then(function(user) {
+          tclog.notice({msg:"triggerInteract register", user:user.id, inviteCode:postBody.inviteCode});
+          interactModel.triggerInteract(0, user.id, postBody.inviteCode);
+        }).catch(function(err) {
+          tclog.error({msg:"triggerInteract error", user:user.id, inviteCode:postBody.inviteCode, err:err});
+        });
+      }
       yield this.api(result);
     } catch (err) {
       tclog.warn({api:'/api/register', traceNo:traceNo, err:err});

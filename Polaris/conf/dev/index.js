@@ -57,6 +57,14 @@ module.exports = {
     notifaction: {
       host: '192.168.0.244',
       port: 9951
+    },
+    user: {
+      host: '192.168.0.244',
+      port: 9970
+    },
+    interact: {
+      host: '192.168.0.244',
+      port: 9971
     }
   },
 
