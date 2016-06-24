@@ -136,7 +136,7 @@ describe("图片验证码测试", function () {
   it("校验图片验证码[开发模式]", function (done) {
     captchaModel.__set__('developMode', true); //设置开发模式
     var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
-    var captcha = "xxxxx"; //随便填写
+    var captcha = "AAAAA"; //随便填写
     var key = captcha_utils.img_captcha_key(tokenNo);
     var del_stub = sinon.stub(redis_client, 'del');
     var get_stub = sinon.stub(redis_client, 'get', function(key, cb) {

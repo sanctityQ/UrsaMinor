@@ -85,8 +85,10 @@ module.exports = {
       if (validateParam(sms_type, biz_type)) { //参数验证
         var valid_code;
         try{
-          //验证图片验证码 TODO 老版本支持
-          yield captcha2Model.validateImgCaptcha(token, captcha, true);
+          //验证图片验证码 TODO 支持老版本,这个判断需要去掉
+          if(token || captcha) {
+            yield captcha2Model.validateImgCaptcha(token, captcha, true);
+          }
           //验证
           var validateInfo = {source: headerBody.source, sysCode: headerBody.syscode,
             traceNo: traceNo, name: 'MOBILE', value: mobile};

@@ -166,10 +166,14 @@ module.exports = {
                 reject(ex_utils.buildCommonException(apiCode.E20014));
               }
             } else {//开发模式
+              if("AAAAA" == captcha.toUpperCase()) {
+                resolve(true);
+              } else {
+                reject(ex_utils.buildCommonException(apiCode.E20014));
+              }
               if(clear) { //只能验证一次
                 redis_client.del(key);
               }
-              resolve(true);
             }
           }
         });
