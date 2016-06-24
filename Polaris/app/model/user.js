@@ -47,6 +47,7 @@ module.exports = {
         if(err) {
           resolve(null)
         } else {
+          tclog.notice({user:response, msg:"findUserByMobile", mobile:mobile});
           resolve(response)
         }
       });
