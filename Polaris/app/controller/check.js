@@ -36,13 +36,16 @@ module.exports = {
    */
   matchIdNumber: function *() {
     var postBody = this.request.body;
+    var traceNo = this.req.traceNo + "";
     var mobile = postBody.mobile;
     var name = postBody.name;
     var idNumber = postBody.idNumber;
+    tclog.notice({api: '/api/check/matchIdNumber', traceNo:traceNo, mobile:mobile, name:name, idNumber: idNumber});
     var user = yield userModel.findUserByMobile(mobile);
     if(userModel.checkIdNumber(user, name, idNumber)) {
       yield this.api({mobile:mobile, msg:'验证通过'});
     } else {
+      tclog.warn({api: '/api/check/matchIdNumber', traceNo:traceNo, mobile:mobile, name:name, idNumber: idNumber});
       yield this.api_err({error_code : 20017, error_msg : "身份信息不匹配"});
     }
   }

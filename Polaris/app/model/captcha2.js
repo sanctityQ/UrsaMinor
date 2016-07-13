@@ -144,7 +144,7 @@ module.exports = {
    */
   validateImgCaptcha: function (token, captcha, clear) {
     return new Promise(function (resolve, reject) {
-      if (token && captcha) { //验证数据有效性
+      if (token) { //验证数据有效性
         var key = captcha_utils.img_captcha_key(token);
         redis_client.get(key, function (err, result) {
           if (err) { //redis服务异常
@@ -166,13 +166,13 @@ module.exports = {
                 reject(ex_utils.buildCommonException(apiCode.E20014));
               }
             } else {//开发模式
-              if("AAAAA" == captcha.toUpperCase()) {
+              if(clear) { //只能验证一次
+                redis_client.del(key);
+              }
+              if(result && "AAAAA" == captcha.toUpperCase()) {
                 resolve(true);
               } else {
                 reject(ex_utils.buildCommonException(apiCode.E20014));
-              }
-              if(clear) { //只能验证一次
-                redis_client.del(key);
               }
             }
           }
