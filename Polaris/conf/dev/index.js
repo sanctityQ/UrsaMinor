@@ -51,12 +51,18 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      host: '192.168.0.244',
-      port: 9981
+      url: '192.168.0.244:9981',
+      options: {
+        max_connections:100, 
+        min_connections: 10
+      }
     },
     notifaction: {
-      host: '192.168.0.244',
-      port: 9951
+      url: '192.168.0.244:9951',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
     }
   },
 

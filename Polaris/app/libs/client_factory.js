@@ -18,27 +18,12 @@ Redis.Promise.onPossiblyUnhandledRejection(function (error) {
 var redis_client = new Redis(config.redis);
 
 var thrift_conf = config.thirft;
-var thrift = require('thrift');
-var thrift_pool = require("node-thrift-pool");
+var Puck = require("@itiancai/Puck");
 var passport_types = require("@itiancai/passport-client");
 var notification_types = require("@itiancai/notification-client-node");
 
-var passport_settings = {
-  host: thrift_conf.passport.host,
-  port: thrift_conf.passport.port
-};
-
-var notification_settings = {
-  host: thrift_conf.notifaction.host,
-  port: thrift_conf.notifaction.port
-};
-
-var options = {
-  transport: thrift.TFramedTransport,
-  protocol: thrift.TBinaryProtocol
-};
-var passport_client = thrift_pool(thrift, passport_types.PassportService, passport_settings, options);
-var sms_client = thrift_pool(thrift, notification_types.SmsApi, notification_settings, options);
+var passport_client = new Puck(passport_types.PassportService, thrift_conf.passport.options).newIface(thrift_conf.passport.url);
+var sms_client = new Puck(notification_types.SmsApi, thrift_conf.notifaction.options).newIface(thrift_conf.notifaction.url);
 
 module.exports = {
   redis_client : redis_client,
