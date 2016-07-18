@@ -63,6 +63,20 @@ module.exports = {
         max_connections:100,
         min_connections: 10
       }
+    },
+    user: {
+      url: '127.0.0.1:9970',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
+    },
+    interact: {
+      url: '127.0.0.1:9971',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
     }
   },
 
