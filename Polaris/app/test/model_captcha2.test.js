@@ -117,7 +117,7 @@ describe("图片验证码测试", function () {
   });
 
   it("校验图片验证码[参数错误]", function (done) {
-    var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
+    var tokenNo = "";
     var captcha = null;
     var del_stub = sinon.stub(redis_client, 'del');
     var get_stub = sinon.stub(redis_client, 'get');
