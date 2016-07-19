@@ -25,6 +25,7 @@ var login_stub;
 var putToken_stub;
 var findUserByPassportUser_stub;
 var triggerInteract_stub;
+var findInviteInfoByUserKey_stub;
 
 before(function () {
   //rewire 所有controller
@@ -76,6 +77,7 @@ describe("主流程测试", function () {
     putToken_stub = sinon.stub(tokenModel, "putToken");
     findUserByPassportUser_stub = sinon.stub(userModel, "findUserByPassportUser");
     triggerInteract_stub = sinon.stub(interactModel, "triggerInteract");
+    findInviteInfoByUserKey_stub = sinon.stub(interactModel, "findInviteInfoByUserKey");
   });
 
   it("登录测试[登录成功]", function (done) {
@@ -177,6 +179,9 @@ describe("主流程测试", function () {
     findUserByPassportUser_stub.returns(new Promise(function (resovel, reject) {
       resovel({id:'13213-sdff-12312fasfa-fasf', name:"张三", passportId:user.id});
     }));
+    findInviteInfoByUserKey_stub.returns(new Promise(function (resovel, reject) {
+      resovel({user:{}, name:"张三", inviterInfo:{}});
+    }));
 
     request
         .post('/api/register')
@@ -190,6 +195,7 @@ describe("主流程测试", function () {
           result.should.have.property('user');
           result.user.should.be.eql(user);
 
+          sinon.assert.calledOnce(findInviteInfoByUserKey_stub);
           sinon.assert.calledOnce(validateSmsCaptcha_stub);
           sinon.assert.calledOnce(register_stub);
           sinon.assert.calledOnce(clearSmsCaptcha_stub);
@@ -271,6 +277,7 @@ describe("主流程测试", function () {
     putToken_stub.reset();
     findUserByPassportUser_stub.reset();
     triggerInteract_stub.reset();
+    findInviteInfoByUserKey_stub.reset();
   });
 
   after(function() {
@@ -281,5 +288,6 @@ describe("主流程测试", function () {
     putToken_stub.restore();
     findUserByPassportUser_stub.restore();
     triggerInteract_stub.restore();
+    findInviteInfoByUserKey_stub.restore();
   });
 });
