@@ -21,6 +21,8 @@ module.exports = {
     E20015 : {err_code:20015, err_msg:"验证次数过多，请重新发送"},
     E20016 : {err_code:20016, err_msg:"对不起，您今天获取验证码的次数过多，请改天再试！"},
     E20017 : {err_code:20017, err_msg:"身份信息不匹配"},
+    E20018 : {err_code:20018, err_msg:"邀请码错误"},
+    E20019 : {err_code:20019, err_msg:"邀请码无效"},
     E20098 : {err_code:20098, err_msg:"数据参数不合法"},
     E20099 : {err_code:20099, err_msg:"不合法的access_token"}
 

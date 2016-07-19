@@ -59,6 +59,21 @@ module.exports = {
     };
     tclog.notice({api:'/api/register', registerInfo: _.omit(registerInfo, 'password')});
     try {
+      //TODO 是否要放在这里做? 校验邀请码
+      if(postBody.inviteCode) {
+        try{
+          var inviteInfo = yield interactModel.findInviteInfoByUserKey(postBody.inviteCode);
+          tclog.debug({inviteInfo : inviteInfo});
+        } catch(err) {
+          if(err.err_code == 10001) { 
+            //interact服务异常,不能影响注册
+            tclog.error({msg : "findInviteInfoByUserKey err"})
+          } else {
+            throw err;
+          }
+        }
+      }
+      
       //短信验证码是否正确
       var biz_type = captcha2Model.BIZ_TYPE.REGISTER;
       var validObj = {biz_type:biz_type, captcha:smsCaptcha, mobile:registerInfo.mobile};
@@ -80,7 +95,7 @@ module.exports = {
       if(postBody.inviteCode) { //如果填写了邀请码
         userModel.findUserByPassportUser(passportUser).then(function(user) {
           tclog.notice({msg:"triggerInteract register", user:user.id, inviteCode:postBody.inviteCode});
-          interactModel.triggerInteract(0, user.id, postBody.inviteCode);
+          interactModel.triggerInteract(0, user.id, postBody.inviteCode, user.id);
         }).catch(function(err) {
           tclog.error({msg:"triggerInteract error", user:user.id, inviteCode:postBody.inviteCode, err:err});
         });
