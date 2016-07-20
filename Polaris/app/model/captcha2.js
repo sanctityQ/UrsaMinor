@@ -251,7 +251,11 @@ module.exports = {
             }
           }
         } else { //小于最小发送间隔
-          reject(ex_utils.buildCommonException(apiCode.E20013)); //验证码发送失败
+          var exception = ex_utils.buildCommonException(apiCode.E20020);
+          var now = Date.now();
+          var interval = captchaObj.sendTime ? (now - captchaObj.sendTime) : 0;
+          exception.interval = Math.floor(interval / 1000);
+          reject(exception); //验证码发送失败
         }
       });
     });
