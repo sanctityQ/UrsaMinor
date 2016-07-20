@@ -35,33 +35,34 @@ module.exports = {
    * @param checkObj
    */
   mobileCheck: function(checkInfo, checkObj) {
-    var requestInfo = {
-      token_id: checkInfo.token_id,
-      partner_code: config.portal.partner_code,
-      secret_key: config.portal.secret_key,
-      event_id: config.portal.events.phoneCheck,
-      account_mobile: checkInfo.mobile,
-      ip_address: checkInfo.ip,
-      resp_detail_type:config.portal.resp_detail_type
-    };
-    tclog.debug({traceNo: checkInfo.traceNo, requestInfo:requestInfo});
-    if(!developMode) { //非开发模式
-      var url = config.portal.server + config.portal.path;
-      request.post({url: url, form: requestInfo}, function (e, r, body) {
-        try {
-          var result = JSON.parse(body);
-          //发送短信验证码
-          //更新redis中该手机号同盾分数;
-          tclog.debug({traceNo: checkInfo.traceNo, msg:"同盾返回信息", body:body});
-          checkObj.score = result.final_score; //更新分数
-        } catch (e) {
-          tclog.error({traceNo: checkInfo.traceNo, msg:"同盾接口错误", err:e, body:body});
-          checkObj.score = checkObj.score + 6; //分数+6
-        }
-        updateMobileCheck(checkInfo.mobile, checkObj); //更新redis值
-      });
-    } else { //开发模式返回0分
-      updateMobileCheck(checkInfo.mobile, checkObj); //次数增加 分数不变
-    }
+    // var requestInfo = {
+    //   token_id: checkInfo.token_id,
+    //   partner_code: config.portal.partner_code,
+    //   secret_key: config.portal.secret_key,
+    //   event_id: config.portal.events.phoneCheck,
+    //   account_mobile: checkInfo.mobile,
+    //   ip_address: checkInfo.ip,
+    //   resp_detail_type:config.portal.resp_detail_type
+    // };
+    // tclog.debug({traceNo: checkInfo.traceNo, requestInfo:requestInfo});
+    // if(!developMode) { //非开发模式
+    //   var url = config.portal.server + config.portal.path;
+    //   request.post({url: url, form: requestInfo}, function (e, r, body) {
+    //     try {
+    //       var result = JSON.parse(body);
+    //       //发送短信验证码
+    //       //更新redis中该手机号同盾分数;
+    //       tclog.debug({traceNo: checkInfo.traceNo, msg:"同盾返回信息", body:body});
+    //       checkObj.score = result.final_score; //更新分数
+    //     } catch (e) {
+    //       tclog.error({traceNo: checkInfo.traceNo, msg:"同盾接口错误", err:e, body:body});
+    //       checkObj.score = checkObj.score + 6; //分数+6
+    //     }
+    //     updateMobileCheck(checkInfo.mobile, checkObj); //更新redis值
+    //   });
+    // } else { //开发模式返回0分
+    //   updateMobileCheck(checkInfo.mobile, checkObj); //次数增加 分数不变
+    // }
+    updateMobileCheck(checkInfo.mobile, checkObj); //次数增加 分数不变
   }
 };
