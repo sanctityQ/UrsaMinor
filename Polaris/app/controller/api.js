@@ -60,9 +60,14 @@ module.exports = {
     tclog.notice({api:'/api/register', registerInfo: _.omit(registerInfo, 'password')});
     try {
       //TODO 是否要放在这里做? 校验邀请码
-      if(postBody.inviteCode) {
+      var inviteCode = postBody.inviteCode;
+      if(inviteCode) { //邀请码不区分大小写
+        inviteCode = inviteCode.toUpperCase();
+      }
+      if(inviteCode) {
         try{
-          var inviteInfo = yield interactModel.findInviteInfoByUserKey(postBody.inviteCode);
+          //如果填写邀请码,验证邀请码是否正确
+          var inviteInfo = yield interactModel.findInviteInfoByUserKey(inviteCode);
           tclog.debug({inviteInfo : inviteInfo});
         } catch(err) {
           if(err.err_code == 10001) { 
@@ -92,12 +97,12 @@ module.exports = {
       var passportUser = yield passportModel.login(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
       var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
-      if(postBody.inviteCode) { //如果填写了邀请码
+      if(inviteCode) { //如果填写了邀请码
         userModel.findUserByPassportUser(passportUser).then(function(user) {
-          tclog.notice({msg:"triggerInteract register", user:user.id, inviteCode:postBody.inviteCode});
-          interactModel.triggerInteract(0, user.id, postBody.inviteCode, user.id);
+          tclog.notice({msg:"triggerInteract register", user:user.id, inviteCode:inviteCode});
+          interactModel.triggerInteract(0, user.id, inviteCode, user.id);
         }).catch(function(err) {
-          tclog.error({msg:"triggerInteract error", user:user.id, inviteCode:postBody.inviteCode, err:err});
+          tclog.error({msg:"triggerInteract error", user:user.id, inviteCode:inviteCode, err:err});
         });
       }
       yield this.api(result);
