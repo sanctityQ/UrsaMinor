@@ -247,7 +247,7 @@ describe("(短信|语音)验证码测试[开发模式]", function () {
     }, function(err) {
       sinon.assert.calledOnce(get_stub);
       err.should.have.property('err_code');
-      err.err_code.should.equal(apiCode.E20020.err_code); //发送失败
+      err.err_code.should.equal(apiCode.E20013.err_code); //发送失败
 
       get_stub.restore();
       done();

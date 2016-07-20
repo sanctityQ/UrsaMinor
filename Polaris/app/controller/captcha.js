@@ -122,8 +122,7 @@ module.exports = {
     } catch (err) {
       tclog.warn({msg:'sendSmsCaptcha error', traceNo: traceNo, err: err});
       var result = {error_code: err.err_code, error_msg: err.err_msg};
-      if(err.err_code == apiCode.E20020.err_code) {
-        result.error_code = apiCode.E20013.err_code;
+      if(err.err_code == apiCode.E20013.err_code) {
         result.interval = err.interval;
       }
       yield this.api_err(result);
