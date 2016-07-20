@@ -223,7 +223,7 @@ module.exports = {
                     resolve(response);
                   } else {
                     tclog.error({traceNo: traceNo, msg:"sendSmsCaptcha error", err:err});
-                    reject(ex_utils.buildCommonException(apiCode.E20013));
+                    reject(ex_utils.buildCommonException(apiCode.E20020));
                   }
                 }
               });
@@ -242,7 +242,7 @@ module.exports = {
                     resolve(response);
                   } else {
                     tclog.error({traceNo: traceNo, msg:"sendSmsCaptcha error", err:err});
-                    reject(ex_utils.buildCommonException(apiCode.E20013));
+                    reject(ex_utils.buildCommonException(apiCode.E20020));
                   }
                 }
               });
@@ -251,7 +251,7 @@ module.exports = {
             }
           }
         } else { //小于最小发送间隔
-          var exception = ex_utils.buildCommonException(apiCode.E20020);
+          var exception = ex_utils.buildCommonException(apiCode.E20013);
           var now = Date.now();
           var interval = captchaObj.sendTime ? (now - captchaObj.sendTime) : 0;
           exception.interval = Math.floor(interval / 1000);
