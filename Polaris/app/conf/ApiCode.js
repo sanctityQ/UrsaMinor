@@ -23,6 +23,7 @@ module.exports = {
     E20017 : {err_code:20017, err_msg:"身份信息不匹配"},
     E20018 : {err_code:20018, err_msg:"邀请码错误"},
     E20019 : {err_code:20019, err_msg:"邀请码无效"},
+    E20020 : {err_code:20020, err_msg:"发送过于频繁，请稍后再试"},
     E20098 : {err_code:20098, err_msg:"数据参数不合法"},
     E20099 : {err_code:20099, err_msg:"不合法的access_token"}
 
