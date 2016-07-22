@@ -1,6 +1,6 @@
 {
   "name": "@itiancai/Puck",
-  "version": "0.0.0-alpha.2",
+  "version": "0.0.0-alpha.3",
   "description": "Thrift Client Zookeeper",
   "author": "zhouchangbao@tftiancai.com",
   "main": "index.js",

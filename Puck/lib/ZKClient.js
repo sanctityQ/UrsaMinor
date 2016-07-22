@@ -77,16 +77,11 @@ ZKClient.prototype.init = function() {
                 refresh_engine(zk);
               });
             } else if(state == 3) {
-              console.log(">>>>>> retry success")
+              console.log(">>>>>> retry success");
             }
           } else {
-            console.log(">>>>>> refresh_engine")
+            console.log(">>>>>> refresh_engine");
             refresh_engine(zk);
-            var zk_new = buildZK(self._server);
-            zk_new.connect(function (err) {
-              start_listener(zk_new);
-              zk.close();
-            })
           }
         },
         function (rc, err, children) {
@@ -113,6 +108,13 @@ ZKClient.prototype.init = function() {
             if(initFlag) { //初始化成功
               start_listener(zk); //启动监听器
               self.emit(EVENT_INIT, zk);
+            } else {
+              //开启newZk
+              var zk_new = buildZK(self._server);
+              zk_new.connect(function (err) {
+                start_listener(zk_new);
+                zk.close(); //释放oldZk
+              })
             }
           });
         }
@@ -143,7 +145,7 @@ ZKClient.prototype.init = function() {
         } else {
           args[args.length - 1].call(this, new Error("CONNECT ERROR"), null);
         }
-      } else {
+      } else { //未初始化成功
         init_promise.then(function (obj) {
           var client = self._engine.pick();
           if(client) {
