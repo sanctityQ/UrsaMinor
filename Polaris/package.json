@@ -13,9 +13,7 @@
     "koa-router": "^5.1.2",
     "koa-static": "^1.4.9",
     "opn": "^3.0.3",
-    "thrift": "^0.9.3",
     "zeus-template": "*",
-    "node-thrift-pool": "^1.1.0",
     "underscore": "^1.8.3",
     "superagent": "^1.4.0",
     "request": "^2.67.0",
@@ -23,8 +21,11 @@
     "concat-stream": "^1.4.7",
     "moment": "^2.10.0",
     "moment-timezone": "0.5.0",
-    "@itiancai/passport-client":"^0.1.0",
-    "@itiancai/notification-client-node":"^0.0.1"
+    "@itiancai/Puck":"^0.1.0",
+    "@itiancai/passport-client":"^0.2.1",
+    "@itiancai/notification-client-node":"^0.0.1",
+    "@itiancai/user-client-node":"^0.12.0",
+    "@itiancai/interact-client-node":"^0.12.0"
   },
   "devDependencies": {
     "chalk": "^1.1.1",

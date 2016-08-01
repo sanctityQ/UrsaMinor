@@ -51,12 +51,32 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      host: '127.0.0.1',
-      port: 9981
+      url: 'zk!10.10.54.51:2181,10.10.59.172:2181,10.10.58.116:2181!/rpc/services/passport',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
     },
     notifaction: {
-      host: '127.0.0.1',
-      port: 9951
+      url: 'zk!10.10.54.51:2181,10.10.59.172:2181,10.10.58.116:2181!/rpc/services/sms',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
+    },
+    user: {
+      url: 'zk!10.10.54.51:2181,10.10.59.172:2181,10.10.58.116:2181!/rpc/services/p2p/user',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
+    },
+    interact: {
+      url: 'zk!10.10.54.51:2181,10.10.59.172:2181,10.10.58.116:2181!/rpc/services/p2p/interact',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
     }
   },
 

@@ -33,6 +33,9 @@ function setMap(ctrs) {
 
   //验证码
   router.get('/api/captcha/img', ctrs.captcha.genImg);
+  router.post('/api/captcha/validate/img', ctrs.captcha.validateImg);
+
+  router.post('/api/captcha/validate/sms/resetPassword', ctrs.captcha.validateSms4ResetPassword);
   //type:(sms|sound)
   router.post('/api/captcha/:type/:biz', ctrs.captcha.sendSmsCaptcha);
   //router.post('/api/captcha/:type/resetPassword', ctrs.captcha.sendSms4ResetPassword);
@@ -48,6 +51,8 @@ function setMap(ctrs) {
 
   //验证手机号
   router.get('/api/check/mobile', ctrs.check.checkMobile);
+  //验证 身份信息是否匹配
+  router.post('/api/check/idNumber/match', ctrs.check.matchIdNumber);
 
   //重置密码
   router.post('/api/password/reset', ctrs.password.reset);

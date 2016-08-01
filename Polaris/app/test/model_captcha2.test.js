@@ -29,38 +29,38 @@ describe("图片验证码测试", function () {
     captchaModel.__set__('developMode', false);
   });
 
-  it("获取图片验证码[成功]", function (done) {
-    var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
-    var answer = "bgako";
-    var key = captcha_utils.img_captcha_key(tokenNo);
-    var ttl = 1800;
-    var setex_spy = sinon.spy(redis_client, 'setex');
-    nock(conf.captcha.img.server)
-        .get(conf.captcha.img.path)
-        .replyWithFile(200, __dirname + '/captcha.test.png', {
-                         "Content-Type": "image/png",
-                         "x-captcha-answer": answer,
-                         "x-captcha-token": tokenNo
-                       }
-        );
-    captchaModel.genImgCaptcha().then(function (data) {
-      setex_spy.calledOnce.should.be.true; //answer存入redis
-      setex_spy.calledWith(key, ttl, sinon.match(function(value){
-        var obj = JSON.parse(value);
-        return answer == obj.answer;
-      })).should.be.true; //验证参数
-      data.should.have.property('token').and.not.empty();
-      data.should.have.property('captcha').and.not.empty();
-      data.token.should.equal(tokenNo);
-      data.captcha.should.equal('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAAyCAIAAAAx7rVNAAACXElEQVR42u3bUXKEIBAEUO5/mT2iqVSyiZso9HQPCG5P+ZGqqEEeAyikbI7Fo7gKTOgwoeNKwsfj+7hr3fw/7kD4w7Y/TGhCE5rQhCY0oQlNaD8TmtCEJjThnQhp5rzGoVb++xIe/hYh4a7Cap6BiF4Jnpn0mN0Im35nBQ1dWL1VgY9MQuQ08BnjkFcQ/iklftXXhc+fCxegIk5I+X0WJK/j2XIUoxLNW1WfPyd0Qjb/fosgK3YgBM8E/V7vU7oFQyj7vfxdVjGbMNT3Rm5yXO/EZAfkbBIK85fTdnM9YUrHG8IT56sIZzc/iBB4ujzClLEzihecv1VSK9DZ4lPbUAqyiTiEMP6+AeGlEjabznF2bnkpyNbtdIS15g92vGd5hr8p7H7NT2yJFFydsF07rb9b4kcoW2OcRAquSwg17WrfW9iD/kwHcUZTcEVCsV8S/RTCaHaCXxTSCPNfmRU8gRA8AZ32AHeR/OYkRKW5PI7YjCHcF/hdCKWuuIffRmV0q8B8M718LMRHe+7ZRhNuJKHSTBf+OkPPRfN70RI5gf7UMo4wlPL0OhS2JDJuINw6J+LQlQp8sQJff2cXHemcySdUFIUlww6EKeu9yLKU8FFGJdQVkXbccclXIYzeB2vIUxNy1dV340VloM7dvqZ93W6+zh3XOb1rJlGx7/YncK7FFShjV2po8EJzUSfEIYMhEw6IpC2Xpcf+XvqmqZuerwi8xB32/6+wRXtyQnGL/l3/nXFJQuG7mmMmQmIDqmOKsTDltdJx8XBuwuUJo5/ZHJMSevJyH0KHCd8zPgAFm21phXexrAAAAABJRU5ErkJggg==');
-
-      setex_spy.restore();
-      done();
-    })
-  });
+  // it("获取图片验证码[成功]", function (done) {
+  //   var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
+  //   var answer = "bgako";
+  //   var key = captcha_utils.img_captcha_key(tokenNo);
+  //   var ttl = 1800;
+  //   var setex_stub = sinon.stub(redis_client, 'setex');
+  //   nock(conf.captcha.img.server)
+  //       .get(conf.captcha.img.path)
+  //       .replyWithFile(200, __dirname + '/captcha.test.png', {
+  //                        "Content-Type": "image/png",
+  //                        "x-captcha-answer": answer,
+  //                        "x-captcha-token": tokenNo
+  //                      }
+  //       );
+  //   captchaModel.genImgCaptcha().then(function (data) {
+  //     setex_stub.calledOnce.should.be.true; //answer存入redis
+  //     setex_stub.calledWith(key, ttl, sinon.match(function(value){
+  //       var obj = JSON.parse(value);
+  //       return answer == obj.answer;
+  //     })).should.be.true; //验证参数
+  //     data.should.have.property('token').and.not.empty();
+  //     data.should.have.property('captcha').and.not.empty();
+  //     data.token.should.equal(tokenNo);
+  //     data.captcha.should.equal('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAAyCAIAAAAx7rVNAAACXElEQVR42u3bUXKEIBAEUO5/mT2iqVSyiZso9HQPCG5P+ZGqqEEeAyikbI7Fo7gKTOgwoeNKwsfj+7hr3fw/7kD4w7Y/TGhCE5rQhCY0oQlNaD8TmtCEJjThnQhp5rzGoVb++xIe/hYh4a7Cap6BiF4Jnpn0mN0Im35nBQ1dWL1VgY9MQuQ08BnjkFcQ/iklftXXhc+fCxegIk5I+X0WJK/j2XIUoxLNW1WfPyd0Qjb/fosgK3YgBM8E/V7vU7oFQyj7vfxdVjGbMNT3Rm5yXO/EZAfkbBIK85fTdnM9YUrHG8IT56sIZzc/iBB4ujzClLEzihecv1VSK9DZ4lPbUAqyiTiEMP6+AeGlEjabznF2bnkpyNbtdIS15g92vGd5hr8p7H7NT2yJFFydsF07rb9b4kcoW2OcRAquSwg17WrfW9iD/kwHcUZTcEVCsV8S/RTCaHaCXxTSCPNfmRU8gRA8AZ32AHeR/OYkRKW5PI7YjCHcF/hdCKWuuIffRmV0q8B8M718LMRHe+7ZRhNuJKHSTBf+OkPPRfN70RI5gf7UMo4wlPL0OhS2JDJuINw6J+LQlQp8sQJff2cXHemcySdUFIUlww6EKeu9yLKU8FFGJdQVkXbccclXIYzeB2vIUxNy1dV340VloM7dvqZ93W6+zh3XOb1rJlGx7/YncK7FFShjV2po8EJzUSfEIYMhEw6IpC2Xpcf+XvqmqZuerwi8xB32/6+wRXtyQnGL/l3/nXFJQuG7mmMmQmIDqmOKsTDltdJx8XBuwuUJo5/ZHJMSevJyH0KHCd8zPgAFm21phXexrAAAAABJRU5ErkJggg==');
+  //
+  //     setex_stub.restore();
+  //     done();
+  //   })
+  // });
 
   it("获取图片验证码[服务异常]", function (done) {
-    var setex_spy = sinon.spy(redis_client, 'setex');
+    var setex_stub = sinon.stub(redis_client, 'setex');
     nock(conf.captcha.img.server)
         .get("/captcha")
         .reply(function (uri, requestBody) {
@@ -68,11 +68,11 @@ describe("图片验证码测试", function () {
         });
     captchaModel.genImgCaptcha().then(function (data) {
     }, function(err) {
-      sinon.assert.notCalled(setex_spy); //保存answer未执行
+      sinon.assert.notCalled(setex_stub); //保存answer未执行
       err.should.have.property('err_code');
       err.err_code.should.equal(apiCode.E10001.err_code);
 
-      setex_spy.restore();
+      setex_stub.restore();
       done();
     })
   });
@@ -81,16 +81,16 @@ describe("图片验证码测试", function () {
     var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
     var captcha = "bgako";
     var key = captcha_utils.img_captcha_key(tokenNo);
-    var del_spy = sinon.spy(redis_client, 'del');
+    var del_stub = sinon.stub(redis_client, 'del');
     var get_stub = sinon.stub(redis_client, 'get', function(key, cb) {
       cb(null, '{"createTime":1453081988973,"ttl":1800,"answer":"bgako"}');
     });
-    captchaModel.validateImgCaptcha(tokenNo, captcha).then(function (data) {
+    captchaModel.validateImgCaptcha(tokenNo, captcha, true).then(function (data) {
       sinon.assert.calledOnce(get_stub); //获取验证码执行一次
-      del_spy.calledWith(key).should.be.true; //清除缓存执行一次
+      del_stub.calledWith(key).should.be.true; //清除缓存执行一次
       data.should.be.true;
 
-      del_spy.restore(); get_stub.restore();
+      del_stub.restore(); get_stub.restore();
       done();
     }, function(err) {
     })
@@ -100,35 +100,35 @@ describe("图片验证码测试", function () {
     var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
     var captcha = "bgako";
     var key = captcha_utils.img_captcha_key(tokenNo);
-    var del_spy = sinon.spy(redis_client, 'del');
+    var del_stub = sinon.stub(redis_client, 'del');
     var get_stub = sinon.stub(redis_client, 'get', function(key, cb) {
       cb(null, null);
     });
-    captchaModel.validateImgCaptcha(tokenNo, captcha).then(function (data) {
+    captchaModel.validateImgCaptcha(tokenNo, captcha, true).then(function (data) {
     }, function(err) {
       sinon.assert.calledOnce(get_stub); //获取验证码执行一次
-      sinon.assert.notCalled(del_spy);
+      sinon.assert.notCalled(del_stub);
       err.should.have.property('err_code');
       err.err_code.should.equal(apiCode.E20014.err_code);
 
-      del_spy.restore(); get_stub.restore();
+      del_stub.restore(); get_stub.restore();
       done();
     })
   });
 
   it("校验图片验证码[参数错误]", function (done) {
-    var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
+    var tokenNo = "";
     var captcha = null;
-    var del_spy = sinon.spy(redis_client, 'del');
-    var get_spy = sinon.spy(redis_client, 'get');
-    captchaModel.validateImgCaptcha(tokenNo, captcha).then(function (data) {
+    var del_stub = sinon.stub(redis_client, 'del');
+    var get_stub = sinon.stub(redis_client, 'get');
+    captchaModel.validateImgCaptcha(tokenNo, captcha, true).then(function (data) {
     }, function(err) {
-      sinon.assert.notCalled(get_spy);
-      sinon.assert.notCalled(del_spy);
+      sinon.assert.notCalled(get_stub);
+      sinon.assert.notCalled(del_stub);
       err.should.have.property('err_code');
       err.err_code.should.equal(apiCode.E20098.err_code);
 
-      del_spy.restore(); get_spy.restore();
+      del_stub.restore(); get_stub.restore();
       done();
     })
   });
@@ -136,18 +136,18 @@ describe("图片验证码测试", function () {
   it("校验图片验证码[开发模式]", function (done) {
     captchaModel.__set__('developMode', true); //设置开发模式
     var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
-    var captcha = "xxxxx"; //随便填写
+    var captcha = "AAAAA"; //随便填写
     var key = captcha_utils.img_captcha_key(tokenNo);
-    var del_spy = sinon.spy(redis_client, 'del');
+    var del_stub = sinon.stub(redis_client, 'del');
     var get_stub = sinon.stub(redis_client, 'get', function(key, cb) {
       cb(null, '{"createTime":1453081988973,"ttl":1800,"answer":"bgako"}');
     });
-    captchaModel.validateImgCaptcha(tokenNo, captcha).then(function (data) {
+    captchaModel.validateImgCaptcha(tokenNo, captcha, true).then(function (data) {
       sinon.assert.calledOnce(get_stub); //获取验证码执行一次
-      del_spy.calledWith(key).should.be.true; //清除缓存执行一次
+      del_stub.calledWith(key).should.be.true; //清除缓存执行一次
       data.should.be.true;
 
-      del_spy.restore(); get_stub.restore();
+      del_stub.restore(); get_stub.restore();
       done();
     }, function(err) {
     })
@@ -418,7 +418,7 @@ describe("(短信|语音)验证码[手机号验证]", function () {
       cb(null, JSON.stringify(checkObj));
     });
     var set_stub = sinon.stub(redis_client, 'set');
-    var pexpireat_stub = sinon.spy(redis_client, 'pexpireat');
+    var pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
     captchaModel.getMobileCheck(mobile).then(function(data){
       sinon.assert.calledOnce(get_stub);
       sinon.assert.notCalled(set_stub);

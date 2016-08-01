@@ -18,6 +18,8 @@ var userValidate_stub;
 var getMobileCheck_stub;
 var mobileCheck_stub;
 var sendSmsCaptcha_stub;
+var validateImgCaptcha_stub;
+var validateSmsCaptcha_stub;
 
 before(function () {
 
@@ -72,6 +74,52 @@ describe("图片验证码测试", function () {
           done();
         });
   });
+
+  it("图片验证码正确", function (done) {
+    var validateImgCaptcha_stub = sinon.stub(captchaModel, "validateImgCaptcha");
+    validateImgCaptcha_stub.returns(new Promise(function (resolve, reject) {
+      resolve(true)
+    }));
+    request
+        .post('/api/captcha/validate/img')
+        .send({token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
+        .set('syscode', 'FINANCE')
+        .set('source', 'APP')
+        .expect(200)
+        .end(function (err, res) {
+          validateImgCaptcha_stub.calledOnce.should.be.equal(true);
+          res.statusCode.should.be.equal(200);
+          res.body.should.have.property('token');
+
+          validateImgCaptcha_stub.reset();
+          validateImgCaptcha_stub.restore();
+          done();
+        });
+  });
+
+  it("图片验证码错误", function (done) {
+    var validateImgCaptcha_stub = sinon.stub(captchaModel, "validateImgCaptcha");
+    validateImgCaptcha_stub.returns(new Promise(function (resolve, reject) {
+      reject(ex_utils.buildCommonException(apiCode.E20014));
+    }));
+    request
+        .post('/api/captcha/validate/img')
+        .send({token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
+        .set('syscode', 'FINANCE')
+        .set('source', 'APP')
+        .expect(500)
+        .end(function (err, res) {
+          res.statusCode.should.be.equal(500);
+          res.body.error_code.should.be.equal(20014);
+          validateImgCaptcha_stub.calledOnce.should.be.equal(true);
+
+          validateImgCaptcha_stub.reset();
+          validateImgCaptcha_stub.restore();
+          done();
+        });
+  });
+
+
 });
 
 describe("发送验证码测试", function () {
@@ -81,6 +129,8 @@ describe("发送验证码测试", function () {
     getMobileCheck_stub = sinon.stub(captchaModel, "getMobileCheck");
     mobileCheck_stub = sinon.stub(portalModel, "mobileCheck");
     sendSmsCaptcha_stub = sinon.stub(captchaModel, "sendSmsCaptcha");
+    validateSmsCaptcha_stub = sinon.stub(captchaModel, "validateSmsCaptcha");
+    validateImgCaptcha_stub = sinon.stub(captchaModel, "validateImgCaptcha");
   });
 
   it("注册发送验证码测试[短信成功发送]", function (done) {
@@ -96,10 +146,13 @@ describe("发送验证码测试", function () {
     sendSmsCaptcha_stub.returns(new Promise(function(resolve, reject){
       resolve(true); //优质手机号
     }));
+    validateImgCaptcha_stub.returns(new Promise(function(resolve, reject){
+      resolve(true);
+    }));
     var mobile = '15138695162';
     request
         .post('/api/captcha/sms/register')
-        .send({mobile: mobile}) //登录信息
+        .send({mobile: mobile, token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
         .set('syscode', 'FINANCE')
         .set('source', 'APP')
         .expect(200)
@@ -109,14 +162,34 @@ describe("发送验证码测试", function () {
         });
   });
 
-  it("注册发送验证码测试[手机号已注册]", function (done) {
-    userValidate_stub.returns(new Promise(function(resolve, reject){
-      reject(ex_utils.buildCommonException(apiCode.E20001)); //已存在的用户
+  it("注册发送验证码测试[图片验证码错误]", function (done) {
+    validateImgCaptcha_stub.returns(new Promise(function(resolve, reject){
+      reject(ex_utils.buildCommonException(apiCode.E20014));
     }));
     var mobile = '15138695162';
     request
         .post('/api/captcha/sms/register')
-        .send({mobile: mobile}) //登录信息
+        .send({mobile: mobile, token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
+        .set('syscode', 'FINANCE')
+        .set('source', 'APP')
+        .expect(500)
+        .end(function (err, res) {
+          res.body.error_code.should.be.equal(20014);
+          done();
+        });
+  });
+
+  it("注册发送验证码测试[手机号已注册]", function (done) {
+    userValidate_stub.returns(new Promise(function(resolve, reject){
+      reject(ex_utils.buildCommonException(apiCode.E20001)); //已存在的用户
+    }));
+    validateImgCaptcha_stub.returns(new Promise(function(resolve, reject){
+      resolve(true);
+    }));
+    var mobile = '15138695162';
+    request
+        .post('/api/captcha/sms/register')
+        .send({mobile: mobile, token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
         .set('syscode', 'FINANCE')
         .set('source', 'APP')
         .expect(500)
@@ -130,10 +203,13 @@ describe("发送验证码测试", function () {
     userValidate_stub.returns(new Promise(function(resolve, reject){
       reject(ex_utils.buildCommonException(apiCode.E20002)); //已存在的用户
     }));
+    validateImgCaptcha_stub.returns(new Promise(function(resolve, reject){
+      resolve(true);
+    }));
     var mobile = '133';
     request
         .post('/api/captcha/sms/register')
-        .send({mobile: mobile}) //登录信息
+        .send({mobile: mobile, token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
         .set('syscode', 'FINANCE')
         .set('source', 'APP')
         .expect(500)
@@ -156,10 +232,13 @@ describe("发送验证码测试", function () {
     sendSmsCaptcha_stub.returns(new Promise(function(resolve, reject){
       resolve(true); //优质手机号
     }));
+    validateImgCaptcha_stub.returns(new Promise(function(resolve, reject){
+      resolve(true);
+    }));
     var mobile = '15138695162';
     request
         .post('/api/captcha/sound/resetPassword')
-        .send({mobile: mobile}) //登录信息
+        .send({mobile: mobile, token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
         .set('syscode', 'FINANCE')
         .set('source', 'APP')
         .expect(200)
@@ -169,11 +248,45 @@ describe("发送验证码测试", function () {
         });
   });
 
+  it("验证短信验证码(找回密码)-正确", function (done) {
+    validateSmsCaptcha_stub.returns(new Promise(function(resolve, reject){
+      resolve(true);
+    }));
+    var mobile = '15138695162';
+    request
+        .post('/api/captcha/validate/sms/resetPassword')
+        .send({mobile: mobile, smsCaptcha:"145231"})
+        .set('syscode', 'FINANCE')
+        .set('source', 'APP')
+        .expect(200)
+        .end(function (err, res) {
+          res.body.mobile.should.be.equal(mobile);
+          done();
+        });
+  });
+
+  it("验证短信验证码(找回密码)-错误", function (done) {
+    validateSmsCaptcha_stub.returns(new Promise(function(resolve, reject){
+      reject(ex_utils.buildCommonException(apiCode.E20006)); //验证码错误
+    }));
+    var mobile = '15138695162';
+    request
+        .post('/api/captcha/validate/sms/resetPassword')
+        .send({mobile: mobile, smsCaptcha:"145231"})
+        .set('syscode', 'FINANCE')
+        .set('source', 'APP')
+        .expect(500)
+        .end(function (err, res) {
+          res.body.error_code.should.be.equal(20006);
+          done();
+        });
+  });
+
   it("错误的资源[无法匹配]", function (done) {
     var mobile = '15138695162';
     request
         .post('/api/captcha/sound/xxxxx')
-        .send({mobile: mobile}) //登录信息
+        .send({mobile: mobile, token:"8a4440dd-c99c-4b57-9f7f-099db1d9807f", captcha:"3ade1"})
         .set('syscode', 'FINANCE')
         .set('source', 'APP')
         .expect(404)
@@ -188,6 +301,8 @@ describe("发送验证码测试", function () {
     getMobileCheck_stub.reset();
     mobileCheck_stub.reset();
     sendSmsCaptcha_stub.reset();
+    validateSmsCaptcha_stub.reset();
+    validateImgCaptcha_stub.reset();
   });
 
   after(function() {
@@ -195,5 +310,7 @@ describe("发送验证码测试", function () {
     getMobileCheck_stub.restore();
     mobileCheck_stub.restore();
     sendSmsCaptcha_stub.restore();
+    validateSmsCaptcha_stub.restore();
+    validateImgCaptcha_stub.restore();
   });
 });
