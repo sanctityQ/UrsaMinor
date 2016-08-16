@@ -139,11 +139,12 @@ module.exports = {
    * 验证图片验证码
    * @param token
    * @param captcha
+   * @param clear
    * @returns {Promise}
    */
-  validateImgCaptcha: function (token, captcha) {
+  validateImgCaptcha: function (token, captcha, clear) {
     return new Promise(function (resolve, reject) {
-      if (token && captcha) { //验证数据有效性
+      if (token) { //验证数据有效性
         var key = captcha_utils.img_captcha_key(token);
         redis_client.get(key, function (err, result) {
           if (err) { //redis服务异常
@@ -153,7 +154,9 @@ module.exports = {
               if (result) { //存在对应token验证码
                 var img_captcha = JSON.parse(result);
                 var answer = img_captcha.answer;
-                redis_client.del(key); //只能验证一次
+                if(clear) { //只能验证一次
+                  redis_client.del(key);
+                }
                 if(answer.toUpperCase() == captcha.toUpperCase()) {
                   resolve(true);
                 } else {
@@ -163,8 +166,14 @@ module.exports = {
                 reject(ex_utils.buildCommonException(apiCode.E20014));
               }
             } else {//开发模式
-              redis_client.del(key); //只能验证一次
-              resolve(true);
+              if(clear) { //只能验证一次
+                redis_client.del(key);
+              }
+              if(result && "AAAAA" == captcha.toUpperCase()) {
+                resolve(true);
+              } else {
+                reject(ex_utils.buildCommonException(apiCode.E20014));
+              }
             }
           }
         });
@@ -214,7 +223,7 @@ module.exports = {
                     resolve(response);
                   } else {
                     tclog.error({traceNo: traceNo, msg:"sendSmsCaptcha error", err:err});
-                    reject(ex_utils.buildCommonException(apiCode.E20013));
+                    reject(ex_utils.buildCommonException(apiCode.E20020));
                   }
                 }
               });
@@ -233,7 +242,7 @@ module.exports = {
                     resolve(response);
                   } else {
                     tclog.error({traceNo: traceNo, msg:"sendSmsCaptcha error", err:err});
-                    reject(ex_utils.buildCommonException(apiCode.E20013));
+                    reject(ex_utils.buildCommonException(apiCode.E20020));
                   }
                 }
               });
@@ -242,7 +251,11 @@ module.exports = {
             }
           }
         } else { //小于最小发送间隔
-          reject(ex_utils.buildCommonException(apiCode.E20013)); //验证码发送失败
+          var exception = ex_utils.buildCommonException(apiCode.E20013);
+          var now = Date.now();
+          var interval = captchaObj.sendTime ? (now - captchaObj.sendTime) : 0;
+          exception.interval = Math.floor(interval / 1000);
+          reject(exception); //验证码发送失败
         }
       });
     });
