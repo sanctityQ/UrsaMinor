@@ -51,28 +51,28 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      url: '127.0.0.1:9981',
+      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/base/passport',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     notifaction: {
-      url: '127.0.0.1:9951',
+      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/base/sms',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     user: {
-      url: '127.0.0.1:9970',
+      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/p2p/user',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     interact: {
-      url: '127.0.0.1:9971',
+      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/p2p/interact',
       options: {
         max_connections:100,
         min_connections: 10
