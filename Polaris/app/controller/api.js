@@ -48,11 +48,24 @@ module.exports = {
   register: function *() {
     var postBody = this.request.body;
     var headerBody = this.header;
+    var sysCode = headerBody.syscode;
+    var clientInfo_ = headerBody["x-client"];
+    if(clientInfo_) {
+      //"build":"1","os":"iOS","device" :"iPhone","app":"tc","ver" : "1.3.0","osv" : "9.2.1","scr" : "{640, 1136}","net" : "WIFI"
+      var clientInfo = JSON.parse(clientInfo_);
+      if(clientInfo && clientInfo.app) {
+        if(clientInfo.app == 'tc') {
+          sysCode = "P2P";
+        } else if(clientInfo.app == 'nj') {
+          sysCode = "FINANCE";
+        }
+      }
+    }
     var smsCaptcha = postBody.smsCaptcha; //短信验证码(语音)
     var traceNo = this.req.traceNo+"";
     var registerInfo = {
       source: headerBody.source,
-      sysCode: headerBody.syscode,
+      sysCode: sysCode,
       traceNo: traceNo,
       mobile: postBody.mobile,
       password: postBody.password
@@ -61,16 +74,15 @@ module.exports = {
     try {
       //TODO 是否要放在这里做? 校验邀请码
       var inviteCode = postBody.inviteCode;
-      if(inviteCode) { //邀请码不区分大小写
-        inviteCode = inviteCode.toUpperCase();
-      }
       if(inviteCode) {
+        //邀请码不区分大小写
+        inviteCode = inviteCode.toUpperCase();
         try{
           //如果填写邀请码,验证邀请码是否正确
           var inviteInfo = yield interactModel.findInviteInfoByUserKey(inviteCode);
           tclog.debug({inviteInfo : inviteInfo});
         } catch(err) {
-          if(err.err_code == 10001) { 
+          if(err.err_code == 10001) {
             //interact服务异常,不能影响注册
             tclog.error({msg : "findInviteInfoByUserKey err"})
           } else {
@@ -78,7 +90,6 @@ module.exports = {
           }
         }
       }
-      
       //短信验证码是否正确
       var biz_type = captcha2Model.BIZ_TYPE.REGISTER;
       var validObj = {biz_type:biz_type, captcha:smsCaptcha, mobile:registerInfo.mobile};
@@ -88,7 +99,7 @@ module.exports = {
       captcha2Model.clearSmsCaptcha(traceNo, registerInfo.mobile, biz_type);//清除注册短信
       var loginInfo = { //登录信息
         source: headerBody.source,
-        sysCode: headerBody.syscode,
+        sysCode: sysCode,
         traceNo: traceNo,
         credential: postBody.mobile,
         password: postBody.password
@@ -101,9 +112,22 @@ module.exports = {
         userModel.findUserByPassportUser(passportUser).then(function(user) {
           tclog.notice({msg:"triggerInteract register", user:user.id, inviteCode:inviteCode});
           interactModel.triggerInteract(0, user.id, inviteCode, user.id);
+          if(sysCode == 'P2P') {
+            tclog.notice({msg:"autoSendCoupon", user:user.id});
+            interactModel.autoSendCoupon(user.id);
+          }
         }).catch(function(err) {
-          tclog.error({msg:"triggerInteract error", user:user.id, inviteCode:inviteCode, err:err});
+          tclog.error({msg:"findUserByPassportUser error", err:err});
         });
+      } else { //未填写邀请码
+        if(sysCode == 'P2P') {
+          userModel.findUserByPassportUser(passportUser).then(function(user) {
+            tclog.notice({msg:"autoSendCoupon", user:user.id});
+            interactModel.autoSendCoupon(user.id);
+          }).catch(function(err) {
+            tclog.error({msg:"findUserByPassportUser error", err:err});
+          });
+        }
       }
       yield this.api(result);
     } catch (err) {
@@ -126,7 +150,7 @@ module.exports = {
       sysCode:headerBody.syscode,
       traceNo: traceNo,
       tokenNo: tokenNo
-    }
+    };
     var result = yield tokenModel.removeToken(tokenInfo);
     tclog.notice({api:'/api/logout', traceNo:traceNo, result:result});
     yield this.api({access_token:tokenNo, msg:'退出成功'});

@@ -51,14 +51,14 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      url: 'zk!192.168.0.211:2181,192.168.0.212:2181,192.168.0.213:2181!/rpc/services/passport',
+      url: 'zk!192.168.0.211:2181,192.168.0.212:2181,192.168.0.213:2181!/rpc/services/base/passport',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     notifaction: {
-      url: 'zk!192.168.0.211:2181,192.168.0.212:2181,192.168.0.213:2181!/rpc/services/sms',
+      url: 'zk!192.168.0.211:2181,192.168.0.212:2181,192.168.0.213:2181!/rpc/services/base/sms',
       options: {
         max_connections:100,
         min_connections: 10
@@ -73,6 +73,13 @@ module.exports = {
     },
     interact: {
       url: 'zk!192.168.0.211:2181,192.168.0.212:2181,192.168.0.213:2181!/rpc/services/p2p/interact',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
+    },
+    coupon: {
+      url: 'zk!192.168.0.211:2181,192.168.0.212:2181,192.168.0.213:2181!/rpc/services/p2p/coupon',
       options: {
         max_connections:100,
         min_connections: 10

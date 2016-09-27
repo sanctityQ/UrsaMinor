@@ -77,6 +77,13 @@ module.exports = {
         max_connections:100,
         min_connections: 10
       }
+    },
+    coupon: {
+      url: 'zk!127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183!/rpc/services/p2p/coupon',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
     }
   },
 
