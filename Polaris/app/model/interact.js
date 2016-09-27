@@ -3,21 +3,23 @@ var _ = require('underscore');
 var client_factory = require("../libs/client_factory");
 var ex_utils = require('../libs/exception.js');
 var apiCode = require("../conf/ApiCode.js");
-var interact_types = client_factory.interact_types;
-var ttypes = interact_types.ttypes;
-var client = client_factory.interact_client;
+var interact_types = client_factory.interact_types.ttypes;
+var interact_client = client_factory.interact_client;
+
+var coupon_types = client_factory.coupon_types.ttypes;
+var coupon_client = client_factory.interact_client;
 
 module.exports = {
 
   triggerInteract : function(interactType, userId, inviteCode, extVal) {
     tclog.notice({userId:userId, interactType:interactType, inviteCode:inviteCode});
-    var action = new ttypes.InteractAction({
+    var action = new interact_types.InteractAction({
       activeType:interactType,
       activeValue:extVal,
       inviterCode:inviteCode,
       userId:userId
     });
-    client.interactActiveDeal(action, function(err, response) {
+    interact_client.interactActiveDeal(action, function(err, response) {
       if(err) {
         tclog.notice({msg:"triggerInteract error", userId:userId, interactType:interactType, error:err});
       } else {
@@ -33,7 +35,7 @@ module.exports = {
    */
   findInviteInfoByUserKey : function (inviteCode) {
     return new Promise(function (resolve, reject) {
-      client.findInviteInfoByUserKey(inviteCode, function (err, response) {
+      interact_client.findInviteInfoByUserKey(inviteCode, function (err, response) {
         if(err) {
           tclog.warn({msg : "findInviteInfoByUserKey error", inviteCode: inviteCode, error: err});
           if(err.errorCode) {
@@ -47,6 +49,26 @@ module.exports = {
           }
         } else {
           resolve(response);
+        }
+      });
+    });
+  },
+
+  /**
+   * 自动发送优惠券
+   * @param userId
+   * @returns {Promise}
+   */
+  autoSendCoupon : function (userId) {
+    return new Promise(function (resolve, reject) {
+      //CouponSendScene REGISTER = 1 代表注册
+      coupon_client.autoSendCoupon(1, userId, function (err, response) {
+        if(err) {
+          tclog.warn({msg : "autoSendCoupon error", error: err});
+          reject(ex_utils.buildCommonException(apiCode.E10001));
+        } else {
+          tclog.notice({msg : "autoSendCoupon success", userId: userId, response: response});
+          resolve(true);
         }
       });
     });

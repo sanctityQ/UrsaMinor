@@ -21,10 +21,12 @@
     "concat-stream": "^1.4.7",
     "moment": "^2.10.0",
     "moment-timezone": "0.5.0",
+    "thrift": "0.9.3",
     "@itiancai/Puck":"^0.1.0",
     "@itiancai/passport-client":"^0.2.1",
     "@itiancai/notification-client-node":"^0.0.1",
     "@itiancai/user-client-node":"^0.12.0",
+    "@itiancai/coupon-client-node":"^0.13.0",
     "@itiancai/interact-client-node":"^0.12.0"
   },
   "devDependencies": {
