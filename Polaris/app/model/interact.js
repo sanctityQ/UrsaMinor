@@ -7,7 +7,7 @@ var interact_types = client_factory.interact_types.ttypes;
 var interact_client = client_factory.interact_client;
 
 var coupon_types = client_factory.coupon_types.ttypes;
-var coupon_client = client_factory.interact_client;
+var coupon_client = client_factory.coupon_client;
 
 module.exports = {
 
@@ -60,17 +60,13 @@ module.exports = {
    * @returns {Promise}
    */
   autoSendCoupon : function (userId) {
-    return new Promise(function (resolve, reject) {
-      //CouponSendScene REGISTER = 1 代表注册
-      coupon_client.autoSendCoupon(1, userId, function (err, response) {
-        if(err) {
-          tclog.warn({msg : "autoSendCoupon error", error: err});
-          reject(ex_utils.buildCommonException(apiCode.E10001));
-        } else {
-          tclog.notice({msg : "autoSendCoupon success", userId: userId, response: response});
-          resolve(true);
-        }
-      });
+    //CouponSendScene REGISTER = 1 代表注册
+    coupon_client.autoSendCoupon(1, userId, function (err, response) {
+      if(err) {
+        tclog.warn({msg : "autoSendCoupon error", error: err});
+      } else {
+        tclog.notice({msg : "autoSendCoupon success", userId: userId, response: response});
+      }
     });
   }
 };
