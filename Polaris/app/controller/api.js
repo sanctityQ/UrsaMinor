@@ -108,27 +108,17 @@ module.exports = {
       var passportUser = yield passportModel.login(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
       var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
-      if(inviteCode) { //如果填写了邀请码
-        userModel.findUserByPassportUser(passportUser).then(function(user) {
+      //初始化p2p用户
+      userModel.findUserByPassportUser(passportUser).then(function(user) {
+        if(inviteCode) { //如果填写了邀请码
           tclog.notice({msg:"triggerInteract register", user:user.id, inviteCode:inviteCode});
           interactModel.triggerInteract(0, user.id, inviteCode, user.id);
-          if(sysCode == 'P2P') {
-            tclog.notice({msg:"autoSendCoupon", user:user.id});
-            interactModel.autoSendCoupon(user.id);
-          }
-        }).catch(function(err) {
-          tclog.error({msg:"findUserByPassportUser error", err:err});
-        });
-      } else { //未填写邀请码
-        if(sysCode == 'P2P') {
-          userModel.findUserByPassportUser(passportUser).then(function(user) {
-            tclog.notice({msg:"autoSendCoupon", user:user.id});
-            interactModel.autoSendCoupon(user.id);
-          }).catch(function(err) {
-            tclog.error({msg:"findUserByPassportUser error", err:err});
-          });
         }
-      }
+        tclog.notice({msg:"autoSendCoupon register", user:user.id});
+        interactModel.autoSendCoupon(user.id);
+      }).catch(function(err) {
+        tclog.error({msg:"findUserByPassportUser error", err:err});
+      });
       yield this.api(result);
     } catch (err) {
       tclog.warn({api:'/api/register', traceNo:traceNo, err:err});
