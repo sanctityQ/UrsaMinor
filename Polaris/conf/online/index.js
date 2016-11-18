@@ -77,12 +77,19 @@ module.exports = {
         max_connections:100,
         min_connections: 10
       }
+    },
+    coupon: {
+      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/p2p/coupon',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
     }
   },
 
   // redis连接相关配置
   redis: {
-    sentinels: [{ host: '10.10.134.123', port: 26379 }, { host: '10.10.128.130', port: 26379 }, { host: '10.10.8.63', port: 26379 }],
+    sentinels: [{ host: '10.10.140.82', port: 26379 }, { host: '10.10.159.69', port: 26379 }, { host: '10.10.187.65', port: 26379 }],
     name: 'resque',
     enableOfflineQueue: false,
     sentinelRetryStrategy: function (times) {

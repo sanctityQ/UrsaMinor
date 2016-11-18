@@ -77,6 +77,13 @@ module.exports = {
         max_connections:100,
         min_connections: 10
       }
+    },
+    coupon: {
+      url: '127.0.0.1:9974',
+      options: {
+        max_connections:100,
+        min_connections: 10
+      }
     }
   },
 
