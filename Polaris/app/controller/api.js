@@ -10,6 +10,7 @@ var userModel = require('../model/user.js');
 var interactModel = require('../model/interact.js');
 var tclog = require('../libs/tclog.js');
 var tokenModel = require('../model/token.js');
+var wechat = require('../model/social/wechat');
 var _ = require('underscore');
 
 
@@ -51,7 +52,8 @@ module.exports = {
     var sysCode = headerBody.syscode;
     var clientInfo_ = headerBody["x-client"];
     if(clientInfo_) {
-      //"build":"1","os":"iOS","device" :"iPhone","app":"tc","ver" : "1.3.0","osv" : "9.2.1","scr" : "{640, 1136}","net" : "WIFI"
+      //"build":"1","os":"iOS","device" :"iPhone","app":"tc","ver" : "1.3.0","osv" : "9.2.1","scr"
+      // : "{640, 1136}","net" : "WIFI"
       var clientInfo = JSON.parse(clientInfo_);
       if(clientInfo && clientInfo.app) {
         if(clientInfo.app == 'tc') {
@@ -122,6 +124,101 @@ module.exports = {
       yield this.api(result);
     } catch (err) {
       tclog.warn({api:'/api/register', traceNo:traceNo, err:err});
+      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+    }
+  },
+
+  login4Social: function* () {
+    var postBody = this.request.body;
+    var headerBody = this.header;
+    var sysCode = headerBody.syscode;
+    var traceNo = this.req.traceNo+"";
+    var socialType = postBody.socialType;
+    var socialCode = postBody.socialCode;
+    var appId = postBody.appId;
+    var social_token = yield wechat.getAccessToken(socialCode);
+    var social_user = yield wechat.getUserInfo(social_token.token, social_token.openId);
+    var loginInfo = {
+      source: headerBody.source,
+      sysCode: sysCode,
+      traceNo: traceNo,
+      socialType: socialType,
+      socialId: social_user.socialId,
+      appId: appId,
+      openId: social_token.openId
+    };
+    //日志输出不包含密码信息
+    tclog.notice({api:'/api/login', loginInfo: _.omit(loginInfo)});
+    try {
+      var passportUser = yield passportModel.login4Social(loginInfo);
+      var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
+      passportUser.nickName = social_user.nickName;
+      passportUser.headUrl = social_user.headUrl;
+      var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
+      yield this.api(result);
+    } catch (err) { //500
+      tclog.error({api:'/api/login', traceNo:traceNo, err:err});
+      if(err.err_code == 20020) {
+        wechat.saveToken(socialCode, social_user);
+      }
+      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+    }
+  },
+
+  login4Sms: function* () {
+    var headerBody = this.header;
+    var postBody = this.request.body;
+    var mobile = postBody.mobile;
+    var smsCaptcha = postBody.smsCaptcha;
+    var traceNo = this.req.traceNo+"";
+
+    var userInfo = {
+      source: headerBody.source,
+      sysCode: headerBody.syscode,
+      traceNo: traceNo,
+      name: 'MOBILE',
+      value: mobile
+    };
+    var passportUser;
+    try {
+      passportUser = yield passportModel.userInfo(userInfo);
+    } catch (err) {
+      var regInfo = {
+        source: headerBody.source,
+        sysCode: headerBody.syscode,
+        traceNo: traceNo,
+        mobile: mobile
+      };
+      passportUser = yield passportModel.regNoPwd(regInfo)
+    }
+    try {
+      var social_user = yield wechat.getToken(postBody.socialCode);
+      var socialType = social_user.socialType;
+      var socialInfo = {
+        source: headerBody.source,
+        sysCode: headerBody.syscode,
+        traceNo: traceNo,
+        userId: passportUser.id,
+        socialType: socialType,
+        socialId: social_user.socialId
+      };
+      yield passportModel.bindSocial(socialInfo);
+      var loginInfo = {
+        source: headerBody.source,
+        sysCode: headerBody.syscode,
+        traceNo: traceNo,
+        socialType: socialType,
+        socialId: social_user.socialId,
+        appId: social_user.appId,
+        openId: social_user.openId
+      };
+      passportUser = yield passportModel.login4Social(loginInfo);
+      var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
+      passportUser.nickName = social_user.nickName;
+      passportUser.headUrl = social_user.headUrl;
+      yield this.api({access_token:tokenNo, user:passportUser,msg:'登录成功'});
+    } catch (err) { //500
+      tclog.error({api:'/api/login', traceNo:traceNo, err:err});
       yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
     }
   },

@@ -46,6 +46,8 @@ function setMap(ctrs) {
 
   //主流程
   router.post('/api/login', ctrs.api.login);
+  router.post('/api/login/social', ctrs.api.login4Social);
+  router.post('/api/login/sms', ctrs.api.login4Sms);
   router.post('/api/register', ctrs.api.register);
   router.get('/api/logout', ctrs.api.logout);
 

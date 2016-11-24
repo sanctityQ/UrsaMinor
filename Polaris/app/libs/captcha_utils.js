@@ -74,5 +74,13 @@ module.exports = {
    */
   sms_captcha_resetpwd_key: function(mobile) {
     return "passport:captcha:sms:resetpwd:"+mobile;
+  },
+  /**
+   * 短信登陆redis_key
+   * @param mobile
+   * @returns {string}
+   */
+  sms_captcha_login_key: function(mobile) {
+    return "passport:captcha:sms:login:"+mobile;
   }
 }
