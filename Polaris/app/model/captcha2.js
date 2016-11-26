@@ -32,16 +32,7 @@ var BIZ_TYPE = {
  */
 function getCaptcha(mobile, biz_type, flag) {
   return new Promise(function (resolve, reject) {
-    var key;
-    if (biz_type == BIZ_TYPE.REGISTER) { //注册
-      key = captcha_utils.sms_captcha_register_key(mobile);
-    } else if(biz_type == BIZ_TYPE.RESETPWD) { //找回密码
-      key = captcha_utils.sms_captcha_resetpwd_key(mobile);
-    } else if(biz_type == BIZ_TYPE.LOGIN) { //短信登陆
-      key = captcha_utils.sms_captcha_login_key(mobile);
-    } else {
-      //TODO 参数错误
-    }
+    var key = captcha_utils.sms_captcha_key(biz_type, mobile);
     var captchaObj = {};
     redis_client.get(key, function(err, result) {
       captchaObj = result;
@@ -333,16 +324,7 @@ module.exports = {
    * @param biz_type
    */
   clearSmsCaptcha: function(traceNo, mobile, biz_type) {
-    var key;
-    if (biz_type == BIZ_TYPE.REGISTER) { //注册
-      key = captcha_utils.sms_captcha_register_key(mobile);
-    } else if (biz_type == BIZ_TYPE.RESETPWD) { //找回密码
-      key = captcha_utils.sms_captcha_resetpwd_key(mobile);
-    } else if (biz_type == BIZ_TYPE.LOGIN) { //短息登陆
-      key = captcha_utils.sms_captcha_login_key(mobile);
-    } else {
-      //TODO 参数错误
-    }
+    var key = captcha_utils.sms_captcha_key(biz_type, mobile);
     redis_client.del(key); //清除验证码信息
   },
 
