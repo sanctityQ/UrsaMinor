@@ -24,6 +24,8 @@ module.exports = {
     E20018 : {err_code:20018, err_msg:"邀请码错误"},
     E20019 : {err_code:20019, err_msg:"邀请码无效"},
     E20020 : {err_code:20020, err_msg:"验证码发送失败"},
+    E20021 : {err_code:20021, err_msg:"社交账号未绑定"},
+    E20022 : {err_code:20022, err_msg:"社交账号已绑定"},
     E20098 : {err_code:20098, err_msg:"数据参数不合法"},
     E20099 : {err_code:20099, err_msg:"不合法的access_token"}
 

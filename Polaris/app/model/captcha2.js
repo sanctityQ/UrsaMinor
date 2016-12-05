@@ -19,7 +19,8 @@ var SMS_TYPE = {
 
 var BIZ_TYPE = {
   REGISTER: 'register',
-  RESETPWD: 'resetPassword'
+  RESETPWD: 'resetPassword',
+  LOGIN: 'login'
 };
 
 /**
@@ -31,12 +32,7 @@ var BIZ_TYPE = {
  */
 function getCaptcha(mobile, biz_type, flag) {
   return new Promise(function (resolve, reject) {
-    var key;
-    if (biz_type == BIZ_TYPE.REGISTER) { //注册
-      key = captcha_utils.sms_captcha_register_key(mobile);
-    } else { //找回密码
-      key = captcha_utils.sms_captcha_resetpwd_key(mobile);
-    }
+    var key = captcha_utils.sms_captcha_key(biz_type, mobile);
     var captchaObj = {};
     redis_client.get(key, function(err, result) {
       captchaObj = result;
@@ -206,8 +202,12 @@ module.exports = {
             //判断业务类型
             if (biz_type == BIZ_TYPE.REGISTER) { //注册
               template = config.captcha.captcha_template.REGISTER;
-            } else { //找回密码
+            } else if (biz_type == BIZ_TYPE.RESETPWD) { //找回密码
               template = config.captcha.captcha_template.RESETPWD;
+            } else if (biz_type == BIZ_TYPE.LOGIN) { //短信登陆
+              template = config.captcha.captcha_template.LOGIN;
+            } else {
+              //TODO 参数错误
             }
             //通过模板生成短信内容
             var content = captcha_utils.genSmsContent({SMS_CAPTCHA: captcha}, template);
@@ -324,12 +324,7 @@ module.exports = {
    * @param biz_type
    */
   clearSmsCaptcha: function(traceNo, mobile, biz_type) {
-    var key;
-    if (biz_type == BIZ_TYPE.REGISTER) { //注册
-      key = captcha_utils.sms_captcha_register_key(mobile);
-    } else { //找回密码
-      key = captcha_utils.sms_captcha_resetpwd_key(mobile);
-    }
+    var key = captcha_utils.sms_captcha_key(biz_type, mobile);
     redis_client.del(key); //清除验证码信息
   },
 

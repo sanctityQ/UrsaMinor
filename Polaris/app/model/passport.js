@@ -89,6 +89,64 @@ module.exports = {
       }
     });
   },
+  
+  //登陆
+  login4Social: function (loginInfo) {
+    return new Promise(function (resolve, reject) {
+      var request = false;
+      try {
+        request = new ttypes.Login4SocialRequest({
+          header: buildHeader(loginInfo),
+          socialType: ttypes.SocialType[loginInfo.socialType],
+          socialId: loginInfo.socialId,
+          appId: loginInfo.appId,
+          openId: loginInfo.openId
+        });
+      } catch (err) {
+        reject(handleError(loginInfo, err));
+      }
+      if (request) {
+        client.login4Social(request, function (err, response) {
+          if (err) { //网络中断或Exception
+            reject(handleError(loginInfo, err));
+          } else {
+            //用户信息Long字段特殊处理
+            var passportUser = _.mapObject(response, function (val, key) {
+              if(val) return val.valueOf();
+              else val;
+            });
+            resolve(passportUser);
+          }
+        })
+      }
+    });
+  },
+
+  //绑定社交账号
+  bindSocial: function (socialInfo) {
+    return new Promise(function (resolve, reject) {
+      var request = false;
+      try {
+        request = new ttypes.BindSocialRequest({
+          header: buildHeader(socialInfo),
+          userId: socialInfo.userId,
+          socialType: ttypes.SocialType[socialInfo.socialType],
+          socialId: socialInfo.socialId
+        });
+      } catch (err) {
+        reject(handleError(socialInfo, err));
+      }
+      if (request) {
+        client.bindSocial(request, function (err, response) {
+          if (err) { //网络中断或Exception
+            reject(handleError(socialInfo, err));
+          } else {
+            resolve(true);
+          }
+        })
+      }
+    });
+  },
 
   //注册
   register: function (registerInfo) {
@@ -108,6 +166,39 @@ module.exports = {
       }
       if (request) { //创建request成功
         client.reg(request, function (err, response) { //调用注册接口
+          if (err) {
+            reject(handleError(registerInfo, err));
+          } else {
+            //用户信息Long字段特殊处理
+            var passportUser = _.mapObject(response.user, function (val, key) {
+              if(val) return val.valueOf();
+              else val;
+            });
+            resolve(passportUser);
+          }
+        })
+      }
+    });
+  },
+
+  //注册
+  regNoPwd: function (registerInfo) {
+    //手机号、密码、渠道、必传
+    return new Promise(function (resolve, reject) {
+      var request = false; //请求信息默认false
+      try {
+        //初始化请求信息
+        request = new ttypes.RegRequest({
+          header: buildHeader(registerInfo),
+          mobile: registerInfo.mobile,
+          autoLogin: false
+        });
+      } catch (err) { //参数错误
+        //输出参数日志
+        reject(handleError(registerInfo, err));
+      }
+      if (request) { //创建request成功
+        client.regNoPwd(request, function (err, response) { //调用注册接口
           if (err) {
             reject(handleError(registerInfo, err));
           } else {

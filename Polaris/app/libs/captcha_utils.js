@@ -60,6 +60,25 @@ module.exports = {
   },
 
   /**
+   * sms captcha redis key
+   * @param biz_type
+   * @param mobile
+   * @returns {*}
+   */
+  sms_captcha_key: function (biz_type, mobile) {
+    if (biz_type == 'register') { //注册
+      return this.sms_captcha_register_key(mobile);
+    } else if (biz_type == 'resetPassword') { //找回密码
+      return this.sms_captcha_resetpwd_key(mobile);
+    } else if (biz_type == 'login') { //短信登陆
+      return this.sms_captcha_login_key(mobile);
+    } else {
+      //TODO 参数错误
+      return "";
+    }
+  },
+
+  /**
    * 注册redis_key
    * @param mobile
    * @returns {string}
@@ -74,5 +93,13 @@ module.exports = {
    */
   sms_captcha_resetpwd_key: function(mobile) {
     return "passport:captcha:sms:resetpwd:"+mobile;
+  },
+  /**
+   * 短信登陆redis_key
+   * @param mobile
+   * @returns {string}
+   */
+  sms_captcha_login_key: function(mobile) {
+    return "passport:captcha:sms:login:"+mobile;
   }
 }
