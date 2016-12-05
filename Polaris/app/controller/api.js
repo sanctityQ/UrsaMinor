@@ -187,7 +187,7 @@ module.exports = {
       }
 
       if(socialCode) {//绑定社交账号
-        var social_user = yield wechat.getToken();
+        var social_user = yield wechat.getToken(socialCode);
         var socialType = social_user.socialType;
         var socialInfo = {
           source: headerBody.source, sysCode: headerBody.syscode, traceNo: traceNo,
@@ -205,6 +205,7 @@ module.exports = {
         passportUser.headUrl = social_user.headUrl;
         yield this.api({access_token:tokenNo, user:passportUser,msg:'登录成功'});
       } else { //直接进行短信密码登陆
+        var loginInfo = {source: headerBody.source, sysCode: headerBody.syscode, traceNo: traceNo};
         var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
         yield this.api({access_token:tokenNo, user:passportUser,msg:'登录成功'});
       }
