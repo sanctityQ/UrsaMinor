@@ -15,7 +15,7 @@ var MAX_SEND_COUNT = config.captcha.MAX_SEND_COUNT;
  * @returns {boolean}
  */
 function validateParam(sms_type, biz_type) {
-  return (sms_type == 'sms' || sms_type == 'sound') && (biz_type == 'register' || biz_type == 'resetPassword');
+  return (sms_type == 'sms' || sms_type == 'sound') && (biz_type == 'register' || biz_type == 'resetPassword' || biz_type == 'login');
 }
 
 /**
@@ -80,7 +80,7 @@ module.exports = {
     var captcha = postBody.captcha; //图片验证码
     var sms_type = this.params.type;
     var biz_type = this.params.biz;
-    tclog.notice({api: 'sendSmsCaptcha', traceNo: traceNo, mobile: mobile});
+    tclog.notice({api: 'sendSmsCaptcha', traceNo: traceNo, mobile: mobile, biz_type:this.params.biz});
     try {
       if (validateParam(sms_type, biz_type)) { //参数验证
         var valid_code;
