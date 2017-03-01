@@ -10,9 +10,12 @@ module.exports = {
    */
   userEscrow: function *() {
     var headerBody = this.header;
+    var traceNo = this.req.traceNo+"";
     var query = this.query;
-    var tokenInfo = {source:'APP', syscode:'P2P', access_token: query.access_token};
-    var passportUser = yield passportModel.tokenInfo(tokenInfo);
+    var tokenReq = {source:'APP', sysCode:'P2P', traceNo: traceNo, access_token: query.access_token};
+    var tokenInfo = yield passportModel.tokenInfo(tokenReq);
+    var userReq = {source: 'APP', sysCode: 'P2P', traceNo: traceNo, name: 'USERID', value: tokenInfo.uid+""};
+    var passportUser = yield passportModel.userInfo(userReq);
     var p2pUser = yield userModel.findUserByPassportUser(passportUser);
     var userEscrow = yield p2pModel.userEscrow(p2pUser.id);
     yield this.api(userEscrow);
@@ -23,9 +26,12 @@ module.exports = {
    */
   userFund: function *() {
     var headerBody = this.header;
+    var traceNo = this.req.traceNo+"";
     var query = this.query;
-    var tokenInfo = {source:'APP', syscode:'P2P', access_token: query.access_token};
-    var passportUser = yield passportModel.tokenInfo(tokenInfo);
+    var tokenReq = {source:'APP', sysCode:'P2P', traceNo: traceNo, access_token: query.access_token};
+    var tokenInfo = yield passportModel.tokenInfo(tokenReq);
+    var userReq = {source: 'APP', sysCode: 'P2P', traceNo: traceNo, name: 'USERID', value: tokenInfo.uid+""};
+    var passportUser = yield passportModel.userInfo(userReq);
     var p2pUser = yield userModel.findUserByPassportUser(passportUser);
     var userFund = yield p2pModel.userFund(p2pUser.id);
     yield this.api(userFund);

@@ -354,6 +354,7 @@ module.exports = {
         reject(handleError(userInfo, err));
       }
       if (request) {
+        console.log(request)
         client.userInfo(request, function (err, response) {
           if (err) {
             reject(handleError(userInfo, err));
@@ -373,13 +374,13 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       var request = false;
       try {
-        request = new ttypes.UserInfoRequest({
+        request = new ttypes.TokenInfoRequest({
           header: buildHeader(tokenInfo),
           access_token: tokenInfo.access_token
         });
       } catch (err) {
         //构建request错误
-        reject(handleError(userInfo, err));
+        reject(handleError(tokenInfo, err));
       }
       if (request) {
         client.tokenInfo(request, function (err, response) {
