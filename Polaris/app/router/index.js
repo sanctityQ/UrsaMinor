@@ -61,5 +61,9 @@ function setMap(ctrs) {
   //修改密码
   router.post('/api/password/change', ctrs.password.change);
   router.post('/api/password/check', ctrs.password.check);
+
+  //p2p接口
+  router.post('/api/user/escrow', ctrs.p2p.userEscrow);
+  router.post('/api/user/fund', ctrs.p2p.userFund);
 }
 module.exports = set;

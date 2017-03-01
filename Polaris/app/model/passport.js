@@ -367,5 +367,34 @@ module.exports = {
         })
       }
     });
+  },
+  
+  tokenInfo: function (tokenInfo) {
+    return new Promise(function (resolve, reject) {
+      var request = false;
+      try {
+        request = new ttypes.UserInfoRequest({
+          header: buildHeader(tokenInfo),
+          access_token: tokenInfo.access_token
+        });
+      } catch (err) {
+        //构建request错误
+        reject(handleError(userInfo, err));
+      }
+      if (request) {
+        client.tokenInfo(request, function (err, response) {
+          if (err) {
+            reject(handleError(userInfo, err));
+          } else {
+            var passportUser = _.mapObject(response, function (val, key) {
+              if(val) return val.valueOf();
+              else val;
+            });
+            resolve(passportUser);
+          }
+        })
+      }
+    });
+    
   }
 }
