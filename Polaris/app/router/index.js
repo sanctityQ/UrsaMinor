@@ -63,7 +63,7 @@ function setMap(ctrs) {
   router.post('/api/password/check', ctrs.password.check);
 
   //p2p接口
-  router.post('/api/user/escrow', ctrs.p2p.userEscrow);
-  router.post('/api/user/fund', ctrs.p2p.userFund);
+  router.get('/api/user/escrow', ctrs.p2p.userEscrow);
+  router.get('/api/user/fund', ctrs.p2p.userFund);
 }
 module.exports = set;
