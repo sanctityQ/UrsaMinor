@@ -34,6 +34,11 @@ module.exports = {
     var passportUser = yield passportModel.userInfo(userReq);
     var p2pUser = yield userModel.findUserByPassportUser(passportUser);
     var userFund = yield p2pModel.userFund(p2pUser.id);
+    var investStatistics = yield p2pModel.investStatistics(passportUser.id);
+    var investStatistics2 = yield p2pModel.investStatistics2(p2pUser.id);
+    userFund.currentIncome = investStatistics2.currentIncome;
+    userFund.obtainIncome = investStatistics2.investInterestAmount;
+    userFund.investAmount = (investStatistics.investStatistics.totalAmount/100).toFixed(2);
     yield this.api(userFund);
   }
 };
