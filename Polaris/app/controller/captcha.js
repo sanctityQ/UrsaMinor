@@ -85,10 +85,7 @@ module.exports = {
       if (validateParam(sms_type, biz_type)) { //参数验证
         var valid_code;
         try{
-          //验证图片验证码 TODO 支持老版本,这个判断需要去掉
-          if(token || captcha) {
-            yield captcha2Model.validateImgCaptcha(token, captcha, true);
-          }
+          yield captcha2Model.validateImgCaptcha(token, captcha, true);
           //验证
           var validateInfo = {source: headerBody.source, sysCode: headerBody.syscode,
             traceNo: traceNo, name: 'MOBILE', value: mobile};
@@ -147,6 +144,30 @@ module.exports = {
       yield this.api({mobile: mobile, msg: '验证通过', id_authenticated:id_authenticated});
     } catch (err) {
       tclog.warn({msg:'validateSms4ResetPassword error', traceNo: traceNo, err: err});
+      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+    }
+  },
+
+  /**
+   *验证短信验证码(找回密码)
+   */
+  validateSms4Register: function* () {
+    var postBody = this.request.body;
+    var headerBody = this.header; //header信息
+    var traceNo = this.req.traceNo + ""; //日志ID
+    var mobile = postBody.mobile; //手机号
+    var smsCaptcha = postBody.smsCaptcha; //短信验证码
+    try {
+      var biz_type = captcha2Model.BIZ_TYPE.REGISTER;
+      var validObj = {
+        source:headerBody.source, sysCode:headerBody.syscode,
+        biz_type: biz_type, mobile: mobile, captcha: smsCaptcha
+      };
+      tclog.notice({traceNo: traceNo, msg: 'validateSms4Register', validObj: validObj});
+      yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
+      yield this.api({mobile: mobile, msg: '验证通过'});
+    } catch (err) {
+      tclog.warn({msg:'validate4Register error', traceNo: traceNo, err: err});
       yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
     }
   }
