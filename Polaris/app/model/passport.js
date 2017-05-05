@@ -98,9 +98,8 @@ module.exports = {
         request = new ttypes.Login4SocialRequest({
           header: buildHeader(loginInfo),
           socialType: ttypes.SocialType[loginInfo.socialType],
-          socialId: loginInfo.socialId,
           appId: loginInfo.appId,
-          openId: loginInfo.openId
+          code: loginInfo.code
         });
       } catch (err) {
         reject(handleError(loginInfo, err));
@@ -122,26 +121,33 @@ module.exports = {
     });
   },
 
-  //绑定社交账号
-  bindSocial: function (socialInfo) {
+  //短信验证码登录
+  login4Sms: function (loginInfo) {
     return new Promise(function (resolve, reject) {
       var request = false;
       try {
-        request = new ttypes.BindSocialRequest({
-          header: buildHeader(socialInfo),
-          userId: socialInfo.userId,
-          socialType: ttypes.SocialType[socialInfo.socialType],
-          socialId: socialInfo.socialId
+        request = new ttypes.Login4SmsRequest({
+          header: buildHeader(loginInfo),
+          mobile: loginInfo.mobile,
+          captcha: loginInfo.captcha,
         });
+        if(loginInfo.code) {
+          request.code = loginInfo.code;
+        }
       } catch (err) {
-        reject(handleError(socialInfo, err));
+        reject(handleError(loginInfo, err));
       }
       if (request) {
-        client.bindSocial(request, function (err, response) {
+        client.login4Sms(request, function (err, response) {
           if (err) { //网络中断或Exception
-            reject(handleError(socialInfo, err));
+            reject(handleError(loginInfo, err));
           } else {
-            resolve(true);
+            //用户信息Long字段特殊处理
+            var passportUser = _.mapObject(response, function (val, key) {
+              if(val) return val.valueOf();
+              else val;
+            });
+            resolve(passportUser);
           }
         })
       }
