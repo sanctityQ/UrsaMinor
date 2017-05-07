@@ -233,7 +233,7 @@ module.exports = {
           } else { //语音验证码
             tclog.notice({traceNo:traceNo, msg:"send voice captcha", mobile:mobile, captcha: captcha});
             if(!developMode) { //非开发模式
-              sms_client.sendVoiceVerifyCode(mobile, captcha, function (err, response) {
+              sms_client.sendAudioMessage(mobile, "您的验证码是"+captcha, function (err, response) {
                 if (err) { //服务一次
                   tclog.error({traceNo:traceNo, msg:"sendSmsCaptcha error", err: err});
                   reject(ex_utils.buildCommonException(apiCode.E10001));

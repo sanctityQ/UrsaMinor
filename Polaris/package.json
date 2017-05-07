@@ -25,7 +25,7 @@
     "request-promise": "~0.3.2",
     "@itiancai/Puck":"^0.1.0",
     "@itiancai/passport-client":"^0.3.2",
-    "@itiancai/notification-client-node":"^0.0.1",
+    "@itiancai/notification-client-node":"^0.3.0",
     "@itiancai/user-client-node":"^0.12.0",
     "@itiancai/coupon-client-node":"^0.13.0",
     "@itiancai/interact-client-node":"^0.12.0"
