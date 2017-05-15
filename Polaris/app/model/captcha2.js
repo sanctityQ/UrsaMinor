@@ -220,16 +220,14 @@ module.exports = {
                   reject(ex_utils.buildCommonException(apiCode.E10001));
                 } else {
                   if(response) {
-                    resolve(response);
+                    tclog.notice({traceNo:traceNo, msg:"sendSmsCaptcha success"});
                   } else {
                     tclog.error({traceNo: traceNo, msg:"sendSmsCaptcha error", err:err});
-                    reject(ex_utils.buildCommonException(apiCode.E20020));
                   }
                 }
               });
-            } else {
-              resolve(true);
             }
+            resolve(true);
           } else { //语音验证码
             tclog.notice({traceNo:traceNo, msg:"send voice captcha", mobile:mobile, captcha: captcha});
             if(!developMode) { //非开发模式
@@ -239,16 +237,14 @@ module.exports = {
                   reject(ex_utils.buildCommonException(apiCode.E10001));
                 } else {
                   if(response) {
-                    resolve(response);
+                    tclog.notice({traceNo:traceNo, msg:"sendAudioMessage success"});
                   } else {
                     tclog.error({traceNo: traceNo, msg:"sendSmsCaptcha error", err:err});
-                    reject(ex_utils.buildCommonException(apiCode.E20020));
                   }
                 }
               });
-            } else { //开发模式发送成功
-              resolve(true);
             }
+            resolve(true);
           }
         } else { //小于最小发送间隔
           var exception = ex_utils.buildCommonException(apiCode.E20013);
