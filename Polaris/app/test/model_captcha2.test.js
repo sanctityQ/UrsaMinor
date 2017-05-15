@@ -358,9 +358,9 @@ describe("(短信|语音)验证码测试[非开发模式]", function () {
       cb(null, JSON.stringify(captchaObj));
     });
     var setex_stub = sinon.stub(redis_client, 'setex');
-    var sendVoiceVerifyCode_stub = sinon.stub(sms_client, "sendVoiceVerifyCode", function(mobile, captcha, cb) {
+    var sendAudioMessage_stub = sinon.stub(sms_client, "sendAudioMessage", function(mobile, captcha, cb) {
       mobile.should.be.equal(sendObj.mobile);
-      captcha.length.should.be.equal(6);
+      captcha.should.be.equal("您的验证码是666666");
       cb(null, true);
     });
     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
@@ -369,12 +369,12 @@ describe("(短信|语音)验证码测试[非开发模式]", function () {
         var obj = JSON.parse(value);
         return obj.captcha.length == 6 && obj.checkCount == 0;
       })).should.equal(true);//验证参数
-      sinon.assert.calledOnce(sendVoiceVerifyCode_stub);
+      sinon.assert.calledOnce(sendAudioMessage_stub);
       data.should.be.true; //发送成功
 
       get_stub.restore();
       setex_stub.restore();
-      sendVoiceVerifyCode_stub.restore();
+      sendAudioMessage_stub.restore();
       done();
     }, function(err) {
     });
