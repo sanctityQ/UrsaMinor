@@ -54,6 +54,7 @@
     "compile-uat": "gulp --ENV=uat compile & npm run test",
     "compile-auto": "gulp --ENV=auto compile & npm run test",
     "compile-test": "gulp --ENV=test compile & npm run test",
+    "compile-test2": "gulp --ENV=test2 compile & npm run test",
     "compile-check": "gulp --ENV=check compile & npm run test",
     "compile-stress": "gulp --ENV=stress compile & npm run test",
     "compile-online": "gulp --ENV=online compile & npm run test",
