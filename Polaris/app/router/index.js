@@ -37,6 +37,7 @@ function setMap(ctrs) {
 
   router.post('/api/captcha/validate/sms/resetPassword', ctrs.captcha.validateSms4ResetPassword);
   router.post('/api/captcha/validate/sms/register', ctrs.captcha.validateSms4Register);
+  router.post('/api/captcha/validate/sms/login', ctrs.captcha.validateSms4Login);
   //type:(sms|sound)
   router.post('/api/captcha/:type/:biz', ctrs.captcha.sendSmsCaptcha);
   //router.post('/api/captcha/:type/resetPassword', ctrs.captcha.sendSms4ResetPassword);

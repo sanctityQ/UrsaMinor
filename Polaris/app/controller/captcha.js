@@ -149,7 +149,7 @@ module.exports = {
   },
 
   /**
-   *验证短信验证码(找回密码)
+   *验证短信验证码(注册)
    */
   validateSms4Register: function* () {
     var postBody = this.request.body;
@@ -164,6 +164,30 @@ module.exports = {
         biz_type: biz_type, mobile: mobile, captcha: smsCaptcha
       };
       tclog.notice({traceNo: traceNo, msg: 'validateSms4Register', validObj: validObj});
+      yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
+      yield this.api({mobile: mobile, msg: '验证通过'});
+    } catch (err) {
+      tclog.warn({msg:'validate4Register error', traceNo: traceNo, err: err});
+      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+    }
+  },
+
+  /**
+   *验证短信验证码(登录)
+   */
+  validateSms4Login: function* () {
+    var postBody = this.request.body;
+    var headerBody = this.header; //header信息
+    var traceNo = this.req.traceNo + ""; //日志ID
+    var mobile = postBody.mobile; //手机号
+    var smsCaptcha = postBody.smsCaptcha; //短信验证码
+    try {
+      var biz_type = captcha2Model.BIZ_TYPE.LOGIN;
+      var validObj = {
+        source:headerBody.source, sysCode:headerBody.syscode,
+        biz_type: biz_type, mobile: mobile, captcha: smsCaptcha
+      };
+      tclog.notice({traceNo: traceNo, msg: 'validateSms4Login', validObj: validObj});
       yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
       yield this.api({mobile: mobile, msg: '验证通过'});
     } catch (err) {
