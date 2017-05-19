@@ -59,23 +59,23 @@ describe("图片验证码测试", function () {
   //   })
   // });
 
-  it("获取图片验证码[服务异常]", function (done) {
-    var setex_stub = sinon.stub(redis_client, 'setex');
-    nock(conf.captcha.img.server)
-        .get("/captcha")
-        .reply(function (uri, requestBody) {
-          return [500, 'THIS IS THE REPLY BODY'];
-        });
-    captchaModel.genImgCaptcha().then(function (data) {
-    }, function(err) {
-      sinon.assert.notCalled(setex_stub); //保存answer未执行
-      err.should.have.property('err_code');
-      err.err_code.should.equal(apiCode.E10001.err_code);
-
-      setex_stub.restore();
-      done();
-    })
-  });
+  // it("获取图片验证码[服务异常]", function (done) {
+  //   var setex_stub = sinon.stub(redis_client, 'setex');
+  //   nock(conf.captcha.img.server)
+  //       .get("/captcha")
+  //       .reply(function (uri, requestBody) {
+  //         return [500, 'THIS IS THE REPLY BODY'];
+  //       });
+  //   captchaModel.genImgCaptcha().then(function (data) {
+  //   }, function(err) {
+  //     sinon.assert.notCalled(setex_stub); //保存answer未执行
+  //     err.should.have.property('err_code');
+  //     err.err_code.should.equal(apiCode.E10001.err_code);
+  //
+  //     setex_stub.restore();
+  //     done();
+  //   })
+  // });
 
   it("校验图片验证码[验证码正确]", function (done) {
     var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
