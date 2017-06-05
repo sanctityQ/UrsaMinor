@@ -214,7 +214,7 @@ module.exports = {
             tclog.notice({traceNo:traceNo, msg:'send sms captcha', mobile:mobile, content:content});
             if(!developMode) { //非开发模式
               var sendType = ttypes.SendType.TRIGGER;//发送类型及时发送
-              sms_client.sendMessage(mobile, content, sendType, function(err, response) {
+              sms_client.sendNjMessage(mobile, content, function(err, response) {
                 if (err) {
                   tclog.error({traceNo: traceNo, msg:"sendSmsCaptcha error", err:err});
                   reject(ex_utils.buildCommonException(apiCode.E10001));
