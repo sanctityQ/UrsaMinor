@@ -1,10 +1,7 @@
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
-var userModel = require('../model/user.js');
 var tokenModel = require('../model/token.js');
 var tclog = require('../libs/tclog.js');
-var apiCode = require("../conf/ApiCode.js");
-var ex_utils = require('../libs/exception.js');
 
 module.exports = {
 
@@ -48,13 +45,6 @@ module.exports = {
       var biz_type = captcha2Model.BIZ_TYPE.RESETPWD;
       var validObj = {biz_type: biz_type, mobile: mobile, captcha: smsCaptcha};
       var flag = yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
-      var user = yield userModel.findUserByMobile(mobile);
-      console.log(user)
-      if(user && user.idNumber) { //是否实名认证用户
-        if(!userModel.checkIdNumber(user, postBody.name, postBody.idNumber)) {
-          throw ex_utils.buildCommonException(apiCode.E20017); //身份验证不通过
-        }
-      }
       tclog.notice({api: '/api/password/reset', traceNo: traceNo, validate_flag: flag});
       var resetInfo = {source: headerBody.source, sysCode: headerBody.syscode, traceNo: traceNo,
         mobile: mobile, password: password};

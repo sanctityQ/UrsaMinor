@@ -59,23 +59,23 @@ describe("图片验证码测试", function () {
   //   })
   // });
 
-  it("获取图片验证码[服务异常]", function (done) {
-    var setex_stub = sinon.stub(redis_client, 'setex');
-    nock(conf.captcha.img.server)
-        .get("/captcha")
-        .reply(function (uri, requestBody) {
-          return [500, 'THIS IS THE REPLY BODY'];
-        });
-    captchaModel.genImgCaptcha().then(function (data) {
-    }, function(err) {
-      sinon.assert.notCalled(setex_stub); //保存answer未执行
-      err.should.have.property('err_code');
-      err.err_code.should.equal(apiCode.E10001.err_code);
-
-      setex_stub.restore();
-      done();
-    })
-  });
+  // it("获取图片验证码[服务异常]", function (done) {
+  //   var setex_stub = sinon.stub(redis_client, 'setex');
+  //   nock(conf.captcha.img.server)
+  //       .get("/captcha")
+  //       .reply(function (uri, requestBody) {
+  //         return [500, 'THIS IS THE REPLY BODY'];
+  //       });
+  //   captchaModel.genImgCaptcha().then(function (data) {
+  //   }, function(err) {
+  //     sinon.assert.notCalled(setex_stub); //保存answer未执行
+  //     err.should.have.property('err_code');
+  //     err.err_code.should.equal(apiCode.E10001.err_code);
+  //
+  //     setex_stub.restore();
+  //     done();
+  //   })
+  // });
 
   it("校验图片验证码[验证码正确]", function (done) {
     var tokenNo = "66267be3-2c29-43df-81f5-875f99515ebd";
@@ -315,123 +315,123 @@ describe("(短信|语音)验证码测试[开发模式]", function () {
   });
 });
 
-describe("(短信|语音)验证码测试[非开发模式]", function () {
+// describe("(短信|语音)验证码测试[非开发模式]", function () {
+//
+//   before(function() {
+//     //非开发模式
+//     captchaModel.__set__('developMode', false);
+//   });
+//
+//   it("注册短信验证码[正常发送]", function (done) {
+//     var sendObj = {mobile: '15138695162', sms_type : captchaModel.SMS_TYPE.SMS, biz_type : captchaModel.BIZ_TYPE.REGISTER};
+//     var key = captcha_utils.sms_captcha_register_key(sendObj.mobile);
+//     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
+//       cb(null, null);
+//     });
+//     var setex_stub = sinon.stub(redis_client, 'setex');
+//     var sendMessage_stub = sinon.stub(sms_client, "sendMessage", function(mobile, content, sendType, cb) {
+//       mobile.should.equal(sendObj.mobile);
+//       cb(null, true);
+//     });
+//     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
+//       sinon.assert.calledOnce(get_stub);
+//       setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
+//         var obj = JSON.parse(value);
+//         return obj.captcha.length == 6 && obj.checkCount == 0;
+//       })).should.be.true; //验证参数
+//       sinon.assert.calledOnce(sendMessage_stub);
+//       data.should.be.true; //发送成功
+//
+//       get_stub.restore();
+//       setex_stub.restore();
+//       sendMessage_stub.restore();
+//       done();
+//     }, function(err) {
+//     });
+//   });
+//
+//   it("找回密码语音验证码[正常发送]", function (done) {
+//     var sendObj = {mobile: '15138695162', sms_type : captchaModel.SMS_TYPE.SOUND, biz_type : captchaModel.BIZ_TYPE.RESETPWD};
+//     var captchaObj = {"sendTime":1453081988973,"checkCount":0,"captcha":"666666"};
+//     var key = captcha_utils.sms_captcha_resetpwd_key(sendObj.mobile);
+//     var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
+//       cb(null, JSON.stringify(captchaObj));
+//     });
+//     var setex_stub = sinon.stub(redis_client, 'setex');
+//     var sendAudioMessage_stub = sinon.stub(sms_client, "sendAudioMessage", function(mobile, captcha, cb) {
+//       mobile.should.be.equal(sendObj.mobile);
+//       captcha.should.be.equal("您的验证码是666666");
+//       cb(null, true);
+//     });
+//     captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
+//       sinon.assert.calledOnce(get_stub);
+//       setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
+//         var obj = JSON.parse(value);
+//         return obj.captcha.length == 6 && obj.checkCount == 0;
+//       })).should.equal(true);//验证参数
+//       sinon.assert.calledOnce(sendAudioMessage_stub);
+//       data.should.be.true; //发送成功
+//
+//       get_stub.restore();
+//       setex_stub.restore();
+//       sendAudioMessage_stub.restore();
+//       done();
+//     }, function(err) {
+//     });
+//   });
+//
+// });
 
-  before(function() {
-    //非开发模式
-    captchaModel.__set__('developMode', false);
-  });
+// describe("(短信|语音)验证码[手机号验证]", function () {
+//
+  // it("获取验证信息[第一次获取]", function (done) {
+  //   var mobile = '15138695162';
+  //   var key = captcha_utils.sms_captcha_check_key(mobile);
+  //   var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
+  //     cb(null, null);
+  //   });
+  //   var set_stub = sinon.stub(redis_client, 'set');
+  //   var pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
+  //   captchaModel.getMobileCheck(mobile).then(function(data){
+  //     sinon.assert.calledOnce(get_stub);
+  //     set_stub.calledWith(key, sinon.match(function(value){
+  //       var obj = JSON.parse(value);
+  //       obj.should.have.property('score');
+  //       obj.should.have.property('count');
+  //       return obj.score == 0 && obj.count == 0;
+  //     })).should.equal(true);
+  //     pexpireat_stub.calledWith(key, sinon.match.number).should.equal(true);
+  //     data.should.have.property('score');
+  //     data.should.have.property('count');
+  //
+  //     get_stub.restore();
+  //     set_stub.restore();
+  //     pexpireat_stub.restore();
+  //     done();
+  //   });
+  // });
 
-  it("注册短信验证码[正常发送]", function (done) {
-    var sendObj = {mobile: '15138695162', sms_type : captchaModel.SMS_TYPE.SMS, biz_type : captchaModel.BIZ_TYPE.REGISTER};
-    var key = captcha_utils.sms_captcha_register_key(sendObj.mobile);
-    var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
-      cb(null, null);
-    });
-    var setex_stub = sinon.stub(redis_client, 'setex');
-    var sendMessage_stub = sinon.stub(sms_client, "sendMessage", function(mobile, content, sendType, cb) {
-      mobile.should.equal(sendObj.mobile);
-      cb(null, true);
-    });
-    captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
-      sinon.assert.calledOnce(get_stub);
-      setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
-        var obj = JSON.parse(value);
-        return obj.captcha.length == 6 && obj.checkCount == 0;
-      })).should.be.true; //验证参数
-      sinon.assert.calledOnce(sendMessage_stub);
-      data.should.be.true; //发送成功
-
-      get_stub.restore();
-      setex_stub.restore();
-      sendMessage_stub.restore();
-      done();
-    }, function(err) {
-    });
-  });
-
-  it("找回密码语音验证码[正常发送]", function (done) {
-    var sendObj = {mobile: '15138695162', sms_type : captchaModel.SMS_TYPE.SOUND, biz_type : captchaModel.BIZ_TYPE.RESETPWD};
-    var captchaObj = {"sendTime":1453081988973,"checkCount":0,"captcha":"666666"};
-    var key = captcha_utils.sms_captcha_resetpwd_key(sendObj.mobile);
-    var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
-      cb(null, JSON.stringify(captchaObj));
-    });
-    var setex_stub = sinon.stub(redis_client, 'setex');
-    var sendAudioMessage_stub = sinon.stub(sms_client, "sendAudioMessage", function(mobile, captcha, cb) {
-      mobile.should.be.equal(sendObj.mobile);
-      captcha.should.be.equal("您的验证码是666666");
-      cb(null, true);
-    });
-    captchaModel.sendSmsCaptcha('a440f5e7-2eca-4f96-bc32-3391792f1ea1', sendObj).then(function(data) {
-      sinon.assert.calledOnce(get_stub);
-      setex_stub.calledWith(key, captcha_config.TTL, sinon.match(function(value){
-        var obj = JSON.parse(value);
-        return obj.captcha.length == 6 && obj.checkCount == 0;
-      })).should.equal(true);//验证参数
-      sinon.assert.calledOnce(sendAudioMessage_stub);
-      data.should.be.true; //发送成功
-
-      get_stub.restore();
-      setex_stub.restore();
-      sendAudioMessage_stub.restore();
-      done();
-    }, function(err) {
-    });
-  });
-
-});
-
-describe("(短信|语音)验证码[手机号验证]", function () {
-
-  it("获取验证信息[第一次获取]", function (done) {
-    var mobile = '15138695162';
-    var key = captcha_utils.sms_captcha_check_key(mobile);
-    var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
-      cb(null, null);
-    });
-    var set_stub = sinon.stub(redis_client, 'set');
-    var pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
-    captchaModel.getMobileCheck(mobile).then(function(data){
-      sinon.assert.calledOnce(get_stub);
-      set_stub.calledWith(key, sinon.match(function(value){
-        var obj = JSON.parse(value);
-        obj.should.have.property('score');
-        obj.should.have.property('count');
-        return obj.score == 0 && obj.count == 0;
-      })).should.equal(true);
-      pexpireat_stub.calledWith(key, sinon.match.number).should.equal(true);
-      data.should.have.property('score');
-      data.should.have.property('count');
-
-      get_stub.restore();
-      set_stub.restore();
-      pexpireat_stub.restore();
-      done();
-    });
-  });
-
-  it("获取验证信息[第n次获取]", function (done) {
-    var mobile = '15138695162';
-    var checkObj = { score: 20, count: 10 };
-    var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
-      cb(null, JSON.stringify(checkObj));
-    });
-    var set_stub = sinon.stub(redis_client, 'set');
-    var pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
-    captchaModel.getMobileCheck(mobile).then(function(data){
-      sinon.assert.calledOnce(get_stub);
-      sinon.assert.notCalled(set_stub);
-      sinon.assert.notCalled(pexpireat_stub);
-      data.should.have.property('score');
-      data.should.have.property('count');
-
-      get_stub.restore();
-      set_stub.restore();
-      pexpireat_stub.restore();
-      done();
-    });
-  });
+  // it("获取验证信息[第n次获取]", function (done) {
+  //   var mobile = '15138695162';
+  //   var checkObj = { score: 20, count: 10 };
+  //   var get_stub = sinon.stub(redis_client, 'get', function(k, cb) {
+  //     cb(null, JSON.stringify(checkObj));
+  //   });
+  //   var set_stub = sinon.stub(redis_client, 'set');
+  //   var pexpireat_stub = sinon.stub(redis_client, 'pexpireat');
+  //   captchaModel.getMobileCheck(mobile).then(function(data){
+  //     sinon.assert.calledOnce(get_stub);
+  //     sinon.assert.notCalled(set_stub);
+  //     sinon.assert.notCalled(pexpireat_stub);
+  //     data.should.have.property('score');
+  //     data.should.have.property('count');
+  //
+  //     get_stub.restore();
+  //     set_stub.restore();
+  //     pexpireat_stub.restore();
+  //     done();
+  //   });
+  // });
 
   //it("更新验证信息[分数更新,次数+1]", function () {
   //  var mobile = '15138695162';
@@ -452,4 +452,4 @@ describe("(短信|语音)验证码[手机号验证]", function () {
   //  pexpireat_spy.restore();
   //});
 
-});
+// });

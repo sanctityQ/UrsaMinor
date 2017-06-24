@@ -14,19 +14,13 @@ var ctrs;
 
 var passportModel;
 var captchaModel;
-var userModel;
 var tokenModel;
-var interactModel;
 
 var clearSmsCaptcha_stub;
 var validateSmsCaptcha_stub;
 var register_stub;
 var login_stub;
 var putToken_stub;
-var findUserByPassportUser_stub;
-var triggerInteract_stub;
-var findInviteInfoByUserKey_stub;
-var autoSendCoupon_stub;
 
 before(function () {
   //rewire 所有controller
@@ -52,8 +46,6 @@ before(function () {
   passportModel = ctrs.api.__get__('passportModel');
   captchaModel = ctrs.api.__get__('captcha2Model');
   tokenModel = ctrs.api.__get__('tokenModel');
-  userModel = ctrs.api.__get__('userModel');
-  interactModel = ctrs.api.__get__('interactModel');
 });
 var tokenNo = "3213213123123213131";
 var user = {
@@ -76,10 +68,6 @@ describe("主流程测试", function () {
     register_stub = sinon.stub(passportModel, "register");
     login_stub = sinon.stub(passportModel, "login");
     putToken_stub = sinon.stub(tokenModel, "putToken");
-    findUserByPassportUser_stub = sinon.stub(userModel, "findUserByPassportUser");
-    triggerInteract_stub = sinon.stub(interactModel, "triggerInteract");
-    findInviteInfoByUserKey_stub = sinon.stub(interactModel, "findInviteInfoByUserKey");
-    autoSendCoupon_stub = sinon.stub(interactModel, "autoSendCoupon");
   });
 
   it("登录测试[登录成功]", function (done) {
@@ -143,9 +131,6 @@ describe("主流程测试", function () {
     putToken_stub.returns(new Promise(function (resovel, reject) {
       resovel(tokenNo); //返回tokenNo
     }));
-    findUserByPassportUser_stub.returns(new Promise(function (resovel, reject) {
-      resovel({id:'13213-sdff-12312fasfa-fasf', name:"张三", passportId:user.id});
-    }));
 
     request
         .post('/api/register')
@@ -164,53 +149,6 @@ describe("主流程测试", function () {
           sinon.assert.calledOnce(clearSmsCaptcha_stub);
           sinon.assert.calledOnce(login_stub);
           sinon.assert.calledOnce(putToken_stub);
-          sinon.assert.calledOnce(autoSendCoupon_stub);
-          done();
-        });
-  });
-
-  it("注册测试[填写邀请码-注册成功]", function (done) {
-    validateSmsCaptcha_stub.returns(new Promise(function (resovel, reject) {
-      resovel(true);
-    }));
-    register_stub.returns(new Promise(function (resovel, reject) {
-      resovel(user);
-    }));
-    login_stub.returns(new Promise(function (resovel, reject) {
-      resovel(user);
-    }));
-    putToken_stub.returns(new Promise(function (resovel, reject) {
-      resovel(tokenNo); //返回tokenNo
-    }));
-    findUserByPassportUser_stub.returns(new Promise(function (resovel, reject) {
-      resovel({id:'13213-sdff-12312fasfa-fasf', name:"张三", passportId:user.id});
-    }));
-    findInviteInfoByUserKey_stub.returns(new Promise(function (resovel, reject) {
-      resovel({user:{}, name:"张三", inviterInfo:{}});
-    }));
-
-    request
-        .post('/api/register')
-        .send({mobile: '14131313131', password: '123456', smsCaptcha: '123456', inviteCode:'T4321F'})
-        .set('source', 'APP')//header info
-        .set('syscode', 'FINANCE')//header info
-        .set('x-client', '{"build":"1","os":"iOS","device" :"iPhone","app":"tc","ver" : "1.3.0","osv" : "9.2.1","scr" : "{640, 1136}","net" : "WIFI"}')
-        .expect(200)
-        .end(function (err, res) {
-          var result = res.body;
-          result.should.have.property('access_token');
-          result.should.have.property('user');
-          result.user.should.be.eql(user);
-
-          sinon.assert.calledOnce(findInviteInfoByUserKey_stub);
-          sinon.assert.calledOnce(validateSmsCaptcha_stub);
-          sinon.assert.calledOnce(register_stub);
-          sinon.assert.calledOnce(clearSmsCaptcha_stub);
-          sinon.assert.calledOnce(login_stub);
-          sinon.assert.calledOnce(putToken_stub);
-          sinon.assert.calledOnce(findUserByPassportUser_stub);
-          sinon.assert.calledOnce(triggerInteract_stub);
-          sinon.assert.calledOnce(autoSendCoupon_stub);
           done();
         });
   });
@@ -283,10 +221,6 @@ describe("主流程测试", function () {
     register_stub.reset();
     login_stub.reset();
     putToken_stub.reset();
-    findUserByPassportUser_stub.reset();
-    triggerInteract_stub.reset();
-    findInviteInfoByUserKey_stub.reset();
-    autoSendCoupon_stub.reset();
   });
 
   after(function() {
@@ -295,9 +229,5 @@ describe("主流程测试", function () {
     register_stub.restore();
     login_stub.restore();
     putToken_stub.restore();
-    findUserByPassportUser_stub.restore();
-    triggerInteract_stub.restore();
-    findInviteInfoByUserKey_stub.restore();
-    autoSendCoupon_stub.restore();
   });
 });

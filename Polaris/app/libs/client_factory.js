@@ -20,16 +20,10 @@ var redis_client = new Redis(config.redis);
 var thrift_conf = config.thirft;
 var Puck = require("@itiancai/Puck");
 var passport_types = require("@itiancai/passport-client");
-var user_types = require("@itiancai/user-client-node");
-var interact_types = require("@itiancai/interact-client-node");
 var notification_types = require("@itiancai/notification-client-node");
-var coupon_types = require("@itiancai/coupon-client-node");
 
 var passport_client = new Puck(passport_types.PassportService, thrift_conf.passport.options).newIface(thrift_conf.passport.url);
 var sms_client = new Puck(notification_types.SmsApi, thrift_conf.notifaction.options).newIface(thrift_conf.notifaction.url);
-var user_client = new Puck(user_types.service, thrift_conf.user.options).newIface(thrift_conf.user.url);
-var interact_client = new Puck(interact_types.service, thrift_conf.interact.options).newIface(thrift_conf.interact.url);
-var coupon_client = new Puck(coupon_types.service, thrift_conf.coupon.options).newIface(thrift_conf.coupon.url);
 
 module.exports = {
   redis_client : redis_client,
@@ -38,14 +32,5 @@ module.exports = {
   passport_types : passport_types,
 
   sms_client : sms_client,
-  notification_types :notification_types,
-
-  user_client : user_client,
-  user_types : user_types,
-
-  interact_client : interact_client,
-  interact_types : interact_types,
-
-  coupon_client : coupon_client,
-  coupon_types : coupon_types
+  notification_types :notification_types
 };

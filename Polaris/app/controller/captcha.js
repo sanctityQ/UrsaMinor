@@ -1,6 +1,5 @@
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
-var userModel = require('../model/user.js');
 var portalModel = require('../model/portal.js');
 var apiCode = require("../conf/ApiCode.js");
 var ex_utils = require('../libs/exception.js');
@@ -139,9 +138,7 @@ module.exports = {
       var biz_type = captcha2Model.BIZ_TYPE.RESETPWD;
       var validObj = {biz_type: biz_type, mobile: mobile, captcha: smsCaptcha};
       yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
-      var user = yield userModel.findUserByMobile(mobile);
-      var id_authenticated = (user && user.idNumber) ? 1 : 0;
-      yield this.api({mobile: mobile, msg: '验证通过', id_authenticated:id_authenticated});
+      yield this.api({mobile: mobile, msg: '验证通过', id_authenticated:0});
     } catch (err) {
       tclog.warn({msg:'validateSms4ResetPassword error', traceNo: traceNo, err: err});
       yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});

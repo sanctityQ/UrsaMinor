@@ -4,15 +4,12 @@ var sinon = require('sinon');
 var app = rewire('../server');
 var request = require('supertest-koa-agent')(app);
 var test = require('../libs/test');
-var ex_utils = require('../libs/exception.js');
-var apiCode = require('../conf/ApiCode');
 var router = rewire('../router');
 var _ = require('underscore');
 
 var ctrs;
 var passportModel;
 var captchaModel;
-var userModel;
 var tokenModel;
 
 var getToken_stub;
@@ -21,7 +18,6 @@ var resetPassword_stub;
 var changePassword_stub;
 var clearSmsCaptcha_stub;
 var validateSmsCaptcha_stub;
-var findUserByMobile_stub;
 
 before(function () {
   router.__set__({
@@ -42,7 +38,6 @@ before(function () {
   app.listen(80004);
   passportModel = ctrs.password.__get__('passportModel');
   captchaModel = ctrs.password.__get__('captcha2Model');
-  userModel = ctrs.password.__get__('userModel');
   tokenModel = ctrs.password.__get__('tokenModel');
 });
 
@@ -57,7 +52,6 @@ describe("安全保护测试", function () {
     changePassword_stub = sinon.stub(passportModel, 'changePassword');
     clearSmsCaptcha_stub = sinon.stub(captchaModel, 'clearSmsCaptcha');
     validateSmsCaptcha_stub = sinon.stub(captchaModel, 'validateSmsCaptcha');
-    findUserByMobile_stub = sinon.stub(userModel, 'findUserByMobile');
   });
 
   it("验证原始密码[验证通过]", function (done) {
@@ -113,62 +107,9 @@ describe("安全保护测试", function () {
     resetPassword_stub.returns(new Promise(function(resolve, reject) {
       resolve(true);
     }));
-    findUserByMobile_stub.returns(new Promise(function(resolve, reject) {
-      resolve(null);
-    }));
     request
         .post('/api/password/reset')
         .send({mobile: mobile, password: '123456', smsCaptcha: '123456'})
-        .set('syscode', 'FINANCE')//header info
-        .set('source', 'APP')//header info
-        .expect(200)
-        .end(function (err, res) {
-          var result = res.body;
-          result.should.have.property('mobile');
-          result.mobile.should.be.equal(mobile);
-          sinon.assert.calledOnce(validateSmsCaptcha_stub);
-          sinon.assert.calledOnce(resetPassword_stub);
-          sinon.assert.calledOnce(clearSmsCaptcha_stub);
-          done();
-        });
-  });
-
-  it("重置密码[实名认证-身份信息不匹配]", function (done) {
-    validateSmsCaptcha_stub.returns(new Promise(function(resolve, reject) {
-      resolve(true);
-    }));
-    resetPassword_stub.returns(new Promise(function(resolve, reject) {
-      resolve(true);
-    }));
-    findUserByMobile_stub.returns(new Promise(function(resolve, reject) {
-      resolve({name:"李四", idNumber:"510278198910013421"});
-    }));
-    request
-        .post('/api/password/reset')
-        .send({mobile: mobile, password: '123456', smsCaptcha: '123456', name:"张三", idNumber:"410278198910013421"})
-        .set('syscode', 'FINANCE')//header info
-        .set('source', 'APP')//header info
-        .expect(500)
-        .end(function (err, res) {
-          res.body.error_code.should.be.equal(20017);
-          sinon.assert.calledOnce(validateSmsCaptcha_stub);
-          done();
-        });
-  });
-
-  it("重置密码[实名认证-重置成功]", function (done) {
-    validateSmsCaptcha_stub.returns(new Promise(function(resolve, reject) {
-      resolve(true);
-    }));
-    resetPassword_stub.returns(new Promise(function(resolve, reject) {
-      resolve(true);
-    }));
-    findUserByMobile_stub.returns(new Promise(function(resolve, reject) {
-      resolve({name:"张三", idNumber:"410278198910013421"});
-    }));
-    request
-        .post('/api/password/reset')
-        .send({mobile: mobile, password: '123456', smsCaptcha: '123456', name:"张三", idNumber:"410278198910013421"})
         .set('syscode', 'FINANCE')//header info
         .set('source', 'APP')//header info
         .expect(200)
@@ -190,7 +131,6 @@ describe("安全保护测试", function () {
     changePassword_stub.reset();
     clearSmsCaptcha_stub.reset();
     validateSmsCaptcha_stub.reset();
-    findUserByMobile_stub.reset();
   });
 
 });
@@ -202,5 +142,4 @@ after(function() {
   changePassword_stub.restore();
   clearSmsCaptcha_stub.restore();
   validateSmsCaptcha_stub.restore();
-  findUserByMobile_stub.restore();
 });
