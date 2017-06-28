@@ -1,10 +1,7 @@
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
-var userModel = require('../model/user.js');
 var tokenModel = require('../model/token.js');
 var tclog = require('../libs/tclog.js');
-var apiCode = require("../conf/ApiCode.js");
-var ex_utils = require('../libs/exception.js');
 
 module.exports = {
 
@@ -24,13 +21,13 @@ module.exports = {
       //验证密码是否正确
       var result = yield passportModel.checkPassword(checkInfo);
       tclog.notice({api:'/api/password/check', traceNo:traceNo, result:result});
-      yield this.api({access_token:tokenNo, msg:'密码验证通过'});
+      yield this.api({errorCode : "00000", errorMsg : '密码验证通过', data:{token:token}});
     } catch (err) {
       if(err.err_code == 20011) {
         err.err_msg = '原始密码错误';
       }
       tclog.error({api:'/api/password/check', traceNo:traceNo, err:err});
-      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
     }
   },
 
@@ -48,23 +45,16 @@ module.exports = {
       var biz_type = captcha2Model.BIZ_TYPE.RESETPWD;
       var validObj = {biz_type: biz_type, mobile: mobile, captcha: smsCaptcha};
       var flag = yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
-      var user = yield userModel.findUserByMobile(mobile);
-      console.log(user)
-      if(user && user.idNumber) { //是否实名认证用户
-        if(!userModel.checkIdNumber(user, postBody.name, postBody.idNumber)) {
-          throw ex_utils.buildCommonException(apiCode.E20017); //身份验证不通过
-        }
-      }
       tclog.notice({api: '/api/password/reset', traceNo: traceNo, validate_flag: flag});
       var resetInfo = {source: headerBody.source, sysCode: headerBody.syscode, traceNo: traceNo,
         mobile: mobile, password: password};
       var result = yield passportModel.resetPassword(resetInfo);
       tclog.notice({api: '/api/password/reset', traceNo: traceNo, result: result});
       captcha2Model.clearSmsCaptcha(traceNo, mobile, biz_type); //清除找回密码验证码
-      yield this.api({mobile:mobile, msg:'密码已重置'});
+      yield this.api({errorCode : "00000", errorMsg : '密码已重置', data:{mobile:mobile}});
     } catch (err) {
       tclog.error({api:'/api/password/reset', traceNo:traceNo, err:err});
-      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
     }
   },
 
@@ -85,10 +75,10 @@ module.exports = {
         userId: token.uid, oldPassword: postBody.oldPassword, password: postBody.password};
       var result = yield passportModel.changePassword(changeInfo);
       tclog.notice({api:'/api/password/change', traceNo:traceNo, result:result});
-      yield this.api({access_token:tokenNo, msg:'修改成功'});
+      yield this.api({errorCode : "00000", errorMsg : '修改成功', data:{token:tokenNo}});
     } catch (err) {
       tclog.error({api:'/api/password/change', traceNo:traceNo, err:err});
-      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
     }
   }
 };

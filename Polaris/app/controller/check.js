@@ -1,5 +1,4 @@
 var passportModel = require('../model/passport.js');
-var userModel = require('../model/user.js');
 var tclog = require('../libs/tclog.js');
 var token = require('../model/token.js');
 var _ = require('underscore');
@@ -24,29 +23,15 @@ module.exports = {
     try {
       var result = yield passportModel.userValidate(validateInfo);
       tclog.notice({api:'/api/check/mobile', traceNo:traceNo, result:result});
-      yield this.api({mobile:query.mobile, msg:'验证通过'});
+      //不存在
+      yield this.api({errorCode : "00000", errorMsg : "手机号不存在"});
     } catch(err) {
       tclog.warn({api:'/api/check/mobile', traceNo:traceNo, err:err});
-      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
-    }
-  },
-
-  /**
-   * 验证手机号和身份证是否匹配
-   */
-  matchIdNumber: function *() {
-    var postBody = this.request.body;
-    var traceNo = this.req.traceNo + "";
-    var mobile = postBody.mobile;
-    var name = postBody.name;
-    var idNumber = postBody.idNumber;
-    tclog.notice({api: '/api/check/matchIdNumber', traceNo:traceNo, mobile:mobile, name:name, idNumber: idNumber});
-    var user = yield userModel.findUserByMobile(mobile);
-    if(userModel.checkIdNumber(user, name, idNumber)) {
-      yield this.api({mobile:mobile, msg:'验证通过'});
-    } else {
-      tclog.warn({api: '/api/check/matchIdNumber', traceNo:traceNo, mobile:mobile, name:name, idNumber: idNumber});
-      yield this.api_err({error_code : 20017, error_msg : "身份信息不匹配"});
+      if(err.err_code == '20001') {
+        yield this.api({errorCode : "20001", errorMsg : "手机号已使用"});
+      } else {
+        yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
+      }
     }
   }
 

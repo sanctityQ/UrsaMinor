@@ -1,6 +1,5 @@
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
-var userModel = require('../model/user.js');
 var portalModel = require('../model/portal.js');
 var apiCode = require("../conf/ApiCode.js");
 var ex_utils = require('../libs/exception.js');
@@ -45,7 +44,7 @@ module.exports = {
    */
   genImg: function* () {
     var result = yield captcha2Model.genImgCaptcha();
-    yield this.api(result);
+    yield this.api({errorCode:"00000", errorMsg:"成功", data: result});
   },
 
   /**
@@ -60,10 +59,10 @@ module.exports = {
     try {
       var result = yield captcha2Model.validateImgCaptcha(token, captcha, false);
       tclog.notice({msg: "validateImg success", traceNo: traceNo, result: result});
-      yield this.api({token:token, msg:"验证通过"});
+      yield this.api({errorCode:"00000", errorMsg:"验证通过", data: {token:token}});
     } catch (err) {
       tclog.warn({msg:'validateImg error', traceNo: traceNo, err: err});
-      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
     }
   },
 
@@ -111,18 +110,18 @@ module.exports = {
         var sendObj = {sms_type: sms_type, biz_type: biz_type, mobile: mobile};
         var result = yield captcha2Model.sendSmsCaptcha(traceNo, sendObj);
         tclog.notice({msg: "sendSmsCaptcha success", traceNo: traceNo, result: result});
-        yield this.api({mobile: mobile, msg: '验证码发送成功'});
+        yield this.api({errorCode:"00000", errorMsg:"验证码发送成功", data: {mobile:mobile}});
       } else { //资源不存在
         tclog.warn({traceNo:traceNo, sms_type:sms_type, biz_type:biz_type});
         yield this.api_404();
       }
     } catch (err) {
       tclog.warn({msg:'sendSmsCaptcha error', traceNo: traceNo, err: err});
-      var result = {error_code: err.err_code, error_msg: err.err_msg};
+      var result = {errorCode: err.err_code, errorMsg: err.err_msg, data:{}};
       if(err.err_code == apiCode.E20013.err_code) {
-        result.interval = err.interval;
+        result.data.interval = err.interval;
       }
-      yield this.api_err(result);
+      yield this.api(result);
     }
   },
 
@@ -139,12 +138,10 @@ module.exports = {
       var biz_type = captcha2Model.BIZ_TYPE.RESETPWD;
       var validObj = {biz_type: biz_type, mobile: mobile, captcha: smsCaptcha};
       yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
-      var user = yield userModel.findUserByMobile(mobile);
-      var id_authenticated = (user && user.idNumber) ? 1 : 0;
-      yield this.api({mobile: mobile, msg: '验证通过', id_authenticated:id_authenticated});
+      yield this.api({errorCode:"00000", errorMsg:"验证通过", data: mobile});
     } catch (err) {
       tclog.warn({msg:'validateSms4ResetPassword error', traceNo: traceNo, err: err});
-      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
     }
   },
 
@@ -165,10 +162,10 @@ module.exports = {
       };
       tclog.notice({traceNo: traceNo, msg: 'validateSms4Register', validObj: validObj});
       yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
-      yield this.api({mobile: mobile, msg: '验证通过'});
+      yield this.api({errorCode:"00000", errorMsg:"验证通过", data: {mobile:mobile}});
     } catch (err) {
       tclog.warn({msg:'validate4Register error', traceNo: traceNo, err: err});
-      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
     }
   }
 

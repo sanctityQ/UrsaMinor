@@ -6,8 +6,6 @@
  */
 var passportModel = require('../model/passport.js');
 var captcha2Model = require('../model/captcha2.js');
-var userModel = require('../model/user.js');
-var interactModel = require('../model/interact.js');
 var tclog = require('../libs/tclog.js');
 var tokenModel = require('../model/token.js');
 var _ = require('underscore');
@@ -32,10 +30,10 @@ module.exports = {
       var passportUser = yield passportModel.login(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
       var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
-      yield this.api(result);
+      yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) { //500
       tclog.error({api:'/api/login', traceNo:traceNo, err:err});
-      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
     }
   },
 
@@ -48,8 +46,6 @@ module.exports = {
     var sysCode = headerBody.syscode;
     var clientInfo_ = headerBody["x-client"];
     if(clientInfo_) {
-      //"build":"1","os":"iOS","device" :"iPhone","app":"tc","ver" : "1.3.0","osv" : "9.2.1","scr"
-      // : "{640, 1136}","net" : "WIFI"
       var clientInfo = JSON.parse(clientInfo_);
       if(clientInfo && clientInfo.app) {
         if(clientInfo.app == 'tc') {
@@ -67,24 +63,6 @@ module.exports = {
     };
     tclog.notice({api:'/api/register', registerInfo: _.omit(registerInfo, 'password')});
     try {
-      //TODO 是否要放在这里做? 校验邀请码
-      var inviteCode = postBody.inviteCode;
-      if(inviteCode) {
-        //邀请码不区分大小写
-        inviteCode = inviteCode.toUpperCase();
-        try{
-          //如果填写邀请码,验证邀请码是否正确
-          var inviteInfo = yield interactModel.findInviteInfoByUserKey(inviteCode);
-          tclog.debug({inviteInfo : inviteInfo});
-        } catch(err) {
-          if(err.err_code == 10001) {
-            //interact服务异常,不能影响注册
-            tclog.error({msg : "findInviteInfoByUserKey err"})
-          } else {
-            throw err;
-          }
-        }
-      }
       //短信验证码是否正确
       var biz_type = captcha2Model.BIZ_TYPE.REGISTER;
       var validObj = {biz_type:biz_type, captcha:smsCaptcha, mobile:registerInfo.mobile};
@@ -100,21 +78,10 @@ module.exports = {
       var passportUser = yield passportModel.login(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
       var result = {access_token:tokenNo, user:passportUser,msg:'登录成功'};
-      //初始化p2p用户
-      userModel.findUserByPassportUser(passportUser).then(function(user) {
-        if(inviteCode) { //如果填写了邀请码
-          tclog.notice({msg:"triggerInteract register", user:user.id, inviteCode:inviteCode});
-          interactModel.triggerInteract(0, user.id, inviteCode, user.id);
-        }
-        tclog.notice({msg:"autoSendCoupon register", user:user.id});
-        interactModel.autoSendCoupon(user.id);
-      }).catch(function(err) {
-        tclog.error({msg:"findUserByPassportUser error", err:err});
-      });
-      yield this.api(result);
+      yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) {
       tclog.warn({api:'/api/register', traceNo:traceNo, err:err});
-      yield this.api_err({error_code : err.err_code, error_msg : err.err_msg});
+      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
     }
   },
 
@@ -134,10 +101,11 @@ module.exports = {
       tclog.notice({api: '/api/login', loginInfo: _.omit(loginInfo)});
       var passportUser = yield passportModel.login4Social(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
-      yield this.api({access_token: tokenNo, user: passportUser, msg: '登录成功'});
+      var result = {access_token: tokenNo, user: passportUser, msg: '登录成功'};
+      yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) { //500
       tclog.error({api: '/api/login4Social', traceNo: traceNo, err: err});
-      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
     }
   },
 
@@ -155,10 +123,11 @@ module.exports = {
       };
       var passportUser = yield passportModel.login4Sms(loginInfo);
       var tokenNo = yield tokenModel.putToken(loginInfo, passportUser);
-      yield this.api({access_token: tokenNo, user: passportUser, msg: '登录成功'});
+      var result = {access_token: tokenNo, user: passportUser, msg: '登录成功'};
+      yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) { //500
       tclog.error({api: '/api/login4Sms', traceNo: traceNo, err: err});
-      yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
+      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
     }
   },
 
@@ -179,6 +148,6 @@ module.exports = {
     };
     var result = yield tokenModel.removeToken(tokenInfo);
     tclog.notice({api:'/api/logout', traceNo:traceNo, result:result});
-    yield this.api({access_token:tokenNo, msg:'退出成功'});
+    yield this.api({errorCode : "00000", errorMsg : "退出成功", data: tokenNo});
   }
 };
