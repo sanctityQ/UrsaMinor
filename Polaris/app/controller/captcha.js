@@ -138,7 +138,7 @@ module.exports = {
       var biz_type = captcha2Model.BIZ_TYPE.RESETPWD;
       var validObj = {biz_type: biz_type, mobile: mobile, captcha: smsCaptcha};
       yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
-      yield this.api({errorCode:"00000", errorMsg:"验证通过", data: mobile});
+      yield this.api({errorCode:"00000", errorMsg:"验证通过", data: {mobile:mobile}});
     } catch (err) {
       tclog.warn({msg:'validateSms4ResetPassword error', traceNo: traceNo, err: err});
       yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
