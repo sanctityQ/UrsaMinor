@@ -30,7 +30,7 @@ module.exports = {
       if(err.err_code == '20001') {
         yield this.api({errorCode : "20001", errorMsg : "手机号已使用"});
       } else {
-        yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
+        yield this.api({errorCode : err.err_code+"", errorMsg : err.err_msg});
       }
     }
   }

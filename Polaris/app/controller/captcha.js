@@ -62,7 +62,7 @@ module.exports = {
       yield this.api({errorCode:"00000", errorMsg:"验证通过", data: {token:token}});
     } catch (err) {
       tclog.warn({msg:'validateImg error', traceNo: traceNo, err: err});
-      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
+      yield this.api({errorCode: err.err_code+"", errorMsg: err.err_msg});
     }
   },
 
@@ -117,7 +117,7 @@ module.exports = {
       }
     } catch (err) {
       tclog.warn({msg:'sendSmsCaptcha error', traceNo: traceNo, err: err});
-      var result = {errorCode: err.err_code, errorMsg: err.err_msg, data:{}};
+      var result = {errorCode: err.err_code+"", errorMsg: err.err_msg, data:{}};
       if(err.err_code == apiCode.E20013.err_code) {
         result.data.interval = err.interval;
       }
@@ -165,7 +165,7 @@ module.exports = {
       yield this.api({errorCode:"00000", errorMsg:"验证通过", data: {mobile:mobile}});
     } catch (err) {
       tclog.warn({msg:'validate4Register error', traceNo: traceNo, err: err});
-      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
+      yield this.api({errorCode: err.err_code+"", errorMsg: err.err_msg});
     }
   }
 

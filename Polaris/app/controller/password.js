@@ -13,6 +13,9 @@ module.exports = {
     var headerBody = this.header;
     var traceNo = this.req.traceNo+"";
     var tokenNo = postBody.access_token;
+    if(!tokenNo) {
+      tokenNo = postBody.accessToken;
+    }
     try {
       //获取token信息
       var token = yield tokenModel.getToken(traceNo, tokenNo);
@@ -23,11 +26,11 @@ module.exports = {
       tclog.notice({api:'/api/password/check', traceNo:traceNo, result:result});
       yield this.api({errorCode : "00000", errorMsg : '密码验证通过', data:{token:token}});
     } catch (err) {
-      if(err.err_code == 20011) {
+      if(err.err_code == '20011') {
         err.err_msg = '原始密码错误';
       }
       tclog.error({api:'/api/password/check', traceNo:traceNo, err:err});
-      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
+      yield this.api({errorCode : err.err_code+"", errorMsg : err.err_msg});
     }
   },
 
@@ -54,7 +57,7 @@ module.exports = {
       yield this.api({errorCode : "00000", errorMsg : '密码已重置', data:{mobile:mobile}});
     } catch (err) {
       tclog.error({api:'/api/password/reset', traceNo:traceNo, err:err});
-      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
+      yield this.api({errorCode : err.err_code+"", errorMsg : err.err_msg});
     }
   },
 
@@ -68,6 +71,9 @@ module.exports = {
     var headerBody = this.header;
     var traceNo = this.req.traceNo+"";
     var tokenNo = postBody.access_token;
+    if(!tokenNo) {
+      tokenNo = postBody.accessToken;
+    }
     tclog.notice({api:'api/change', traceNo:traceNo, source:headerBody.source, sysCode:headerBody.syscode, tokenNo: tokenNo});
     try {
       var token = yield tokenModel.getToken(traceNo, tokenNo);
@@ -78,7 +84,7 @@ module.exports = {
       yield this.api({errorCode : "00000", errorMsg : '修改成功', data:{token:tokenNo}});
     } catch (err) {
       tclog.error({api:'/api/password/change', traceNo:traceNo, err:err});
-      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
+      yield this.api({errorCode : err.err_code+"", errorMsg : err.err_msg});
     }
   }
 };
