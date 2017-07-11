@@ -141,7 +141,7 @@ module.exports = {
       yield this.api({errorCode:"00000", errorMsg:"验证通过", data: {mobile:mobile}});
     } catch (err) {
       tclog.warn({msg:'validateSms4ResetPassword error', traceNo: traceNo, err: err});
-      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
+      yield this.api({errorCode: err.err_code+"", errorMsg: err.err_msg});
     }
   },
 

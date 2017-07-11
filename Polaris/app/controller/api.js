@@ -33,7 +33,7 @@ module.exports = {
       yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) { //500
       tclog.error({api:'/api/login', traceNo:traceNo, err:err});
-      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
+      yield this.api({errorCode : err.err_code+"", errorMsg : err.err_msg});
     }
   },
 
@@ -81,7 +81,7 @@ module.exports = {
       yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) {
       tclog.warn({api:'/api/register', traceNo:traceNo, err:err});
-      yield this.api({errorCode : err.err_code, errorMsg : err.err_msg});
+      yield this.api({errorCode : err.err_code+"", errorMsg : err.err_msg});
     }
   },
 
@@ -105,7 +105,7 @@ module.exports = {
       yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) { //500
       tclog.error({api: '/api/login4Social', traceNo: traceNo, err: err});
-      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
+      yield this.api({errorCode: err.err_code+"", errorMsg: err.err_msg});
     }
   },
 
@@ -127,7 +127,7 @@ module.exports = {
       yield this.api({errorCode : "00000", errorMsg : "登录成功", data: result});
     } catch (err) { //500
       tclog.error({api: '/api/login4Sms', traceNo: traceNo, err: err});
-      yield this.api({errorCode: err.err_code, errorMsg: err.err_msg});
+      yield this.api({errorCode: err.err_code+"", errorMsg: err.err_msg});
     }
   },
 
