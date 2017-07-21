@@ -25,7 +25,7 @@ module.exports = {
 
   // 文本宏
   consts: {
-    siteName: '甜菜金融'
+    siteName: '带你装'
   },
 
   // 模板引擎相关配置
@@ -101,9 +101,9 @@ module.exports = {
       path : "/captcha"
     },
     captcha_template : { //短信模板
-      REGISTER : "欢迎注册甜菜金融，手机验证码：{SMS_CAPTCHA}，验证码在10分钟内有效 www.itiancai.com",
-      RESETPWD : "甜菜金融通知您本次修改登录密码的手机验证码为:{SMS_CAPTCHA},验证码在10分钟内有效",
-      LOGIN : "手机验证码：{SMS_CAPTCHA}，验证码在10分钟内有效 www.itiancai.com"
+      REGISTER: "您的短信验证码为：{SMS_CAPTCHA}，请在10分钟内输入此验证码完成注册",
+      RESETPWD: "您本次找回密码的短信验证码为:{SMS_CAPTCHA},本验证码在10分钟内输入有效",
+      LOGIN: "登录验证码:{SMS_CAPTCHA},验证码在10分钟内有效"
     },
     TTL: 10*60, //验证码有效时间[10分钟(单位:秒)]
     MIN_INTERVAL: 50*1000, //最小发送间隔[50秒(单位:毫秒)]

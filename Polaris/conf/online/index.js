@@ -14,7 +14,7 @@ module.exports = {
 
   // 应用全局配置
   app: {
-    port: 9980,
+    port: 9958,
     httpAgentMaxSocks: 30000
   },
 
@@ -25,7 +25,7 @@ module.exports = {
 
   // 文本宏
   consts: {
-    siteName: '甜菜金融'
+    siteName: '带你装'
   },
 
   // 模板引擎相关配置
@@ -51,35 +51,14 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/base/passport',
+      url: 'zk!10.9.131.21:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/passport/thrift',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     notifaction: {
-      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/base/sms',
-      options: {
-        max_connections:100,
-        min_connections: 10
-      }
-    },
-    user: {
-      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/p2p/user',
-      options: {
-        max_connections:100,
-        min_connections: 10
-      }
-    },
-    interact: {
-      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/p2p/interact',
-      options: {
-        max_connections:100,
-        min_connections: 10
-      }
-    },
-    coupon: {
-      url: 'zk!10.10.97.70:2181,10.10.105.138:2181,10.10.111.250:2181!/rpc/services/p2p/coupon',
+      url: 'zk!10.9.131.21:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/sms/thrift',
       options: {
         max_connections:100,
         min_connections: 10
@@ -120,9 +99,9 @@ module.exports = {
       path : "/captcha"
     },
     captcha_template : { //短信模板
-      REGISTER : "欢迎注册甜菜金融，手机验证码：{SMS_CAPTCHA}，验证码在10分钟内有效 www.itiancai.com",
-      RESETPWD : "甜菜金融通知您本次修改登录密码的手机验证码为:{SMS_CAPTCHA},验证码在10分钟内有效",
-      LOGIN : "登录验证码:{SMS_CAPTCHA},验证码在10分钟内有效"
+      REGISTER: "您的短信验证码为：{SMS_CAPTCHA}，请在10分钟内输入此验证码完成注册",
+      RESETPWD: "您本次找回密码的短信验证码为:{SMS_CAPTCHA},本验证码在10分钟内输入有效",
+      LOGIN: "登录验证码:{SMS_CAPTCHA},验证码在10分钟内有效"
     },
     TTL: 10*60, //验证码有效时间[10分钟(单位:秒)]
     MIN_INTERVAL: 50*1000, //最小发送间隔[50秒(单位:毫秒)]
