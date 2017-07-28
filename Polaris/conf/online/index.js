@@ -51,14 +51,14 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      url: 'zk!10.9.131.21:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/passport/thrift',
+      url: 'zk!10.9.131.215:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/passport/thrift',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     notifaction: {
-      url: 'zk!10.9.131.21:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/sms/thrift',
+      url: 'zk!10.9.131.215:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/sms/thrift',
       options: {
         max_connections:100,
         min_connections: 10
