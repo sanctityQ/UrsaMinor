@@ -140,7 +140,7 @@ module.exports = {
     var traceNo = this.req.traceNo+"";
     var tokenNo = query.access_token;
     if(!tokenNo) {
-      tokenNo = postBody.accessToken;
+      tokenNo = query.accessToken;
     }
     tclog.notice({api:'api/logout', traceNo:traceNo, source:headerBody.source, sysCode:headerBody.syscode, tokenNo: tokenNo});
     var tokenInfo = {
