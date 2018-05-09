@@ -141,7 +141,11 @@ module.exports = {
       yield captcha2Model.validateSmsCaptcha(traceNo, validObj);
       var user = yield userModel.findUserByMobile(mobile);
       var id_authenticated = (user && user.idNumber) ? 1 : 0;
-      yield this.api({mobile: mobile, msg: '验证通过', id_authenticated:id_authenticated});
+      var name = "";
+      if(id_authenticated == 1) {
+          name = name.charAt(0) + name.substr(1).replace(new RegExp(".",'g'), "*")
+      }
+      yield this.api({mobile: mobile, msg: '验证通过', name : name, id_authenticated:id_authenticated});
     } catch (err) {
       tclog.warn({msg:'validateSms4ResetPassword error', traceNo: traceNo, err: err});
       yield this.api_err({error_code: err.err_code, error_msg: err.err_msg});
