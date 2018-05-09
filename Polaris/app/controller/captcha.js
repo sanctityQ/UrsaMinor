@@ -143,7 +143,7 @@ module.exports = {
       var id_authenticated = (user && user.idNumber) ? 1 : 0;
       var name = "";
       if(id_authenticated == 1) {
-          name = name.charAt(0) + name.substr(1).replace(new RegExp(".",'g'), "*")
+          name = user.name;
       }
       yield this.api({mobile: mobile, msg: '验证通过', name : name, id_authenticated:id_authenticated});
     } catch (err) {
