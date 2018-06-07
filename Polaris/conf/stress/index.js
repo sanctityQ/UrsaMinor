@@ -132,7 +132,7 @@ module.exports = {
   },
 
   token:{
-    DEFAULT_EXPIRE : 7*24*60*60, //token有效时间
+    DEFAULT_EXPIRE : 30*24*60*60, //token有效时间
     KEY_PRE: "passport:access_token:" //redis-key
   },
 
