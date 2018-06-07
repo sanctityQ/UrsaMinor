@@ -248,22 +248,22 @@ describe("发送验证码测试", function () {
         });
   });
 
-  it("验证短信验证码(找回密码)-正确", function (done) {
-    validateSmsCaptcha_stub.returns(new Promise(function(resolve, reject){
-      resolve(true);
-    }));
-    var mobile = '15138695162';
-    request
-        .post('/api/captcha/validate/sms/resetPassword')
-        .send({mobile: mobile, smsCaptcha:"145231"})
-        .set('syscode', 'FINANCE')
-        .set('source', 'APP')
-        .expect(200)
-        .end(function (err, res) {
-          res.body.mobile.should.be.equal(mobile);
-          done();
-        });
-  });
+  // it("验证短信验证码(找回密码)-正确", function (done) {
+  //   validateSmsCaptcha_stub.returns(new Promise(function(resolve, reject){
+  //     resolve(true);
+  //   }));
+  //   var mobile = '15138695162';
+  //   request
+  //       .post('/api/captcha/validate/sms/resetPassword')
+  //       .send({mobile: mobile, smsCaptcha:"145231"})
+  //       .set('syscode', 'FINANCE')
+  //       .set('source', 'APP')
+  //       .expect(200)
+  //       .end(function (err, res) {
+  //         res.body.mobile.should.be.equal(mobile);
+  //         done();
+  //       });
+  // });
 
   it("验证短信验证码(找回密码)-错误", function (done) {
     validateSmsCaptcha_stub.returns(new Promise(function(resolve, reject){
