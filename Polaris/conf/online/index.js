@@ -68,7 +68,7 @@ module.exports = {
 
   // redis连接相关配置
   redis: {
-    sentinels: [{ host: '10.9.98.165', port: 26379 }, { host: '10.9.99.51', port: 26379 }, { host: '10.9.81.238', port: 26379 }],
+    sentinels: [{ host: '10.10.140.82', port: 26379 }, { host: '10.10.159.69', port: 26379 }, { host: '10.10.187.65', port: 26379 }],
     name: 'resque',
     db: 1,
     enableOfflineQueue: false,
