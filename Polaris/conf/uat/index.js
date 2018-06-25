@@ -10,7 +10,7 @@ module.exports = {
   // 当前运行模式
   runEnv: 'uat',
 
-  developMode: false,
+  developMode: true,
 
   // 应用全局配置
   app: {
