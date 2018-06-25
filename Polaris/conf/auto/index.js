@@ -142,5 +142,6 @@ module.exports = {
   session: {
     key: 'itiancai.sid',
     prefix: 'passport:sess:'
-  }
+  },
+  p2p_url: "http://127.0.0.1:8888"
 }

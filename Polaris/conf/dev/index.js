@@ -51,7 +51,7 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      url: '127.0.0.1:9999',
+      url: '192.168.0.244:9981',
       options: {
         max_connections:100, 
         min_connections: 10
@@ -65,21 +65,21 @@ module.exports = {
       }
     },
     user: {
-      url: '127.0.0.1:9970',
+      url: '192.168.0.244:9970',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     interact: {
-      url: '127.0.0.1:9971',
+      url: '192.168.0.244:9971',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     coupon: {
-      url: '127.0.0.1:9974',
+      url: '192.168.0.244:9974',
       options: {
         max_connections:100,
         min_connections: 10
@@ -173,5 +173,6 @@ module.exports = {
   session: {
     key: 'itiancai.sid',
     prefix: 'passport:sess:'
-  }
+  },
+  p2p_url: "http://192.168.0.244:8888"
 }
