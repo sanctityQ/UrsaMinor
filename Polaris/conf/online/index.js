@@ -51,14 +51,14 @@ module.exports = {
   // 后端连接相关配置
   thirft: {
     passport: {
-      url: 'zk!10.9.131.215:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/passport/thrift',
+      url: '127.0.0.1:9959',
       options: {
         max_connections:100,
         min_connections: 10
       }
     },
     notifaction: {
-      url: 'zk!10.9.131.215:2181,10.9.110.4:2181,10.9.194.146:2181!/rpc/dnz/product/sms/thrift',
+      url: '127.0.0.1:9951',
       options: {
         max_connections:100,
         min_connections: 10
@@ -68,7 +68,7 @@ module.exports = {
 
   // redis连接相关配置
   redis: {
-    sentinels: [{ host: '10.10.140.82', port: 26379 }, { host: '10.10.159.69', port: 26379 }, { host: '10.10.187.65', port: 26379 }],
+    sentinels: [{ host: '10.9.166.23', port: 26379 }, { host: '10.9.68.228', port: 26379 }, { host: '10.9.68.228', port: 26389 }],
     name: 'resque',
     db: 1,
     enableOfflineQueue: false,
